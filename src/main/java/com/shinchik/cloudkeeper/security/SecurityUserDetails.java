@@ -1,5 +1,6 @@
-package com.shinchik.cloudkeeper.model;
+package com.shinchik.cloudkeeper.security;
 
+import com.shinchik.cloudkeeper.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

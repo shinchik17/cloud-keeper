@@ -1,7 +1,6 @@
 package com.shinchik.cloudkeeper.security;
 
 
-import com.shinchik.cloudkeeper.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +22,10 @@ public class SecurityConfig {
     //    private final String registerUrl = "/auth/register";
     private final String loginUrl = "/auth/login";
     private final String logoutUrl = "/auth/logout";
-    private final String defaultUrl = "/auth/welcome";
+    private final String welcomeUrl = "/welcome";
+    private final String defaultUrl = "/";
     private final String[] unsecuredUrls = new String[]{
-//            defaultUrl,
+            defaultUrl,
             "/error",
             "/auth/register",
             loginUrl,
@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> {
                     formLogin.loginPage(loginUrl);
                     formLogin.loginProcessingUrl(loginUrl);
-                    formLogin.defaultSuccessUrl(defaultUrl);
+                    formLogin.defaultSuccessUrl(welcomeUrl);
                     formLogin.failureUrl(loginUrl + "?error");
                 })
                 .logout(logout -> {
