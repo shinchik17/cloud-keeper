@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login page</title>
+</head>
+<body>
+
+<div>
+    <p>Ooops!</p>
+    <p th:text="${errorMessage}">Error</p>
+    <img src="https://thecatapi.com/api/images/get?format=src&type=gif" alt="*Funny cat gif*">
+<!--    <img src="https://thecatapi.com/api/images/get?format=src&amp;type=gif" class="mt-5 mx-auto img-fluid d-block" style="max-width: 900px;">-->
+    <br/>
+    <a th:href="@{/}">Home page</a>
+</div>
+
+</body>
+</html>
