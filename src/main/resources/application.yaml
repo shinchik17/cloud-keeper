@@ -12,7 +12,15 @@ spring:
     hibernate:
       ddl-auto: validate
 
-
 server:
   servlet:
     context-path: /api/v1/
+
+
+
+minio:
+  client:
+    endpoint: ${MINIO_ENDPOINT}
+    user: ${MINIO_ROOT_USER}
+    password: ${MINIO_ROOT_PASSWORD}
+  bucket-name: user-uploads
