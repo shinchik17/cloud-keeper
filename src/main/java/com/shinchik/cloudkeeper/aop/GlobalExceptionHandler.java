@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
         request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         model.addAttribute("errorMessage", e.getMessage());
         model.addAttribute("errorCode", e.getMessage());
+        logger.error(e.getMessage());
         return "error";
     }
 

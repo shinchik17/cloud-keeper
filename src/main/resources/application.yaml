@@ -11,6 +11,10 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: validate
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 10MB
 
 server:
   servlet:

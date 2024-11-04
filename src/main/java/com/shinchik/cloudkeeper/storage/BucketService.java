@@ -16,12 +16,11 @@ import java.security.NoSuchAlgorithmException;
 @Service
 public class BucketService {
 
-    @Value("minio.bucket-name")
-    private String defaultBucketName;
     private final MinioClient minioClient;
 
     @Autowired
-    public BucketService(MinioClient minioClient) throws MinioException {
+    public BucketService(MinioClient minioClient,
+                         @Value("minio.bucket-name") String defaultBucketName) throws MinioException {
         this.minioClient = minioClient;
         createBucket(defaultBucketName);
     }
