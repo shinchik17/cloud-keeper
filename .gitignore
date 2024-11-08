@@ -38,3 +38,6 @@ out/
 
 ### Dev environment file ###
 /dev.env
+
+### Minio files ###
+/data

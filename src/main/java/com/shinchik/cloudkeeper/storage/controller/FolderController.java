@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
-import com.shinchik.cloudkeeper.storage.model.FolderUploadDto;
+
+import com.shinchik.cloudkeeper.storage.dto.folder.FolderUploadDto;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;

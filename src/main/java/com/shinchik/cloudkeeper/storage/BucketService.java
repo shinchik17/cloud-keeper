@@ -7,6 +7,7 @@ import io.minio.MinioClient;
 import io.minio.errors.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,15 +21,9 @@ public class BucketService {
 
     @Autowired
     public BucketService(MinioClient minioClient,
-                         @Value("minio.bucket-name") String defaultBucketName) throws MinioException {
+                         @Value("${minio.bucket-name}") String defaultBucketName) throws MinioException {
         this.minioClient = minioClient;
         createBucket(defaultBucketName);
-    }
-
-
-    public void createDefaultUserFolder(User user) throws MinioException {
-        String bucketName = "user-%d-files".formatted(user.getId());
-        createBucket(bucketName);
     }
 
 

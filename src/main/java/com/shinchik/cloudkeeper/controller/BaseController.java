@@ -1,14 +1,16 @@
 package com.shinchik.cloudkeeper.controller;
 
+import com.shinchik.cloudkeeper.model.User;
 import com.shinchik.cloudkeeper.security.SecurityUserDetails;
 import com.shinchik.cloudkeeper.storage.BucketService;
-import com.shinchik.cloudkeeper.storage.model.FileUploadDto;
-import com.shinchik.cloudkeeper.storage.model.FolderUploadDto;
+import com.shinchik.cloudkeeper.storage.dto.file.FileUploadDto;
+import com.shinchik.cloudkeeper.storage.dto.folder.FolderUploadDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Controller
 public class BaseController {
@@ -21,15 +23,19 @@ public class BaseController {
     }
 
     @GetMapping("/welcome")
-    public String welcome(Model model, @AuthenticationPrincipal SecurityUserDetails user){
+    public String welcome(Model model,
+                          @ModelAttribute("fileUploadDto") FileUploadDto fileUploadDto,
+                          @ModelAttribute("folderUploadDto") FolderUploadDto folderUploadDto
+                          ){
 
-        FileUploadDto fileUploadDto = new FileUploadDto();
-        fileUploadDto.setUsername(user.getUsername());
-        FolderUploadDto folderUploadDto = new FolderUploadDto();
-        folderUploadDto.setUsername(user.getUsername());
-
-        model.addAttribute("fileUploadDto", fileUploadDto);
-        model.addAttribute("folderUploadDto", folderUploadDto);
+//        User user = userDetails.getUser();
+//        FileUploadDto fileUploadDto = new FileUploadDto();
+//        fileUploadDto.setUser(user);
+//        FolderUploadDto folderUploadDto = new FolderUploadDto();
+//        folderUploadDto.setUser(user);
+//
+//        model.addAttribute("fileUploadDto", fileUploadDto);
+//        model.addAttribute("folderUploadDto", folderUploadDto);
 //        model.addAttribute("user", user);
         return "welcome";
     }

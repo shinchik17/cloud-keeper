@@ -1,17 +1,17 @@
 package com.shinchik.cloudkeeper.security;
 
 import com.shinchik.cloudkeeper.model.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public class SecurityUserDetails implements UserDetails {
 
+    @Getter
     private User user;
 
     public SecurityUserDetails(User user) {
