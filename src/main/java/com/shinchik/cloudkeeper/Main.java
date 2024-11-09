@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("kek");
         String bucketName = "user-files";
-        String objectName = "/path/to/";
+        String objectName = "folder3/kek.doc";
 
         try {
 
@@ -27,24 +27,24 @@ public class Main {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             }
 
-//            minioClient.putObject(
-//                    PutObjectArgs.builder()
-//                            .bucket(bucketName)
-//                            .object(objectName)
-//                            .stream(new ByteArrayInputStream(new byte[] {1,2,3}), 0, -1)
-//                            .build()
-//            );
-            var a = minioClient.getObject(
-                    GetObjectArgs.builder()
+            minioClient.putObject(
+                    PutObjectArgs.builder()
                             .bucket(bucketName)
                             .object(objectName)
+                            .stream(new ByteArrayInputStream(new byte[] {1,2,3}), -1, 5*1024*1024L)
                             .build()
             );
+//            var a = minioClient.getObject(
+//                    GetObjectArgs.builder()
+//                            .bucket(bucketName)
+//                            .object(objectName)
+//                            .build()
+//            );
 
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs.builder()
                             .bucket(bucketName)
-                            .prefix("path")
+                            .prefix(objectName)
                             .recursive(true)
                             .maxKeys(10)
                             .build());
@@ -63,7 +63,7 @@ public class Main {
 //            minioClient.copyObject(
 //                    CopyObjectArgs.builder()
 //                            .bucket(bucketName)
-//                            .object("/path/to2/")
+//                            .object("/Fonts2")
 //                            .source(
 //                                    CopySource.builder()
 //                                            .bucket(bucketName)

@@ -1,10 +1,7 @@
 package com.shinchik.cloudkeeper.storage;
 
 import com.shinchik.cloudkeeper.model.User;
-import com.shinchik.cloudkeeper.storage.dto.file.FileDownloadDto;
-import com.shinchik.cloudkeeper.storage.dto.file.FileRenameDto;
-import com.shinchik.cloudkeeper.storage.dto.file.FileRequestDto;
-import com.shinchik.cloudkeeper.storage.dto.file.FileUploadDto;
+import com.shinchik.cloudkeeper.storage.dto.file.*;
 import com.shinchik.cloudkeeper.storage.exception.FileServiceException;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import io.minio.SnowballObject;
@@ -12,6 +9,7 @@ import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -32,17 +30,16 @@ import java.util.zip.ZipOutputStream;
 public class FileService {
 
     private final MinioRepository minioRepository;
-
-
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private long maxFileSize;
-
-    @Value("${spring.servlet.multipart.max-request-size}")
-    private long maxRequestSize;
+    private final long maxFileSize;
+    private final long maxRequestSize;
 
     @Autowired
-    public FileService(MinioRepository minioRepository) {
+    public FileService(MinioRepository minioRepository,
+                       @Value("${spring.servlet.multipart.max-file-size}") long maxFileSize,
+                       @Value("${spring.servlet.multipart.max-request-size}") long maxRequestSize) {
         this.minioRepository = minioRepository;
+        this.maxFileSize = maxFileSize;
+        this.maxRequestSize = maxRequestSize;
     }
 
 
@@ -50,6 +47,7 @@ public class FileService {
 
         List<MultipartFile> files = uploadDto.getDocuments();
         User user = uploadDto.getUser();
+        String path = uploadDto.getPath();
 
         if (isTotalExceededSizeConstraints(files)) {
             throw new MaxUploadSizeExceededException(maxRequestSize);
@@ -57,27 +55,26 @@ public class FileService {
 
         try {
             if (files.size() == 1) {
-                MultipartFile file = uploadDto.getDocuments().get(0);
-                String fullPath = formFullPath(file.getOriginalFilename(), user);
-                minioRepository.upload(fullPath, file.getInputStream(), file.getSize());
+                MultipartFile file = files.get(0);
+                String fullObjPath = formFullPath(uploadDto) + "/" + file.getOriginalFilename();
+                minioRepository.upload(fullObjPath, file.getInputStream(), file.getSize());
             } else {
-                minioRepository.upload(multipartToSnowball(files, user));
+                minioRepository.upload(multipartToSnowball(files, path, user));
             }
         } catch (IOException | FileServiceException e) {
             throw new FileServiceException(e);
         }
-
     }
 
 
     public InputStreamResource download(FileDownloadDto downloadDto) {
         // TODO: implement
-        String fullPath = formFullPath(downloadDto.getObjName(), downloadDto.getUser());
+        String fullObjPath = formFullPath(downloadDto) + "/" + downloadDto.getObjName();
 
-        if (isDir(fullPath)) {
-            return new InputStreamResource(getZippedFolder(fullPath));
+        if (isDir(fullObjPath)) {
+            return new InputStreamResource(getZippedFolder(fullObjPath));
         } else {
-            return new InputStreamResource(minioRepository.get(fullPath));
+            return new InputStreamResource(minioRepository.get(fullObjPath));
         }
 
     }
@@ -85,27 +82,41 @@ public class FileService {
 
     public void rename(FileRenameDto renameDto){
         String fullPath = formFullPath(renameDto);
-//        String newFullPath = formFullPath(newObjPath, user);
+        String objName = renameDto.getObjName();
+        String newObjName = renameDto.getNewObjName();
 
-        if (isDir(fullPath)) {
+
+        if (isDir(fullPath + objName)) {
 
 //            Map<Item, InputStream> objectsMap = minioRepository.getAfterPath(fullPath);
-            List<Item> objectsMeta = minioRepository.findRecursively(fullPath);
+            List<Item> objectsMeta = minioRepository.findRecursively(fullPath + "/" + objName);
 
             for (Item item : objectsMeta) {
-//                minioRepository.rename(item.objectName(), );
+                String objPath = item.objectName();
+                minioRepository.rename(objPath, objPath.replace(objName, newObjName));
             }
-
 
         } else {
 
-//            newFullPath = handleFileExtension(objPath, newFullPath);
-//            minioRepository.rename(fullPath, newFullPath);
+            String fullObjPath = fullPath + "/" + handleFileExtension(objName, newObjName);
+            String fullNewObjPath = fullPath + "/" + newObjName;
+            minioRepository.rename(fullObjPath, fullNewObjPath);
         }
 
+    }
 
 
+    public void delete(FileDeleteDto deleteDto){
+        String fullObjPath = formFullPath(deleteDto) + "/" + deleteDto.getObjName();
 
+        minioRepository.delete(fullObjPath);
+
+    }
+
+
+    public boolean isObjectExist(FileCheckDto checkDto){
+        String fullObjPath = formFullPath(checkDto) + "/" + checkDto.getObjName();
+        return minioRepository.isObjectExist(fullObjPath);
     }
 
 
@@ -151,6 +162,7 @@ public class FileService {
         return new ByteArrayInputStream(byteOutStream.toByteArray());
     }
 
+
     private static String handleFileExtension(String oldName, String newName){
         int lastDotIndex = oldName.lastIndexOf(".");
         if (lastDotIndex != -1){
@@ -160,16 +172,16 @@ public class FileService {
         return newName;
     }
 
-    private boolean isDir(String path) {
-        return path.endsWith("/");
+    private boolean isDir(String objPath) {
+        return objPath.endsWith("/");
     }
 
-    private static List<SnowballObject> multipartToSnowball(List<MultipartFile> files, User user) {
+    private static List<SnowballObject> multipartToSnowball(List<MultipartFile> files, String path, User user) {
         return files.stream()
                 .map(file -> {
                     try {
                         return new SnowballObject(
-                                formFullPath(file.getOriginalFilename(), user),
+                                formFullPath(path + "/" + file.getOriginalFilename(), user),
                                 file.getInputStream(),
                                 file.getSize(),
                                 null);
@@ -196,6 +208,7 @@ public class FileService {
     private static String formFullPath(FileRequestDto requestDto) {
         return "user-%d-files/%s".formatted(requestDto.getUser().getId(), requestDto.getPath());
     }
+
 
     private static String extractOrigName(String prefixedPath) {
 //        return "user-%d-files/%s".formatted(user.getId(), path);

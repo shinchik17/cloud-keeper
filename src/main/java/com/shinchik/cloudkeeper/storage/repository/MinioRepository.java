@@ -6,6 +6,7 @@ import io.minio.errors.*;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -21,14 +22,16 @@ import java.util.Map;
 @Repository
 public class MinioRepository {
 
-    @Value("${minio.bucket-name}")
-    private String bucketName;
-    @Value("${minio.max-listed-objects}")
-    private int maxFindKeys;
+    private final String bucketName;
+    private final int maxFindKeys;
     private final MinioClient minioClient;
 
-    public MinioRepository(MinioClient minioClient) {
+    public MinioRepository(MinioClient minioClient,
+                           @Value("${minio.bucket-name}") String bucketName,
+                           @Value("${minio.max-listed-objects}") int maxFindKeys) {
         this.minioClient = minioClient;
+        this.bucketName = bucketName;
+        this.maxFindKeys = maxFindKeys;
     }
 
     public void upload(String objPath, InputStream fileStream, long size) {

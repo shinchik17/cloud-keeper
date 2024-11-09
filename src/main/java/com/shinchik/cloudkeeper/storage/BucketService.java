@@ -5,6 +5,7 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.errors.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -15,15 +16,18 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @Service
+@Slf4j
 public class BucketService {
 
     private final MinioClient minioClient;
+    private final String bucketName;
 
     @Autowired
     public BucketService(MinioClient minioClient,
-                         @Value("${minio.bucket-name}") String defaultBucketName) throws MinioException {
+                         @Value("${minio.bucket-name}") String bucketName) throws MinioException {
         this.minioClient = minioClient;
-        createBucket(defaultBucketName);
+        this.bucketName = bucketName;
+//        createBucket(bucketName);
     }
 
 
@@ -38,8 +42,9 @@ public class BucketService {
                 );
             }
 
-        } catch (Exception ex) {
-            throw new MinioException(ex.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 

@@ -4,7 +4,8 @@ package com.shinchik.cloudkeeper.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: cloud-keeper
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: validate
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+server:
+  servlet:
+    context-path: /api/v1/
+
+
+minio:
+  client:
+    endpoint: http://localhost:9000
+    user: test
+    password: testpass
+  bucket-name: user-files
+  max-listed-objects: 20
