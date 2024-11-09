@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.storage;
 
 import com.shinchik.cloudkeeper.model.User;
+import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -30,8 +31,11 @@ public class BucketService {
 //        createBucket(bucketName);
     }
 
+    public void createDefaultBucket(){
+        createBucket(bucketName);
+    }
 
-    public void createBucket(String bucketName) throws MinioException {
+    public void createBucket(String bucketName) {
 
         try {
             if (!isBucketExisting(bucketName)) {
@@ -44,7 +48,7 @@ public class BucketService {
 
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new MinioException(e.getMessage());
+            throw new MinioRepositoryException(e.getMessage());
         }
     }
 
