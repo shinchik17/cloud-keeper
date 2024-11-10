@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage.dto.file;
+package com.shinchik.cloudkeeper.storage.dto;
 
 import com.shinchik.cloudkeeper.model.User;
 import lombok.*;
@@ -9,10 +9,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FileUploadDto extends FileRequestDto{
+public class UploadDto extends BaseReqDto {
     private List<MultipartFile> documents;
 
-    public FileUploadDto(User user, String path, List<MultipartFile> documents) {
+    public UploadDto(User user, String path, List<MultipartFile> documents) {
         super(user, path);
         this.documents = documents;
     }

@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import javax.sql.DataSource;
 
 @TestConfiguration
-public class TestConfigMock {
+public class TestStorageConfig {
 
     @MockBean
     private DataSource dataSource;

@@ -1,12 +1,8 @@
 package com.shinchik.cloudkeeper.controller;
 
-import com.shinchik.cloudkeeper.model.User;
-import com.shinchik.cloudkeeper.security.SecurityUserDetails;
 import com.shinchik.cloudkeeper.storage.BucketService;
-import com.shinchik.cloudkeeper.storage.dto.file.FileUploadDto;
-import com.shinchik.cloudkeeper.storage.dto.folder.FolderUploadDto;
+import com.shinchik.cloudkeeper.storage.dto.UploadDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,17 +20,17 @@ public class BaseController {
 
     @GetMapping("/welcome")
     public String welcome(Model model,
-                          @ModelAttribute("fileUploadDto") FileUploadDto fileUploadDto,
-                          @ModelAttribute("folderUploadDto") FolderUploadDto folderUploadDto
+                          @ModelAttribute("fileUploadDto") UploadDto uploadDto
+//                          @ModelAttribute("folderUploadDto") FolderUploadDto folderUploadDto
                           ){
 
 //        User user = userDetails.getUser();
-//        FileUploadDto fileUploadDto = new FileUploadDto();
-//        fileUploadDto.setUser(user);
+//        UploadDto uploadDto = new UploadDto();
+//        uploadDto.setUser(user);
 //        FolderUploadDto folderUploadDto = new FolderUploadDto();
 //        folderUploadDto.setUser(user);
 //
-//        model.addAttribute("fileUploadDto", fileUploadDto);
+//        model.addAttribute("uploadDto", uploadDto);
 //        model.addAttribute("folderUploadDto", folderUploadDto);
 //        model.addAttribute("user", user);
         return "welcome";
