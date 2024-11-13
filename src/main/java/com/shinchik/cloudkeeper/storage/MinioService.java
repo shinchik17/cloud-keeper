@@ -1,6 +1,5 @@
 package com.shinchik.cloudkeeper.storage;
 
-import com.shinchik.cloudkeeper.model.User;
 import com.shinchik.cloudkeeper.storage.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.dto.RenameDto;
 import com.shinchik.cloudkeeper.storage.dto.UploadDto;
@@ -30,16 +29,16 @@ import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Service
-public class StorageService {
+public class MinioService {
 
     private final MinioRepository minioRepository;
     private final long maxFileSize;
     private final long maxRequestSize;
 
     @Autowired
-    public StorageService(MinioRepository minioRepository,
-                          @Value("${spring.servlet.multipart.max-file-size}") DataSize maxFileSize,
-                          @Value("${spring.servlet.multipart.max-request-size}") DataSize maxRequestSize) {
+    public MinioService(MinioRepository minioRepository,
+                        @Value("${spring.servlet.multipart.max-file-size}") DataSize maxFileSize,
+                        @Value("${spring.servlet.multipart.max-request-size}") DataSize maxRequestSize) {
         this.minioRepository = minioRepository;
         this.maxFileSize = maxFileSize.toBytes();
         this.maxRequestSize = maxRequestSize.toBytes();
@@ -238,9 +237,6 @@ public class StorageService {
         return files.stream().mapToLong(MultipartFile::getSize).sum() > maxRequestSize;
     }
 
-    private static String formFullPath(String path, User user) {
-        return "user-%d-files/%s/".formatted(user.getId(), path).replace("//", "/");
-    }
 
     private static String formFullPath(BaseReqDto reqDto) {
         return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");

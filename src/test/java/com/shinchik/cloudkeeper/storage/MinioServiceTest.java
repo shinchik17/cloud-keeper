@@ -20,12 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +33,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @SpringBootTest
 @Import(TestStorageConfig.class)
-class StorageServiceTest {
+class MinioServiceTest {
 
     private static final String MINIO_IMAGE_NAME = "quay.io/minio/minio:latest";
-    private static final DockerImageName MINIO_IMAGE = DockerImageName.parse("quay.io/minio/minio:latest");
 
-    // @Container
-    private GenericContainer<?> minioContainer = new FixedHostPortGenericContainer<>(MINIO_IMAGE_NAME)
+    private final GenericContainer<?> minioContainer = new FixedHostPortGenericContainer<>(MINIO_IMAGE_NAME)
             .withFixedExposedPort(9000, 9000)
             .withFixedExposedPort(9001, 9001)
             .withCommand("server", "/data", "--console-address", ":9001");
@@ -54,10 +50,15 @@ class StorageServiceTest {
     private BucketService bucketService;
 
     @Autowired
-    private StorageService storageService;
+    private MinioService minioService;
 
     private final User user = new User(1L, "user1", "pass1", "USER");
     private final String genericPath = "folder";
+    private static final int NUM_OBJ_TO_UPLOAD = 3;
+    private final List<MultipartFile> mockFilesAndFolder = generateMockMultipartFilesAndFolder();
+    private final List<MultipartFile> mockSingleFile = generateMockMultipartFiles(1);
+    private final UploadDto filesAndFolderUploadDto = new UploadDto(user, genericPath, mockFilesAndFolder);
+    private final UploadDto singleFileUploadDto = new UploadDto(user, genericPath, mockSingleFile);
 
 
     @BeforeEach
@@ -74,28 +75,23 @@ class StorageServiceTest {
         minioContainer.stop();
     }
 
-    // TODO: extract common test data generation into @BeforeEach
 
     @Test
     @DisplayName("Upload file")
     public void uploadSingleFile_objCreated() {
-        List<MultipartFile> files = generateMockMultipartFiles(1);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
-
-        BaseReqDto checkDto = new BaseReqDto(user, genericPath, files.get(0).getOriginalFilename());
-        assertTrue(storageService.isObjectExist(checkDto), "File have been uploaded successfully");
+        minioService.upload(singleFileUploadDto);
+        String filename = singleFileUploadDto.getDocuments().get(0).getOriginalFilename();
+        BaseReqDto checkDto = new BaseReqDto(user, genericPath, filename);
+        assertTrue(minioService.isObjectExist(checkDto), "File have not been uploaded");
     }
 
     @Test
     @DisplayName("Upload multiple files")
     public void uploadMultipleFiles_objectsCreated() {
-        List<MultipartFile> files = generateMockMultipartFiles(3);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+        minioService.upload(filesAndFolderUploadDto);
 
         BaseReqDto checkDto = new BaseReqDto(user, genericPath, "");
-        assertEquals(3, storageService.list(checkDto).size(), "All files have been uploaded successfully");
+        assertEquals(NUM_OBJ_TO_UPLOAD, minioService.list(checkDto).size(), "Files have not been uploaded");
     }
 
     @Test
@@ -103,23 +99,20 @@ class StorageServiceTest {
     public void downloadExistentFile() {
         List<MultipartFile> files = generateMockMultipartFiles(1);
         UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+        minioService.upload(uploadDto);
 
         BaseReqDto downloadDto = new BaseReqDto(user, genericPath, files.get(0).getOriginalFilename());
-        InputStreamResource downloadedFile = storageService.download(downloadDto);
-        assertDoesNotThrow(() -> downloadedFile.getInputStream().available(), "Input stream of downloaded file is valid");
+        InputStreamResource downloadedFile = minioService.download(downloadDto);
+        assertDoesNotThrow(() -> downloadedFile.getInputStream().available(), "Downloaded file is invalid");
     }
 
     @Test
-    @DisplayName("Download existent folder with files and folder inside -> must create zip archive")
-    public void downloadExistentFolder_zipArchiveSaved(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path tempDir) throws IOException {
-        List<MultipartFile> files = generateMockMultipartFiles(3);
-        files.add(createFakeFolder());
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+    @DisplayName("Download existent folder with files and empty folder inside -> must create zip archive")
+    public void downloadExistentFolder_zipArchiveSaved(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path tempDir) {
+        minioService.upload(filesAndFolderUploadDto);
 
         BaseReqDto downloadDto = new BaseReqDto(user, "", "folder");
-        InputStreamResource downloadedZip = storageService.download(downloadDto);
+        InputStreamResource downloadedZip = minioService.download(downloadDto);
 
         File zipFile = new File(tempDir.toFile(), "test.zip");
         try (FileOutputStream fos = new FileOutputStream(zipFile)) {
@@ -128,14 +121,14 @@ class StorageServiceTest {
             throw new RuntimeException(e);
         }
 
-        assertTrue(zipFile.exists(), "Zip archive have been created successfully");
+        assertTrue(zipFile.exists(), "Zip archive have not been created successfully");
     }
 
     @Test
     @DisplayName("Download nonexistent object")
     public void downloadNonExistentObj_thenThrow() {
-        BaseReqDto downloadDto = new BaseReqDto(user, genericPath, "dummyName");
-        assertThrows(MinioRepositoryException.class, () -> storageService.download(downloadDto), "No such object exists");
+        assertThrows(MinioRepositoryException.class, () -> minioService.download(singleFileUploadDto),
+                "Downloaded nonexistent file");
     }
 
     @Test
@@ -143,116 +136,111 @@ class StorageServiceTest {
     public void renameFile() {
         List<MultipartFile> files = generateMockMultipartFiles(1);
         UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+        minioService.upload(uploadDto);
 
         String oldName = files.get(0).getOriginalFilename();
         String newName = "RenamedFile";
         RenameDto renameDto = new RenameDto(user, genericPath, oldName, newName);
-        storageService.rename(renameDto);
+        minioService.rename(renameDto);
 
         BaseReqDto oldFileDto = new BaseReqDto(user, genericPath, oldName);
         BaseReqDto newFileDto = new BaseReqDto(user, genericPath, newName + ".txt");
-        assertFalse(storageService.isObjectExist(oldFileDto), "Object with old name does ot exist");
-        assertTrue(storageService.isObjectExist(newFileDto), "Object with new name exists");
+        assertFalse(minioService.isObjectExist(oldFileDto), "Object with old name still exists");
+        assertTrue(minioService.isObjectExist(newFileDto), "Object with new name does not exist");
     }
 
     @Test
     @DisplayName("Rename folder with file inside")
     public void renameFolder() {
-        List<MultipartFile> files = generateMockMultipartFiles(1);
-        UploadDto uploadDto = new UploadDto(user, genericPath + "/folder2", files);
-        storageService.upload(uploadDto);
-
-        String fileName = files.get(0).getOriginalFilename();
         String oldFolderName = "folder2";
+        UploadDto uploadDto = new UploadDto(user, genericPath + "/" + oldFolderName, mockSingleFile);
+        minioService.upload(uploadDto);
+
+        String fileName = mockSingleFile.get(0).getOriginalFilename();
         String newFolderName = "renamedFolder";
         RenameDto renameDto = new RenameDto(user, genericPath, oldFolderName, newFolderName);
-        storageService.rename(renameDto);
+        minioService.rename(renameDto);
 
-        // check whether old name folder exists and whether file is now in renamed folder
         BaseReqDto oldFolderDto = new BaseReqDto(user, genericPath, oldFolderName);
         BaseReqDto newFileDto = new BaseReqDto(user, genericPath, newFolderName + "/" + fileName);
-        assertFalse(storageService.isObjectExist(oldFolderDto), "Folder with old name does not exist");
-        assertTrue(storageService.isObjectExist(newFileDto), "File inside renamed folder exists");
+        assertFalse(minioService.isObjectExist(oldFolderDto), "Folder with old name still exists");
+        assertTrue(minioService.isObjectExist(newFileDto), "File inside renamed folder does not exist");
     }
 
 
     @Test
     @DisplayName("Delete file")
     public void deleteFile() {
-        List<MultipartFile> files = generateMockMultipartFiles(1);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+        minioService.upload(singleFileUploadDto);
 
-        BaseReqDto deleteDto = new BaseReqDto(user, genericPath, files.get(0).getOriginalFilename());
-        storageService.delete(deleteDto);
+        String filename = singleFileUploadDto.getDocuments().get(0).getOriginalFilename();
+        BaseReqDto deleteDto = new BaseReqDto(user, genericPath, filename);
+        minioService.delete(deleteDto);
 
-        BaseReqDto checkDto = new BaseReqDto(user, genericPath, files.get(0).getOriginalFilename());
-        assertFalse(storageService.isObjectExist(checkDto), "File have been deleted successfully");
+        assertFalse(minioService.isObjectExist(deleteDto), "File have not been deleted");
     }
 
 
     @Test
     @DisplayName("Delete folder with files and folder inside")
-    public void deleteFolder() throws IOException {
-        List<MultipartFile> files = generateMockMultipartFiles(3);
-        files.add(createFakeFolder());
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+    public void deleteFolder() {
+        minioService.upload(filesAndFolderUploadDto);
 
         BaseReqDto deleteDto = new BaseReqDto(user, "", genericPath);
-        storageService.delete(deleteDto);
+        minioService.delete(deleteDto);
+
         BaseReqDto checkDto = new BaseReqDto(user, genericPath);
-        assertEquals(0, storageService.list(checkDto).size(), "All objects have been deleted");
+        assertEquals(0, minioService.list(checkDto).size(), "Objects have not been deleted");
     }
 
 
     @Test
     @DisplayName("List objects inside directory")
-    public void listDir() throws IOException {
-        List<MultipartFile> files = generateMockMultipartFiles(3);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+    public void listDir() {
+        minioService.upload(filesAndFolderUploadDto);
 
-        UploadDto fakeFolderUploadDto = new UploadDto(user, "", List.of(createFakeFolder()));
-        storageService.upload(fakeFolderUploadDto);
+        UploadDto folderUploadDto = new UploadDto(user, "", List.of(createMockMultipartFolder()));
+        minioService.upload(folderUploadDto);
 
         BaseReqDto checkDto = new BaseReqDto(user, "");
-        assertEquals(2, storageService.list(checkDto).size(),
-                "All objects inside directory have been found, no extra objects been found");
+        assertEquals(2, minioService.list(checkDto).size(),
+                "Not all objects have been found or extra objects been found inside directory");
     }
 
     @Test
     @DisplayName("List all objects after prefix recursively")
-    public void listRecursively() throws IOException {
-        List<MultipartFile> files = generateMockMultipartFiles(3);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
+    public void listRecursively() {
+        minioService.upload(filesAndFolderUploadDto);
 
-        UploadDto fakeFolderUploadDto = new UploadDto(user, "", List.of(createFakeFolder()));
-        storageService.upload(fakeFolderUploadDto);
+        BaseReqDto createFolderDto = new BaseReqDto(user, "", genericPath);
+        minioService.createFolder(createFolderDto);
 
         BaseReqDto checkDto = new BaseReqDto(user, "");
-        assertEquals(4, storageService.listRecursively(checkDto).size(), "All objects have been found");
+        assertEquals(NUM_OBJ_TO_UPLOAD + 1, minioService.listRecursively(checkDto).size(),
+                "Amount of listed objects does not equal to amount of upload");
     }
 
     @Test
     @DisplayName("Create folder and ensure that files can be loaded inwards")
     public void createFolder() {
-        BaseReqDto reqDto = new BaseReqDto(user, "", genericPath);
-        storageService.createFolder(reqDto);
+        BaseReqDto createFolderDto = new BaseReqDto(user, "", genericPath);
+        minioService.createFolder(createFolderDto);
 
-        BaseReqDto checkDto = new BaseReqDto(user, "", reqDto.getObjName());
-        assertTrue(storageService.isDir(checkDto), "Folder created properly");
+        assertTrue(minioService.isDir(createFolderDto),
+                "Folder have not been created or been created incorrectly");
 
-        List<MultipartFile> files = generateMockMultipartFiles(3);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
-        storageService.upload(uploadDto);
-
+        minioService.upload(filesAndFolderUploadDto);
         BaseReqDto listDto = new BaseReqDto(user, genericPath);
-        assertEquals(3, storageService.list(listDto).size(), "Objects have been loaded into folder successfully");
+        assertEquals(NUM_OBJ_TO_UPLOAD, minioService.list(listDto).size(),
+                "Expected amount of loaded into folder files does not equal to amount of preceded");
     }
 
+
+    private static List<MultipartFile> generateMockMultipartFilesAndFolder() {
+        List<MultipartFile> files = generateMockMultipartFiles(NUM_OBJ_TO_UPLOAD - 1);
+        files.add(createMockMultipartFolder());
+        return files;
+    }
 
     private static List<MultipartFile> generateMockMultipartFiles(int amount) {
         ArrayList<MultipartFile> multipartFiles = new ArrayList<>();
@@ -270,12 +258,12 @@ class StorageServiceTest {
 
     }
 
-    private static MultipartFile createFakeFolder() throws IOException {
+    private static MultipartFile createMockMultipartFolder() {
         return new MockMultipartFile(
                 "fakeFolder/",
                 "fakeFolder/",
                 "content",
-                InputStream.nullInputStream());
+                new byte[]{});
     }
 
 

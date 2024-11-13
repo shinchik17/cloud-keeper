@@ -1,7 +1,7 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
 import com.shinchik.cloudkeeper.security.SecurityUserDetails;
-import com.shinchik.cloudkeeper.storage.StorageService;
+import com.shinchik.cloudkeeper.storage.MinioService;
 import com.shinchik.cloudkeeper.storage.dto.UploadDto;
 import io.minio.errors.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,11 @@ import java.security.NoSuchAlgorithmException;
 @RequestMapping("/files")
 public class FileController {
 
-    private final StorageService storageService;
+    private final MinioService minioService;
 
     @Autowired
-    public FileController(StorageService storageService) {
-        this.storageService = storageService;
+    public FileController(MinioService minioService) {
+        this.minioService = minioService;
     }
 
 
@@ -35,7 +35,7 @@ public class FileController {
         // TODO: rethink uploadDto structure, maybe I don't need it, replace with @RequestParam?
         uploadDto.setUser(userDetails.getUser());
 
-        storageService.upload(uploadDto);
+        minioService.upload(uploadDto);
 
         return "redirect:/welcome";
     }
