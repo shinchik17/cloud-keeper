@@ -1,6 +1,8 @@
 package com.shinchik.cloudkeeper.storage.dto;
 
 import com.shinchik.cloudkeeper.user.model.User;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -8,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BaseReqDto {
+
+    @NotNull(message = "User must be authorized to use service")
     private User user;
     private String path;
     private String objName;

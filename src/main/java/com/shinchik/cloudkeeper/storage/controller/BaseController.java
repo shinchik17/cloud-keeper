@@ -1,13 +1,14 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
-import com.shinchik.cloudkeeper.storage.BucketService;
 import com.shinchik.cloudkeeper.storage.dto.UploadDto;
+import com.shinchik.cloudkeeper.storage.service.BucketService;
+import com.shinchik.cloudkeeper.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -21,10 +22,7 @@ public class BaseController {
     }
 
     @GetMapping("/welcome")
-    public String welcome(Model model,
-                          @ModelAttribute("fileUploadDto") UploadDto uploadDto
-//                          @ModelAttribute("folderUploadDto") FolderUploadDto folderUploadDto
-                          ){
+    public String welcome(){
 
 //        User user = userDetails.getUser();
 //        UploadDto uploadDto = new UploadDto();
@@ -38,14 +36,16 @@ public class BaseController {
         return "welcome";
     }
 
-//    @GetMapping()
-//    public String showDefault(){
-//        return "default";
-//    }
 
-    @GetMapping()
-    public String index(@RequestParam(value = "path", required = false) String path){
-        return "default";
+    @GetMapping
+    public String home(@RequestParam(value = "path", required = false, defaultValue = "") String path,
+//                       @AuthenticationPrincipal(expression = "getUser") User user,
+                       @ModelAttribute("uploadDto") UploadDto uploadDto,
+                       Model model) {
+
+        model.addAttribute("path", path);
+
+        return "home";
     }
 
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+</head>
+
+<body>
+This is default page at the root context
+
+<form th:action="@{/auth/logout}" method="POST">
+    <input type="submit" value="Logout">
+</form>
+
+<br/>
+
+<form th:action="@{/files(path=${path})}" method="POST" th:object="${uploadDto}" enctype="multipart/form-data">
+    <label th:for="file-upload">Choose file</label>
+    <input type="file" name="files-upload" th:field="*{documents}" multiple required/>
+    <button type="submit">Upload</button>
+</form>
+
+<br/>
+
+<form th:action="@{/folders}" method="POST" th:object="${uploadDto}" enctype="multipart/form-data">
+    <label th:for="file-upload">Choose folder</label>
+    <input type="file" th:name="folder-upload" th:field="*{documents}" webkitdirectory multiple required/>
+    <input type="hidden" name="path" th:value="${path}" th:field="*{path}"/>
+    <button type="submit">Upload</button>
+</form>
+
+</body>
+</html>

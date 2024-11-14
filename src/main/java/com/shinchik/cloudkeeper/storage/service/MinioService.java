@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage;
+package com.shinchik.cloudkeeper.storage.service;
 
 import com.shinchik.cloudkeeper.storage.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.dto.RenameDto;
@@ -192,6 +192,8 @@ public class MinioService {
     }
 
 
+
+
     public boolean isDir(String fullObjPath) {
         return minioRepository.isObjectDir(fullObjPath);
     }
@@ -204,8 +206,6 @@ public class MinioService {
     private boolean isDir(Item objMeta) {
         return objMeta.isDir() || objMeta.objectName().endsWith("/");
     }
-
-
 
     private static String handleFileExtension(String oldName, String newName) {
         int lastDotIndex = oldName.lastIndexOf(".");
@@ -236,7 +236,6 @@ public class MinioService {
     private boolean isTotalExceededSizeConstraints(List<MultipartFile> files) {
         return files.stream().mapToLong(MultipartFile::getSize).sum() > maxRequestSize;
     }
-
 
     private static String formFullPath(BaseReqDto reqDto) {
         return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");

@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage;
+package com.shinchik.cloudkeeper.storage.service;
 
 import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
 import io.minio.BucketExistsArgs;
@@ -8,6 +8,8 @@ import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,12 +25,13 @@ public class BucketService {
 
     @Autowired
     public BucketService(MinioClient minioClient,
-                         @Value("${minio.bucket-name}") String bucketName) throws MinioException {
+                         @Value("${minio.bucket-name}") String bucketName) {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
-//        createBucket(bucketName);
     }
 
+
+    @EventListener(ApplicationReadyEvent.class)
     public void createDefaultBucket(){
         createBucket(bucketName);
     }
@@ -36,12 +39,15 @@ public class BucketService {
     public void createBucket(String bucketName) {
 
         try {
+
             if (!isBucketExisting(bucketName)) {
                 minioClient.makeBucket(
                         MakeBucketArgs.builder()
                                 .bucket(bucketName)
-                                .build()
-                );
+                                .build());
+                log.info("Default bucket has been created successfully");
+            } else {
+                log.info("Default bucket (%s) exists".formatted(bucketName));
             }
 
         } catch (Exception e) {

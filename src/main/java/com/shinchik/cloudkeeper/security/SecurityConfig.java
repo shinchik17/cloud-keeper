@@ -25,7 +25,7 @@ public class SecurityConfig {
     private final String welcomeUrl = "/welcome";
     private final String defaultUrl = "/";
     private final String[] unsecuredUrls = new String[]{
-            defaultUrl,
+            welcomeUrl,
             "/error",
             "/auth/register",
             loginUrl,
@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> {
                     formLogin.loginPage(loginUrl);
                     formLogin.loginProcessingUrl(loginUrl);
-                    formLogin.defaultSuccessUrl(welcomeUrl);
+                    formLogin.defaultSuccessUrl(defaultUrl);
                     formLogin.failureUrl(loginUrl + "?error");
                 })
                 .logout(logout -> {
