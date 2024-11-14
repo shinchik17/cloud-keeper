@@ -1,6 +1,6 @@
 package com.shinchik.cloudkeeper.storage;
 
-import com.shinchik.cloudkeeper.model.User;
+import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.storage.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.dto.RenameDto;
 import com.shinchik.cloudkeeper.storage.dto.UploadDto;

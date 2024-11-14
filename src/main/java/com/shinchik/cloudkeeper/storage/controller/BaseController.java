@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.controller;
+package com.shinchik.cloudkeeper.storage.controller;
 
 import com.shinchik.cloudkeeper.storage.BucketService;
 import com.shinchik.cloudkeeper.storage.dto.UploadDto;
@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class BaseController {
@@ -36,9 +38,15 @@ public class BaseController {
         return "welcome";
     }
 
+//    @GetMapping()
+//    public String showDefault(){
+//        return "default";
+//    }
+
     @GetMapping()
-    public String showDefault(){
+    public String index(@RequestParam(value = "path", required = false) String path){
         return "default";
     }
+
 
 }

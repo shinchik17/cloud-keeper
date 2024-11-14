@@ -1,7 +1,7 @@
-package com.shinchik.cloudkeeper.service;
+package com.shinchik.cloudkeeper.user.service;
 
-import com.shinchik.cloudkeeper.model.User;
-import com.shinchik.cloudkeeper.repository.UserRepository;
+import com.shinchik.cloudkeeper.user.model.User;
+import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

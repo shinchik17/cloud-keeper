@@ -1,7 +1,7 @@
-package com.shinchik.cloudkeeper.controller;
+package com.shinchik.cloudkeeper.user.controller;
 
-import com.shinchik.cloudkeeper.model.User;
-import com.shinchik.cloudkeeper.service.AuthService;
+import com.shinchik.cloudkeeper.user.model.User;
+import com.shinchik.cloudkeeper.user.service.AuthService;
 import com.shinchik.cloudkeeper.util.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

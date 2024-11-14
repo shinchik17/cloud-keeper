@@ -1,8 +1,7 @@
 package com.shinchik.cloudkeeper.security;
 
-import com.shinchik.cloudkeeper.model.User;
-import com.shinchik.cloudkeeper.security.SecurityUserDetails;
-import com.shinchik.cloudkeeper.repository.UserRepository;
+import com.shinchik.cloudkeeper.user.model.User;
+import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

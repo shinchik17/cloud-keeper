@@ -1,7 +1,7 @@
 package com.shinchik.cloudkeeper.util;
 
-import com.shinchik.cloudkeeper.model.User;
-import com.shinchik.cloudkeeper.service.UserService;
+import com.shinchik.cloudkeeper.user.model.User;
+import com.shinchik.cloudkeeper.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

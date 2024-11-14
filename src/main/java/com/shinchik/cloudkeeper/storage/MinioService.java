@@ -3,7 +3,7 @@ package com.shinchik.cloudkeeper.storage;
 import com.shinchik.cloudkeeper.storage.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.dto.RenameDto;
 import com.shinchik.cloudkeeper.storage.dto.UploadDto;
-import com.shinchik.cloudkeeper.storage.exception.StorageServiceException;
+import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import io.minio.SnowballObject;
 import io.minio.messages.Item;
@@ -61,8 +61,8 @@ public class MinioService {
             } else {
                 minioRepository.upload(multipartToSnowball(files, fullPath));
             }
-        } catch (IOException | StorageServiceException e) {
-            throw new StorageServiceException(e);
+        } catch (IOException | MinioServiceException e) {
+            throw new MinioServiceException(e);
         }
     }
 
@@ -185,7 +185,7 @@ public class MinioService {
             }
 
         } catch (IOException e) {
-            throw new StorageServiceException(e);
+            throw new MinioServiceException(e);
         }
 
         return new ByteArrayInputStream(byteOutStream.toByteArray());
@@ -226,7 +226,7 @@ public class MinioService {
                                 file.getSize(),
                                 null);
                     } catch (IOException e) {
-                        throw new StorageServiceException(e);
+                        throw new MinioServiceException(e);
                     }
                 })
                 .collect(Collectors.toList());

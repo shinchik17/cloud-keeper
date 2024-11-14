@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.model;
+package com.shinchik.cloudkeeper.user.model;
 
 
 import jakarta.persistence.*;
@@ -20,7 +20,7 @@ public class User {
 
     private String password;
 
-    private String roles;
+    private String roles = "USER";
 
 
 }

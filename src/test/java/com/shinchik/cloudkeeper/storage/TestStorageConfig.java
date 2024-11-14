@@ -1,7 +1,7 @@
 package com.shinchik.cloudkeeper.storage;
 
-import com.shinchik.cloudkeeper.controller.BaseController;
-import com.shinchik.cloudkeeper.repository.UserRepository;
+import com.shinchik.cloudkeeper.storage.controller.BaseController;
+import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;

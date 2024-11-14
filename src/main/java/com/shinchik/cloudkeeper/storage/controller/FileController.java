@@ -30,10 +30,12 @@ public class FileController {
 
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String uploadFiles(@ModelAttribute("fileUploadDto") UploadDto uploadDto, BindingResult bindingResult,
-                              @AuthenticationPrincipal SecurityUserDetails userDetails) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public String uploadFiles(@ModelAttribute("uploadDto") UploadDto uploadDto, BindingResult bindingResult,
+                              @AuthenticationPrincipal SecurityUserDetails userDetails) {
         // TODO: rethink uploadDto structure, maybe I don't need it, replace with @RequestParam?
         uploadDto.setUser(userDetails.getUser());
+
+
 
         minioService.upload(uploadDto);
 

@@ -1,13 +1,15 @@
 package com.shinchik.cloudkeeper.security;
 
-import com.shinchik.cloudkeeper.model.User;
+import com.shinchik.cloudkeeper.user.model.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class SecurityUserDetails implements UserDetails {
 
@@ -21,10 +23,10 @@ public class SecurityUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // TODO: fix if roles would be needed
-        return new ArrayList<SimpleGrantedAuthority>();
-//        return Arrays.stream(user.getRoles().split(", "))
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
+//        return new ArrayList<SimpleGrantedAuthority>();
+        return Arrays.stream(user.getRoles().split(", "))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override

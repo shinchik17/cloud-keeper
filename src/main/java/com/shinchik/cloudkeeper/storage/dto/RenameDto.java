@@ -1,6 +1,6 @@
 package com.shinchik.cloudkeeper.storage.dto;
 
-import com.shinchik.cloudkeeper.model.User;
+import com.shinchik.cloudkeeper.user.model.User;
 import lombok.*;
 
 
