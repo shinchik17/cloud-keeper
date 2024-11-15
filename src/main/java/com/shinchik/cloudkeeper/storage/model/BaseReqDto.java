@@ -1,7 +1,6 @@
-package com.shinchik.cloudkeeper.storage.dto;
+package com.shinchik.cloudkeeper.storage.model;
 
 import com.shinchik.cloudkeeper.user.model.User;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 

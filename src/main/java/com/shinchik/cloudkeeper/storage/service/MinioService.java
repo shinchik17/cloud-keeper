@@ -1,8 +1,8 @@
 package com.shinchik.cloudkeeper.storage.service;
 
-import com.shinchik.cloudkeeper.storage.dto.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.dto.RenameDto;
-import com.shinchik.cloudkeeper.storage.dto.UploadDto;
+import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.RenameDto;
+import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import io.minio.SnowballObject;

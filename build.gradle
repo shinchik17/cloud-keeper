@@ -26,6 +26,7 @@ repositories {
 ext {
     minioVersion = "8.5.13"
     testContainersVersion = "1.20.3"
+    mapstructVersion = "1.5.5.Final"
 }
 
 dependencies {
@@ -38,7 +39,8 @@ dependencies {
     implementation "io.minio:minio:${minioVersion}"
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor 'org.projectlombok:lombok', "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

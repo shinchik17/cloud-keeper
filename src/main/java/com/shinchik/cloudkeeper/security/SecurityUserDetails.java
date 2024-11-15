@@ -22,8 +22,6 @@ public class SecurityUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO: fix if roles would be needed
-//        return new ArrayList<SimpleGrantedAuthority>();
         return Arrays.stream(user.getRoles().split(", "))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

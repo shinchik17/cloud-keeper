@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.util;
+package com.shinchik.cloudkeeper.user.util;
 
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.service.UserService;

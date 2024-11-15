@@ -1,6 +1,6 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
-import com.shinchik.cloudkeeper.storage.dto.UploadDto;
+import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.user.model.User;
 import lombok.extern.slf4j.Slf4j;
