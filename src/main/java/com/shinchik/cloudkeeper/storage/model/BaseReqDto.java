@@ -12,6 +12,7 @@ public class BaseReqDto {
 
     @NotNull(message = "User must be authorized to use service")
     private User user;
+    @NotNull(message = "Path should not be null")
     private String path;
     private String objName;
 

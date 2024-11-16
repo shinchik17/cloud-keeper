@@ -69,7 +69,7 @@ class MinioServiceTest {
                 .withEnv("MINIO_ROOT_PASSWORD", minioClientProperties.getPassword());
         minioContainer.start();
         Thread.sleep(2000); // needs for container to really get ready
-        bucketService.createDefaultBucket();
+        bucketService.createDefaultBucket(); // TODO: remove bucket service, remove this line
     }
 
     @AfterEach

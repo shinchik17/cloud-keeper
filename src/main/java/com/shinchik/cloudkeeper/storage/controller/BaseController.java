@@ -2,6 +2,7 @@ package com.shinchik.cloudkeeper.storage.controller;
 
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.Breadcrumb;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
@@ -53,10 +54,11 @@ public class BaseController {
 
 
         BaseReqDto listReq = new BaseReqDto(user, path);
-        List<BaseReqDto> userObjects = minioService.list(listReq);
+        List<BaseRespDto> userObjects = minioService.list(listReq);
 
-
+        model.addAttribute("breadcrumb", breadcrumb);
         model.addAttribute("path", path);
+        model.addAttribute("userObjects", userObjects);
 
         return "home";
     }

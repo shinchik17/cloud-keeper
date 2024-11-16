@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.storage.service;
 
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
@@ -122,16 +123,18 @@ public class MinioService {
     }
 
 
-    public List<BaseReqDto> list(BaseReqDto reqDto) {
+    public List<BaseRespDto> list(BaseReqDto reqDto) {
         String fullPath = formFullPath(reqDto);
-        List<BaseReqDto> objects = new ArrayList<>();
+        List<BaseRespDto> objects = new ArrayList<>();
         // TODO: stream api
         for (Item obj : minioRepository.list(fullPath)) {
             // TODO: replace with mapper?
             if (isDir(obj) && obj.objectName().equals(fullPath)){
                 continue;
             }
-            BaseReqDto objInfo = new BaseReqDto(reqDto.getUser(), reqDto.getPath(), obj.objectName());
+
+            String objName = extractOrigName(obj.objectName().replaceAll("/$",""));
+            BaseRespDto objInfo = new BaseRespDto(reqDto.getUser(), reqDto.getPath(), objName, obj.isDir());
             objects.add(objInfo);
         }
 
@@ -139,15 +142,16 @@ public class MinioService {
     }
 
 
-    public List<BaseReqDto> listRecursively(BaseReqDto reqDto) {
+    public List<BaseRespDto> listRecursively(BaseReqDto reqDto) {
         String fullPath = formFullPath(reqDto);
-        List<BaseReqDto> objects = new ArrayList<>();
+        List<BaseRespDto> objects = new ArrayList<>();
         for (Item obj : minioRepository.listRecursively(fullPath)) {
 
             if (isDir(obj) && obj.objectName().equals(fullPath)){
                 continue;
             }
-            BaseReqDto resCheckDto = new BaseReqDto(reqDto.getUser(), reqDto.getPath(), obj.objectName());
+            String objName = removeUserPrefix(obj.objectName().replaceAll("/$",""));
+            BaseRespDto resCheckDto = new BaseRespDto(reqDto.getUser(), reqDto.getPath(), objName, obj.isDir());
             objects.add(resCheckDto);
         }
 
@@ -241,8 +245,12 @@ public class MinioService {
         return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");
     }
 
-    private static String extractOrigName(String prefixedPath) {
+    private static String removeUserPrefix(String prefixedPath) {
         return prefixedPath.replaceFirst("user-[0-9]{1,18}-files/", "");
+    }
+
+    private static String extractOrigName(String fullObjPath) {
+        return fullObjPath.substring(fullObjPath.lastIndexOf("/") + 1);
     }
 
 }
