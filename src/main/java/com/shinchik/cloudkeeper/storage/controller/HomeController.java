@@ -1,13 +1,9 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
-import com.shinchik.cloudkeeper.storage.model.Breadcrumb;
-import com.shinchik.cloudkeeper.storage.model.UploadDto;
+import com.shinchik.cloudkeeper.storage.model.*;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.user.model.User;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -19,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-public class BaseController {
+public class HomeController {
 
     private MinioService minioService;
 
     @Autowired
-    public BaseController(MinioService minioService) {
+    public HomeController(MinioService minioService) {
         this.minioService = minioService;
     }
 
@@ -47,18 +43,20 @@ public class BaseController {
     @GetMapping
     public String home(@RequestParam(value = "path", required = false, defaultValue = "") String path,
                        @AuthenticationPrincipal(expression = "getUser") User user,
-                       @ModelAttribute("uploadDto") UploadDto uploadDto,
                        Model model) {
 
         Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
 
+        List<BaseRespDto> userObjects = minioService.list(new BaseReqDto(user, path));
 
-        BaseReqDto listReq = new BaseReqDto(user, path);
-        List<BaseRespDto> userObjects = minioService.list(listReq);
-
-        model.addAttribute("breadcrumb", breadcrumb);
         model.addAttribute("path", path);
+        model.addAttribute("breadcrumb", breadcrumb);
         model.addAttribute("userObjects", userObjects);
+        model.addAttribute("user", userObjects);
+        model.addAttribute("uploadDto", new UploadDto());
+        model.addAttribute("downloadDto", new BaseRespDto());
+        model.addAttribute("renameDto", new RenameDto());
+        model.addAttribute("deleteDto", new BaseReqDto());
 
         return "home";
     }

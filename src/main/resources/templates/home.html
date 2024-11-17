@@ -29,9 +29,29 @@ This is default page at the root context
     <li class="list-group-item" th:each="obj : ${userObjects}">
 
         <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
-            <i th:class="${obj.isObjDir} ? 'bi bi-folder' : 'bi bi-file'"></i>
+            <i th:class="${obj.dir} ? 'bi bi-folder' : 'bi bi-file'"></i>
             <span th:text=" ${obj.objName}">Object name</span>
         </a>
+        <!--        TODO: reimplement th:method with JS Fetch API ?-->
+        <form th:action="@{/files}" th:object="${downloadDto}" th:method="get">
+            <input type="hidden" name="path" th:value="${path}"/>
+            <input type="hidden" name="objName" th:value="${obj.objName}"/>
+            <input type="hidden" name="dir" th:value="${obj.dir}"/>
+            <button type="submit"><i class="bi bi-download"></i></button>
+        </form>
+        <form th:action="@{/files}" th:object="${renameDto}" th:method="patch">
+            <input type="hidden" name="path" th:value="${path}"/>
+            <input type="hidden" name="objName" th:value="${obj.objName}"/>
+            <!-- TODO: modal -->
+            <input type="hidden" name="newObjName" th:value="NEW_OBJ_NAME"/>
+            <button type="submit"><i class="bi bi-pencil-square"></i></button>
+        </form>
+        <form th:action="@{/files}" th:object="${deleteDto}" th:method="delete">
+            <input type="hidden" name="path" th:value="${path}"/>
+            <input type="hidden" name="objName" th:value="${obj.objName}"/>
+            <button type="submit"><i class="bi bi-trash"></i></button>
+        </form>
+
     </li>
 </ul>
 

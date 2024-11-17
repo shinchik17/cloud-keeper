@@ -11,12 +11,11 @@ import lombok.*;
 public class RenameDto extends BaseReqDto {
     @NotBlank(message = "New name must not be empty")
     private String newObjName;
-    @NotBlank(message = "You must specify object to rename")
-    private String objName;
 
-    public RenameDto(User user, String path, String objName, String newObjName) {
-        super(user, path);
-        this.objName = objName;
+    public RenameDto(User user, String path,
+                     @NotBlank(message = "You must specify object to rename") String objName,
+                     String newObjName) {
+        super(user, path, objName);
         this.newObjName = newObjName;
     }
 

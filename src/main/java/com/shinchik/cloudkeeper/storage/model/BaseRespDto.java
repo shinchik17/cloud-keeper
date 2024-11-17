@@ -2,23 +2,23 @@ package com.shinchik.cloudkeeper.storage.model;
 
 import com.shinchik.cloudkeeper.user.model.User;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 // TODO: validation patterns on fields
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
-public class BaseRespDto extends BaseReqDto {
-    @NotBlank(message = "Object must be specified")
+public class BaseRespDto {
+//    @NotNull(message = "User must be authorized to use service")
+    private User user;
+    @NotNull(message = "Path should not be null")
+    private String path;
+    @NotBlank(message = "Object name must be specified")
     private String objName;
-    private boolean isObjDir;
-
-    public BaseRespDto(User user, String path, String objName, boolean isObjDir) {
-        super(user, path);
-        this.objName = objName;
-        this.isObjDir = isObjDir;
-    }
+    @NotNull
+    @Setter(AccessLevel.NONE)
+    private boolean dir;
 
 }
