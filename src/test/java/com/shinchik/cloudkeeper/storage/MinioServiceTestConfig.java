@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.storage;
 
-import com.shinchik.cloudkeeper.storage.controller.BaseController;
+import com.shinchik.cloudkeeper.ApplicationStartupListener;
+import com.shinchik.cloudkeeper.storage.controller.HomeController;
 import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -9,7 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import javax.sql.DataSource;
 
 @TestConfiguration
-public class TestStorageConfig {
+public class MinioServiceTestConfig {
 
     @MockBean
     private DataSource dataSource;
@@ -21,7 +22,10 @@ public class TestStorageConfig {
     private EntityManagerFactory entityManagerFactory;
 
     @MockBean
-    private BaseController baseController;
+    private HomeController homeController;
+
+    @MockBean
+    private ApplicationStartupListener applicationStartupListener;
 //
 //    @MockBean
 //    private AuthController baseController;

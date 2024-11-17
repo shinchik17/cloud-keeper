@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @SpringBootTest
-@Import(TestStorageConfig.class)
+@Import(MinioServiceTestConfig.class)
 class MinioServiceTest {
 
     private static final String MINIO_IMAGE_NAME = "quay.io/minio/minio:latest";
@@ -69,7 +69,7 @@ class MinioServiceTest {
                 .withEnv("MINIO_ROOT_PASSWORD", minioClientProperties.getPassword());
         minioContainer.start();
         Thread.sleep(2000); // needs for container to really get ready
-        bucketService.createDefaultBucket(); // TODO: remove bucket service, remove this line
+        bucketService.createDefaultBucket();
     }
 
     @AfterEach

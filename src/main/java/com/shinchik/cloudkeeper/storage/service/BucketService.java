@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+// TODO: move all to MinioService?
 @Service
 @Slf4j
 public class BucketService {
@@ -31,7 +32,6 @@ public class BucketService {
     }
 
 
-    @EventListener(ApplicationReadyEvent.class)
     public void createDefaultBucket(){
         createBucket(bucketName);
     }
