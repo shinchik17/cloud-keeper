@@ -6,13 +6,17 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
-public class User {
+
+// TODO: fix redis inserting username
+public class User implements Serializable {
     // TODO: validation patterns
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

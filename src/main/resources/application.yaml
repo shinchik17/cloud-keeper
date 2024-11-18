@@ -5,6 +5,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: root
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
+      port: ${REDIS_PORT}
   jpa:
     properties:
       hibernate:
@@ -19,6 +23,11 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  session:
+    redis:
+      repository-type: default
+    timeout:
+
 
 
 server:
