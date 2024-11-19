@@ -18,6 +18,10 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
+//    @SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq")
+//    @SequenceGenerator(name = "seqGen")
     private Long id;
 
     @NotNull
