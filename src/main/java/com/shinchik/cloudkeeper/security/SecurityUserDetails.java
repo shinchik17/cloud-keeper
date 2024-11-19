@@ -1,7 +1,11 @@
 package com.shinchik.cloudkeeper.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.shinchik.cloudkeeper.user.model.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +15,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@JsonIgnoreProperties(value = "authorities", ignoreUnknown = true, allowGetters = true)
+@Setter
+@NoArgsConstructor
 public class SecurityUserDetails implements UserDetails {
 
     @Getter
