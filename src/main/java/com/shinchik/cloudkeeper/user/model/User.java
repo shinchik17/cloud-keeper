@@ -27,7 +27,7 @@ public class User implements Serializable {
     private String username;
 
     @NotNull
-    @Size(min = 3, max = 30, message = "Password length should be between {min} and {max} characters")
+    @Size(min = 3, message = "Password length should be at least {min} characters")
     private String password;
 
     // TODO: implement via roles enum
