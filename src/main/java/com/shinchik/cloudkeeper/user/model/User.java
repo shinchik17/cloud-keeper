@@ -14,10 +14,8 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "users")
-
-// TODO: fix redis inserting username
 public class User implements Serializable {
-    // TODO: validation patterns
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,9 +28,9 @@ public class User implements Serializable {
     @Size(min = 3, message = "Password length should be at least {min} characters")
     private String password;
 
-    // TODO: implement via roles enum
     @NotNull
-    private String roles = "USER";
+    @Enumerated(EnumType.STRING)
+    Role role = Role.USER;
 
 
 }

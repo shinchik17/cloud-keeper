@@ -1,5 +1,6 @@
 package com.shinchik.cloudkeeper.user.service;
 
+import com.shinchik.cloudkeeper.user.model.Role;
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class AuthService {
     @Transactional // TODO: research annotation and its usage
     public void register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
         // TODO: create exception handler
         repository.save(user);
     }

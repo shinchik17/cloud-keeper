@@ -16,5 +16,5 @@ databaseChangeLog:
                   name: password
                   value: $2a$10$Ioql.k5S/TfggpcPtTpL6O4nDULRVSbptXHPB.rU/PVa46k1kNMBS
               - column:
-                  name: roles
+                  name: role
                   value: 'USER'

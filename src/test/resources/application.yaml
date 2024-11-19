@@ -5,6 +5,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: root
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
+      port: ${REDIS_PORT}
   jpa:
     properties:
       hibernate:
@@ -15,11 +19,24 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-
-
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  session:
+    redis:
+      repository-type: default
+    timeout: 1800
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+    - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 server:
   servlet:
     context-path: /api/v1/
+    session:
+      cookie:
+        secure: true
 
 
 minio:

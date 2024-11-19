@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shinchik.cloudkeeper.user.model.Role;
 import com.shinchik.cloudkeeper.user.model.User;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ public class SessionConfig implements BeanClassLoaderAware {
         mapper.registerModules(SecurityJackson2Modules.getModules(this.loader));
         mapper.addMixIn(SecurityUserDetails.class, SecurityUserDetails.class);
         mapper.addMixIn(User.class, User.class);
+        mapper.addMixIn(Role.class, Role.class);
         return mapper;
     }
 
