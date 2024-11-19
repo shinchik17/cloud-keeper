@@ -5,6 +5,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: root
+  liquibase:
+    enabled: true
   data:
     redis:
       password: ${REDIS_PASSWORD}

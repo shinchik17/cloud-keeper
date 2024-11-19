@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: shinchik17
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(30)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: unique_const_name
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: roles
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+
