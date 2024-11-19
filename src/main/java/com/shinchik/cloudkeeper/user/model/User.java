@@ -17,11 +17,8 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
-//    @SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq")
-//    @SequenceGenerator(name = "seqGen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqGen")
+    @SequenceGenerator(name = "seqGen", sequenceName = "users_id_seq", allocationSize = 1)
     private Long id;
 
     @NotNull

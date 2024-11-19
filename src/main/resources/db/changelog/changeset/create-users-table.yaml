@@ -9,7 +9,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigserial
+                  type: bigint
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -30,11 +30,14 @@ databaseChangeLog:
                   type: varchar(30)
                   constraints:
                     nullable: false
-#        - alterSequence:
-#            sequenceName: 'users_id_seq'
-#            minValue: 1
-#            startValue: 10000
-#            schemaName: public
+        - createSequence:
+            sequenceName: 'users_id_seq'
+            minValue: 1
+            startValue: 10000
+            schemaName: public
+            dataType: bigint
+            incrementBy: 1
+
 
 
 

@@ -1,16 +1,6 @@
 databaseChangeLog:
-#  - changeSet:
-#      id: 1
-#      author: shinchik17
-#      dbms: 'postgresql,oracle'
-#      changes:
-#        - createSequence:
-#            sequenceName: hibernate_sequence
-#            startValue: 1000
-#            incrementBy: 1
-
   - changeSet:
-      id: 2
+      id: 1
       author: shinchik17
       changes:
         - insert:
@@ -18,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: 9999999
+                  value: 1
               - column:
                   name: username
                   value: user
