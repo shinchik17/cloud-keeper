@@ -2,6 +2,7 @@ package com.shinchik.cloudkeeper.storage;
 
 import com.shinchik.cloudkeeper.storage.service.BucketService;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
+import com.shinchik.cloudkeeper.user.model.Role;
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
@@ -54,7 +55,7 @@ class MinioServiceTest {
     @Autowired
     private MinioService minioService;
 
-    private final User user = new User(1L, "user1", "pass1", "USER");
+    private final User user = new User(1L, "user1", "pass1", Role.USER);
     private final String genericPath = "folder";
     private static final int NUM_OBJ_TO_UPLOAD = 3;
     private final List<MultipartFile> mockFilesAndFolder = generateMockMultipartFilesAndFolder();
