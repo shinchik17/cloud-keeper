@@ -9,8 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -26,17 +26,19 @@ public class HomeController {
 
     @GetMapping("/welcome")
     public String welcome(){
-
-//        User user = userDetails.getUser();
-//        UploadDto uploadDto = new UploadDto();
-//        uploadDto.setUser(user);
-//        FolderUploadDto folderUploadDto = new FolderUploadDto();
-//        folderUploadDto.setUser(user);
-//
-//        model.addAttribute("uploadDto", uploadDto);
-//        model.addAttribute("folderUploadDto", folderUploadDto);
-//        model.addAttribute("user", user);
         return "welcome";
+    }
+
+    @GetMapping("/search")
+    public ModelAndView search(@RequestParam(value = "query", required = false, defaultValue = "") String query,
+                         @AuthenticationPrincipal(expression = "getUser") User user){
+
+        query = query.trim().replaceAll("\\s+", " ");
+        BaseReqDto searchReq = new BaseReqDto(user, "", query);
+        List<BaseRespDto> foundObjects = minioService.search(searchReq);
+
+        return new ModelAndView("storage/search", "foundObjects", foundObjects);
+
     }
 
 
@@ -58,7 +60,7 @@ public class HomeController {
         model.addAttribute("renameDto", new RenameDto());
         model.addAttribute("deleteDto", new BaseReqDto());
 
-        return "home";
+        return "storage/home";
     }
 
 

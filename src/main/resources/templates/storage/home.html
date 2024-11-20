@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <!--    <link rel="stylesheet" href="../static/css/bootstrap.min.css" class="rel">-->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" class="rel">
+    <!--    try to download locally-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+
+<body>
+This is default page at the root context
+
+<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" th:unless="${breadcrumb.curDir.isBlank()}" th:each="part : ${breadcrumb.pathItems}">
+            <a th:href="@{/(path=${part.value})}" th:text="${part.key}">Home</a>
+        </li>
+        <li class="breadcrumb-item active " aria-current="page"
+            th:text="${breadcrumb.curDir.isBlank()} ? Home : ${breadcrumb.curDir}">Folder
+        </li>
+    </ol>
+</nav>
+
+<br/>
+
+<ul class="list-group">
+    <li class="list-group-item" th:each="obj : ${userObjects}">
+
+        <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
+            <i th:class="${obj.dir} ? 'bi bi-folder' : 'bi bi-file'"></i>
+            <span th:text=" ${obj.objName}">Object name</span>
+        </a>
+        <!--        TODO: reimplement th:method with JS Fetch API ?-->
+        <form th:action="@{/files}" th:object="${downloadDto}" th:method="get">
+            <input type="hidden" name="path" th:value="${path}"/>
+            <input type="hidden" name="objName" th:value="${obj.objName}"/>
+            <input type="hidden" name="dir" th:value="${obj.dir}"/>
+            <button type="submit"><i class="bi bi-download"></i></button>
+        </form>
+        <form th:action="@{/files}" th:object="${renameDto}" th:method="patch">
+            <input type="hidden" name="path" th:value="${path}"/>
+            <input type="hidden" name="objName" th:value="${obj.objName}"/>
+            <!-- TODO: modal -->
+            <input type="hidden" name="newObjName" th:value="NEW_OBJ_NAME"/>
+            <button type="submit"><i class="bi bi-pencil-square"></i></button>
+        </form>
+        <form th:action="@{/files}" th:object="${deleteDto}" th:method="delete">
+            <input type="hidden" name="path" th:value="${path}"/>
+            <input type="hidden" name="objName" th:value="${obj.objName}"/>
+            <button type="submit"><i class="bi bi-trash"></i></button>
+        </form>
+
+    </li>
+</ul>
+
+<br>
+
+<form th:action="@{/files(path=${path})}" method="POST" th:object="${uploadDto}" enctype="multipart/form-data">
+    <label th:for="file-upload">Choose file</label>
+    <input type="file" name="files-upload" th:field="*{documents}" multiple required/>
+    <button type="submit">Upload</button>
+</form>
+
+<br/>
+
+<form th:action="@{/files(path=${path})}" method="POST" th:object="${uploadDto}" enctype="multipart/form-data">
+    <label th:for="file-upload">Choose folder</label>
+    <input type="file" th:name="folder-upload" th:field="*{documents}" webkitdirectory multiple required/>
+    <button type="submit">Upload</button>
+</form>
+
+<br>
+<form th:action="@{/auth/logout}" method="POST">
+    <input type="submit" value="Logout">
+</form>
+
+<!--<script src="../static/js/bootstrap.bundle.min.js"></script>-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

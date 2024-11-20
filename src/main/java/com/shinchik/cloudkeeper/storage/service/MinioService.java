@@ -126,9 +126,7 @@ public class MinioService {
     public List<BaseRespDto> list(BaseReqDto reqDto) {
         String fullPath = formFullPath(reqDto);
         List<BaseRespDto> objects = new ArrayList<>();
-        // TODO: stream api
         for (Item obj : minioRepository.list(fullPath)) {
-            // TODO: replace with mapper?
             if (isDir(obj) && obj.objectName().equals(fullPath)){
                 continue;
             }
@@ -142,17 +140,22 @@ public class MinioService {
     }
 
 
-    public List<BaseRespDto> listRecursively(BaseReqDto reqDto) {
-        String fullPath = formFullPath(reqDto);
+    public List<BaseRespDto> search(BaseReqDto searchDto) {
+        String fullPath = formFullPath(searchDto);
+        String query = searchDto.getObjName();
         List<BaseRespDto> objects = new ArrayList<>();
         for (Item obj : minioRepository.listRecursively(fullPath)) {
 
             if (isDir(obj) && obj.objectName().equals(fullPath)){
                 continue;
             }
+            if (!obj.objectName().contains(query)){
+                continue;
+            }
+
             String objName = removeUserPrefix(obj.objectName().replaceAll("/$",""));
-            BaseRespDto resCheckDto = new BaseRespDto(reqDto.getUser(), reqDto.getPath(), objName, obj.isDir());
-            objects.add(resCheckDto);
+            BaseRespDto resultDto = new BaseRespDto(searchDto.getUser(), searchDto.getPath(), objName, obj.isDir());
+            objects.add(resultDto);
         }
 
         return objects;

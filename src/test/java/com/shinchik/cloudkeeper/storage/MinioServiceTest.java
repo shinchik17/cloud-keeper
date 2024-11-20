@@ -218,7 +218,7 @@ class MinioServiceTest {
         minioService.createFolder(createFolderDto);
 
         BaseReqDto checkDto = new BaseReqDto(user, "");
-        assertEquals(NUM_OBJ_TO_UPLOAD + 1, minioService.listRecursively(checkDto).size(),
+        assertEquals(NUM_OBJ_TO_UPLOAD + 1, minioService.search(checkDto).size(),
                 "Amount of listed objects does not equal to amount of upload");
     }
 
