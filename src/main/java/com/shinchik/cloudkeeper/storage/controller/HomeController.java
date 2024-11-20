@@ -54,7 +54,7 @@ public class HomeController {
         model.addAttribute("path", path);
         model.addAttribute("breadcrumb", breadcrumb);
         model.addAttribute("userObjects", userObjects);
-        model.addAttribute("user", userObjects);
+        model.addAttribute("user", user);
         model.addAttribute("uploadDto", new UploadDto());
         model.addAttribute("downloadDto", new BaseRespDto());
         model.addAttribute("renameDto", new RenameDto());

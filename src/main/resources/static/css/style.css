@@ -1,0 +1,123 @@
+:root {
+    --bs-dropdown-link-hover-bg: black;
+    --bs-nav-link-font-size: 1.2rem;
+    --bs-light-rgb: 245, 245, 250;
+    --bs-list-group-item-padding-y: 0;
+    --bs-list-group-item-padding-x: 0;
+    --main-box-color: rgb(245, 245, 250);
+    --left-pane-color: rgb(231, 231, 232);
+    /*--bs-list-group-border-radius: 15px;*/
+    --bs-border-radius: 15px;
+}
+
+.nav {
+    font-size: 1.5rem;
+}
+.nav-link {
+    white-space: nowrap;
+}
+
+.container {
+    margin: 0 auto;
+}
+.container label {
+    font-size: 1.5rem;
+}
+
+
+.form-group label {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+    font-weight: lighter;
+}
+.form-group .btn {
+    padding: 5px 20px;
+    font-size: 1.5rem;
+    border-radius: 2rem;
+}
+
+input[type="text"] {
+    border-radius: 0.5rem;
+}
+
+input[type="search"] {
+    border-radius: 1rem;
+    max-width: 500px;
+}
+
+.ref-btn {
+    padding: 30px;
+}
+
+/*.btn.big {*/
+/*    border-radius: 3rem;*/
+/*    margin: 0 3rem;*/
+/*    padding: 0.5rem 1.5rem;*/
+/*    font-size: 2rem;*/
+/*}*/
+
+.btn {
+    border-radius: 1rem;
+}
+
+
+.display-1 {
+    padding-bottom: 5rem
+}
+
+.row div{
+    padding: 10px;
+}
+
+.form-check-input {
+    width: 2rem;
+    height: 2rem;
+}
+
+.list-group-item {
+    padding: 0 5px;
+    /*border-radius: 10px;*/
+}
+
+.row .file-act-btn {
+    padding: 2px;
+    margin: auto;
+}
+
+.left-pane {
+    background-color: var(--left-pane-color);
+    /*background-color: var(--main-box-color);*/
+    border-radius: 15px;
+    /*margin-top: 10px;*/
+}
+
+.main-box {
+    background-color: var(--main-box-color);
+    border-radius: 15px;
+    /*margin: 10px 5px 10px;*/
+    padding: 0 20px;
+    /*background-color: black;*/
+}
+
+.breadcrumb {
+    padding: 0;
+}
+
+
+/* debug */
+
+body {
+    border: dotted 2px black;
+}
+
+.container, .container-fluid {
+    border: solid 2px purple;
+}
+
+.row{
+    /*border: solid 1px red;*/
+}
+
+.main-box, .left-pane{
+    border: solid 1px green;
+}

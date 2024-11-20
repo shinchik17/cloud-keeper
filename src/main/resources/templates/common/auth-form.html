@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<form th:fragment="auth-form (repeatPass, link)" th:action="@{${link}}" method="post" class="needs-validation"
+      novalidate>
+    <div class="form-group">
+        <label for="login">Login</label>
+        <input class="form-control" type="text" name="login" id="login" required
+               placeholder="Enter your login"
+               pattern="[a-zA-Z0-9@_.]{4,50}">
+        <div class="invalid-feedback p-0">
+            Allowed letters, numbers and symbols @_., minimum 4 characters
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" name="password" id="password" required
+               placeholder="Enter your password"
+               pattern="[a-zA-Z0-9@_.!#$%^&*]{8,50}">
+        <div class="invalid-feedback p-0">
+            Allowed latin letters, numbers and symbols @_.!#$%^&*, minimum 8 characters.
+        </div>
+    </div>
+    <div th:if="${repeatPass}" class="form-group">
+        <label for="pass-repeat">Repeat password</label>
+        <input class="form-control" type="password" name="pass-repeat" id="pass-repeat" required
+               placeholder="Repeat password"
+               pattern="[a-zA-Z0-9@_.!#$%^&*]{8,50}">
+        <div class="invalid-feedback p-0">
+            Allowed latin letters, numbers and symbols @_.!#$%^&*, minimum 8 characters.
+        </div>
+    </div>
+    <div class="form-group d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary">Confirm</button>
+    </div>
+    <script th:src="@{/resources/js/check-form-validity.js}"></script>
+</form>
+
+
+</body>
+</html>
