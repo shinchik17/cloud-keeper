@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="../../static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../static/css/style.css" rel="stylesheet">
+<!--    <link href="../../static/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link href="../../static/css/style.css" rel="stylesheet">-->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" rel="stylesheet"/>
 
     <!--    <link th:href="@{/resources/css/bootstrap.min.css}" rel="stylesheet">-->
     <!--    <link th:href="@{/resources/css/style.css}" rel="stylesheet">-->
@@ -17,7 +19,7 @@
 
 <body>
 
-<nav th:fragment="nav-bar" class="navbar navbar-expand-sm navbar-light bg-light">
+<nav th:fragment="nav-bar" class="navbar navbar-expand-sm navbar-light bg-light mb-3">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -57,12 +59,10 @@
 </nav>
 
 
-
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-2 left-pane">
-            <div class="row">
+<div class="container-fluid ">
+    <div class="row m-sm-3">
+        <div class="col-2 left-pane d-none d-sm-block d-flex flex-grow-1 flex-column flex-shrink-2">
+            <div class="row pb-0">
                 <a th:href="@{/register}" class="btn btn-primary" role="button">Upload</a>
             </div>
             <div class="row">
@@ -70,12 +70,13 @@
             </div>
         </div>
 
-        <div class="col-8 pt-0 pb-0">
-            <div class="main-box ps-4">
+        <div class="col-8 main-box pt-0 pb-0">
+            <div class="files-box ps-4">
                 <div class="row p-0 m-0">
                     <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item" th:unless="${breadcrumb.curDir.isBlank()}" th:each="part : ${breadcrumb.pathItems}">
+                            <li class="breadcrumb-item" th:unless="${breadcrumb.curDir.isBlank()}"
+                                th:each="part : ${breadcrumb.pathItems}">
                                 <a th:href="@{/(path=${part.value})}" th:text="${part.key}">Home</a>
                             </li>
                             <li class="breadcrumb-item active " aria-current="page"
@@ -230,18 +231,73 @@
                     </ul>
                 </div>
             </div>
-        </div>
 
+            <div class="dropzone-div">
+                <form th:action="@{/files}" class="dropzone" id="my-dropzone">
+                    <input type="hidden" name="path" th:value="${path}">
+                </form>
+            </div>
+
+            <!--            <div class="dropzone-div">-->
+            <!--                <form th:action="@{/files}" action="/files" th:method="post" class="dropzone" enctype="multipart/form-data">-->
+            <!--                    <input type="hidden" name="path" th:value="${path}">-->
+            <!--                    <div class="fallback">-->
+            <!--                        <div id="myDropzone">-->
+            <!--                            <div class="dz-message needsclick text-center">-->
+            <!--                                <i class="icon-upload-cloud-outline fa-2x"></i>-->
+            <!--                                <h3 class="fw-bold">Перетащите файлы или нажмите тут :)</h3>-->
+            <!--                            </div>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </form>-->
+            <!--                <div class="container-fluid">-->
+            <!--                    <div class="btn-group d-grid gap-2 d-sm-flex justify-content-sm-between">-->
+            <!--                        <button id="startUpload" class="btn button">Загрузить все</button>-->
+            <!--                        <button id="clearQueue" class="btn button ">Убрать все</button>-->
+            <!--                    </div>-->
+            <!--                    <div class="dropzone-previews"></div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+
+            <!--            <div class="preview_template">-->
+            <!--                <div class="dz-preview border rounded">-->
+            <!--                    <div class="dz-details">-->
+            <!--                        <div class="row">-->
+            <!--                            <div class="dz-filename"><span data-dz-name></span></div>-->
+            <!--                            <div class="dz-size text-center" data-dz-size></div>-->
+            <!--                            <div class="text-center">-->
+            <!--                                <a href="javascript:;" class="dz-remove" data-dz-remove>-->
+            <!--                                    <strong class="d-none d-sm-inline">УБРАТЬ</strong>-->
+            <!--                                    <i class="d-inline d-sm-none icon-cancel"></i>-->
+            <!--                                </a>-->
+            <!--                            </div>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                    <div class="container-fluid">-->
+            <!--                        <div class="dz-progress">-->
+            <!--                            <span class="dz-upload" data-dz-uploadprogress></span>-->
+            <!--                        </div>-->
+            <!--                        <div class="dz-error-message text-center text-danger">-->
+            <!--                            <small data-dz-errormessage></small>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+
+        </div>
 
     </div>
 
 </div>
 
 
-
-
-<!--<script th:src="@{/resources/js/bootstrap.bundle.min.js}"></script>-->
-<script src="../../static/js/bootstrap.bundle.min.js}"></script>
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<!--<script th:src="@{/resources/js/bootstrap.bundle.min.js}"></script>-->
+<!--<script src="../../static/js/bootstrap.bundle.min.js"></script>-->
+<!--<script src="../../static/js/drag_handling.js"></script>-->
+<!--<script src="../../static/js/script.js"></script>-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/drag_handling.js}"></script>
+<script th:src="@{/js/script.js}"></script>
 </body>
 </html>
