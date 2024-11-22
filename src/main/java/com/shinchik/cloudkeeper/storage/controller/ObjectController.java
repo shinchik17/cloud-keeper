@@ -27,12 +27,12 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Controller
 @RequestMapping("/files")
-public class FileController {
+public class ObjectController {
 
     private final MinioService minioService;
 
     @Autowired
-    public FileController(MinioService minioService) {
+    public ObjectController(MinioService minioService) {
         this.minioService = minioService;
     }
 
