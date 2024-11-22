@@ -3,10 +3,10 @@ Dropzone.autoDiscover = false;
 // Note that the name "myDropzone" is the camelized
 // id of the form.
 Dropzone.options.myDropzone = {
-    url: "/files",
-    // renameFile: function (file) {
-    //     return file.fullPath;
-    // },
+    url: "http://" + window.location.host + window.location.pathname + "files",
+    renameFile: function (file) {
+        return file.fullPath;
+    },
     paramName: "documents",
     uploadMultiple: true,
     autoProcessQueue: true,

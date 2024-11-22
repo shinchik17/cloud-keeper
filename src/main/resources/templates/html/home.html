@@ -233,57 +233,10 @@
             </div>
 
             <div class="dropzone-div">
-                <form th:action="@{/files}" class="dropzone" id="my-dropzone">
+                <form th:action="@{/files}" th:method="post" class="dropzone" id="my-dropzone">
                     <input type="hidden" name="path" th:value="${path}">
                 </form>
             </div>
-
-            <!--            <div class="dropzone-div">-->
-            <!--                <form th:action="@{/files}" action="/files" th:method="post" class="dropzone" enctype="multipart/form-data">-->
-            <!--                    <input type="hidden" name="path" th:value="${path}">-->
-            <!--                    <div class="fallback">-->
-            <!--                        <div id="myDropzone">-->
-            <!--                            <div class="dz-message needsclick text-center">-->
-            <!--                                <i class="icon-upload-cloud-outline fa-2x"></i>-->
-            <!--                                <h3 class="fw-bold">Перетащите файлы или нажмите тут :)</h3>-->
-            <!--                            </div>-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                </form>-->
-            <!--                <div class="container-fluid">-->
-            <!--                    <div class="btn-group d-grid gap-2 d-sm-flex justify-content-sm-between">-->
-            <!--                        <button id="startUpload" class="btn button">Загрузить все</button>-->
-            <!--                        <button id="clearQueue" class="btn button ">Убрать все</button>-->
-            <!--                    </div>-->
-            <!--                    <div class="dropzone-previews"></div>-->
-            <!--                </div>-->
-            <!--            </div>-->
-
-            <!--            <div class="preview_template">-->
-            <!--                <div class="dz-preview border rounded">-->
-            <!--                    <div class="dz-details">-->
-            <!--                        <div class="row">-->
-            <!--                            <div class="dz-filename"><span data-dz-name></span></div>-->
-            <!--                            <div class="dz-size text-center" data-dz-size></div>-->
-            <!--                            <div class="text-center">-->
-            <!--                                <a href="javascript:;" class="dz-remove" data-dz-remove>-->
-            <!--                                    <strong class="d-none d-sm-inline">УБРАТЬ</strong>-->
-            <!--                                    <i class="d-inline d-sm-none icon-cancel"></i>-->
-            <!--                                </a>-->
-            <!--                            </div>-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                    <div class="container-fluid">-->
-            <!--                        <div class="dz-progress">-->
-            <!--                            <span class="dz-upload" data-dz-uploadprogress></span>-->
-            <!--                        </div>-->
-            <!--                        <div class="dz-error-message text-center text-danger">-->
-            <!--                            <small data-dz-errormessage></small>-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                </div>-->
-            <!--            </div>-->
-
         </div>
 
     </div>
