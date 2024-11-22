@@ -60,7 +60,7 @@ public class HomeController {
         model.addAttribute("renameDto", new RenameDto());
         model.addAttribute("deleteDto", new BaseReqDto());
 
-        return "storage/home";
+        return "html/home";
     }
 
 
