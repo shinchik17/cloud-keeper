@@ -2,8 +2,11 @@ Dropzone.autoDiscover = false;
 
 // Note that the name "myDropzone" is the camelized
 // id of the form.
+
+const baseUrl = "http://" + window.location.host + window.location.pathname
+
 Dropzone.options.myDropzone = {
-    url: "http://" + window.location.host + window.location.pathname + "files",
+    url: baseUrl + "files",
     renameFile: function (file) {
         return file.fullPath;
     },
@@ -48,6 +51,41 @@ Dropzone.options.myDropzone = {
 };
     // TODO: include into index regular upload form and check its fields
 Dropzone.discover()
+
+
+function mkDir(mkBtn){
+    let url = baseUrl + mkBtn.getAttribute("data-mk-path");
+    let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
+    path = typeof (path) === "string" ? path : "";
+    let dirname = document.getElementById("mk-dir-name").value
+    let csrfToken = document.querySelector("input[name='_csrf']").value;
+
+    let formData = new FormData();
+    formData.append("path", path);
+    formData.append("objName", String(dirname));
+    formData.append("_csrf", csrfToken)
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'ContentType': 'application/x-www-form-urlencoded;utf-8',
+        },
+        body: formData
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Folder added successfully`)
+                let href = path === "" ? baseUrl : baseUrl + `?path=${path}`
+                location.replace(href)
+            }
+        })
+
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+
+}
+
 
 //
 // myDropzone.on("sendingmultiple", function (files, xhr, formData) {

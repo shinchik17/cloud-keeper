@@ -108,5 +108,21 @@ public class ObjectController {
     }
 
 
+    @PostMapping("/create")
+    public String createFolder(@ModelAttribute("mkDirDto") @Valid BaseReqDto mkDirDto, BindingResult bindingResult,
+                               @AuthenticationPrincipal(expression = "getUser") User user){
+
+        mkDirDto.setUser(user);
+
+        if (bindingResult.hasErrors()){
+            ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+        }
+
+        minioService.createFolder(mkDirDto);
+
+        return "redirect:/?path=%s".formatted(mkDirDto.getPath());
+
+    }
+
 
 }

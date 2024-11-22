@@ -46,6 +46,7 @@ public class HomeController {
         model.addAttribute("downloadDto", new BaseRespDto());
         model.addAttribute("renameDto", new RenameDto());
         model.addAttribute("deleteDto", new BaseReqDto());
+        model.addAttribute("mkDirDto", new BaseReqDto());
 
         return "storage/home";
     }
