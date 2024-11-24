@@ -1,9 +1,28 @@
 Dropzone.autoDiscover = false;
-
-// Note that the name "myDropzone" is the camelized
-// id of the form.
-
 const baseUrl = "http://" + window.location.host + window.location.pathname
+let renameModal = document.getElementById("rename-modal")
+let fileInput = document.getElementById("file-upload");
+let uploadBtn = document.getElementById("upload-btn");
+let successModalElement = document.getElementById('success-modal')
+successModalElement.addEventListener("hide.bs.modal", reloadPage)
+successModalElement.querySelector("#success-modal .modal-footer button").addEventListener("click", reloadPage)
+let errorModalElement = document.getElementById('error-modal')
+let successModal = new bootstrap.Modal(successModalElement)
+let errorModal = new bootstrap.Modal(errorModalElement)
+
+
+renameModal.addEventListener("show.bs.modal", function (event) {
+    let button = event.relatedTarget
+    let objName = button.getAttribute("data-obj-name")
+
+    let modalInput = document.getElementById("new-obj-name")
+    modalInput.value = removeExtension(objName)
+
+    let okBtn = renameModal.querySelector(".modal-footer .btn-primary")
+    okBtn.setAttribute("data-obj-name", objName)
+})
+uploadBtn.addEventListener("click", () => fileInput.click())
+fileInput.addEventListener("change", uploadObj)
 
 Dropzone.options.myDropzone = {
     url: baseUrl + "files",
@@ -21,49 +40,41 @@ Dropzone.options.myDropzone = {
     // Note: using "function()" here to bind `this` to
     // the Dropzone instance.
     init: function () {
-        this.on("addedfile", file => {
-            console.log("A file has been added");
-        });
+        // this.on("addedfile", file => {
+        //     console.log("A file has been added");
+        // });
 
         this.on("success", function (file, response) {
+            if (file.previewElement) {
+                file.previewElement.classList.add("dz-success");
+            }
+        });
+
+        this.on("successmultiple", function (file, message, xhr) {
+            setSuccessMessage("Files uploaded successfully");
+            successModal.show();
             this.removeAllFiles();
         });
 
         this.on("error", function (file, message, xhr) {
-
-            // let errorSpan = file.previewElement.querySelector('.dz-error-message');
-            // let errorMessage = xhr
-            // if (xhr.status === 404){
-            //     a = file.previewElement
-            // }
-            file.previewElement.querySelector('.dz-error-message').innerText = xhr && xhr.response
-                ? JSON.parse(xhr.response).message
-                : message;
+            setErrorMessage(xhr && xhr.response ? JSON.parse(xhr.response).message : message);
+            errorModal.show()
+            this.removeAllFiles();
         });
 
-
-        // this.on("sendingmultiple", function (files, xhr, formData) {
-        //     formData.append('data', JSON.stringify(files));
-        //     let currentPath = document.querySelector('input[name="currentPath"]').value;
-        //     formData.append('path', currentPath);
-        // });
     }
 };
-    // TODO: include into index regular upload form and check its fields
+
 Dropzone.discover()
 
 
-function mkDir(mkBtn){
-    let url = baseUrl + mkBtn.getAttribute("data-mk-path");
-    let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
-    path = typeof (path) === "string" ? path : "";
+function mkDir(mkBtn) {
+    let url = baseUrl + mkBtn.getAttribute("data-req-path");
     let dirname = document.getElementById("mk-dir-name").value
-    let csrfToken = document.querySelector("input[name='_csrf']").value;
-
     let formData = new FormData();
-    formData.append("path", path);
-    formData.append("objName", String(dirname));
-    formData.append("_csrf", csrfToken)
+    formData.append("path", getCurPath());
+    formData.append("objName", dirname);
+    formData.append("_csrf", getCsrfToken())
 
     fetch(url, {
         method: 'POST',
@@ -74,18 +85,136 @@ function mkDir(mkBtn){
     })
         .then(response => {
             if (response.ok) {
-                console.log(`Folder added successfully`)
-                let href = path === "" ? baseUrl : baseUrl + `?path=${path}`
-                location.replace(href)
+                console.info(`Folder ${dirname} has been created successfully`)
+
+                // setSuccessMessage(`Folder ${dirname} has been created successfully`)
+                // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
+                location.reload()
+            } else {
+                // TODO: exception handling
+                setErrorMessage("Failed to create folder")
+                errorModal.show()
             }
         })
 
         .catch(error => {
-            console.error('Error: ', error)
+            console.error(`While creating new folder following error occurred: ${error}`)
+            // setErrorMessage("Failed to create folder")
+            // errorModal.show()
         })
 
 }
 
+function renameObj(renameBtn) {
+    let url = baseUrl + renameBtn.getAttribute("data-req-path");
+    let objName = renameBtn.getAttribute("data-obj-name")
+    let newObjName = document.getElementById("new-obj-name").value;
+    let formData = new FormData();
+    formData.append("path", getCurPath());
+    formData.append("objName", objName);
+    formData.append("newObjName", String(newObjName));
+    formData.append("_csrf", getCsrfToken())
+
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'ContentType': 'application/x-www-form-urlencoded;utf-8',
+        },
+        body: formData
+    })
+        .then(response => {
+            if (response.ok) {
+                console.info(`Renamed "${objName}" to "${newObjName}" successfully`)
+                // setSuccessMessage(`Renamed "${objName}" to "${newObjName}" successfully`)
+                // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
+                location.reload()
+            } else {
+                // TODO: exception handling
+                setErrorMessage("Failed to rename")
+                errorModal.show()
+            }
+        })
+
+        .catch(error => {
+            console.error(`While renaming the error occurred: ${error}`)
+            // setErrorMessage("Failed to rename")
+            // errorModal.show()
+        })
+
+}
+
+function uploadObj() {
+    let url = baseUrl + uploadBtn.getAttribute("data-req-path");
+    let formData = new FormData();
+    formData.append("path", getCurPath());
+    formData.append("_csrf", getCsrfToken())
+
+    let files = fileInput.files;
+    for (let i = 0; i < files.length; i++) {
+        formData.append(`documents[${i}]`, files[i], files[i].name);
+    }
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'ContentType': 'multipart/form-data;utf-8',
+        },
+        body: formData
+    })
+        .then(response => {
+            if (response.ok) {
+                // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
+                setSuccessMessage(`Files have been uploaded successfully`)
+                successModal.show()
+            } else {
+                // TODO: exception handling
+                setErrorMessage("Failed to upload")
+                errorModal.show()
+            }
+        })
+
+        .catch(error => {
+            console.error(`While uploading the error occurred: ${error}`)
+            // setErrorMessage("Failed to rename")
+            // errorModal.show()
+        })
+}
+
+// TODO: check if it would be more convenient to call "show" inside these functions
+function setSuccessMessage(message) {
+    successModalElement.querySelector(".alert-text").textContent = message;
+}
+
+function setErrorMessage(message) {
+    errorModalElement.querySelector(".alert-text").textContent = message;
+}
+
+function reloadPage() {
+    location.reload();
+}
+
+function removeExtension(filename) {
+    let lastDotIndex = filename.lastIndexOf(".");
+    if (lastDotIndex !== -1) {
+        return filename.substring(0, lastDotIndex);
+    }
+    return filename
+}
+
+function getCurPath() {
+    let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
+    return typeof (path) === "string" ? path : "";
+}
+
+function getCsrfToken() {
+    let csrfToken = document.querySelector("input[name='_csrf']").value;
+
+    if (typeof csrfToken !== "string") {
+        throw new Error("CSRF token not found")
+    }
+
+    return csrfToken;
+}
 
 //
 // myDropzone.on("sendingmultiple", function (files, xhr, formData) {

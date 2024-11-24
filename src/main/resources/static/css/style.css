@@ -125,6 +125,15 @@ input[type="search"] {
     padding: 0;
 }
 
+.list-group-item a {
+    text-decoration: none;
+    color: black;
+}
+
+.list-group-item:hover {
+    background-color: rgb(226, 226, 226);
+    font-weight: bold;
+}
 /*.main-container {*/
 /*    min-height: calc(100vh - 400px);*/
 /*}*/

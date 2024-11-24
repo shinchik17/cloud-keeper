@@ -48,7 +48,7 @@ public class ObjectController {
 
         minioService.upload(uploadDto);
 
-        return "redirect:/";
+        return "redirect:/?path=%s".formatted(uploadDto.getPath());
     }
 
 
@@ -89,7 +89,7 @@ public class ObjectController {
 
         minioService.rename(renameDto);
 
-        return "redirect:/";
+        return "redirect:/?path=%s".formatted(renameDto.getPath());
     }
 
     @DeleteMapping
@@ -104,7 +104,7 @@ public class ObjectController {
 
         minioService.delete(deleteDto);
 
-        return "redirect:/";
+        return "redirect:/?path=%s".formatted(deleteDto.getPath());
     }
 
 

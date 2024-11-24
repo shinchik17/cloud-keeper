@@ -59,18 +59,18 @@
 </nav>
 
 
-<div class="container-fluid ">
+<div class="container-fluid">
     <div class="row m-sm-3">
         <div class="col-2 left-pane d-none d-sm-block d-flex flex-grow-1 flex-column flex-shrink-2">
-            <!--            <div class="row pb-0">-->
-            <!--                <a th:href="@{/files}" class="btn btn-primary" role="button">Upload</a>-->
-            <!--            </div>-->
+            <!-- TODO: insert icons for buttons aligned to the left-->
+            <div class="row pb-0">
+                <input type="file" class="d-none" id="file-upload" multiple required/>
+                <button type="button" class="btn btn-primary" id="upload-btn" data-req-path="files">Upload</button>
+            </div>
             <div class="row">
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mkdir-modal">
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#mkdir-modal">
                     Create folder
                 </button>
-                <!--                <a th:href="@{/register}" class="btn btn-primary" role="button">Create folder</a>-->
             </div>
         </div>
 
@@ -93,10 +93,10 @@
                 <div class="row pt-0">
                     <ul class="list-group">
                         <li class="list-group-item d-flex" th:each="obj : ${userObjects}">
-
                             <div class="flex-grow-1">
                                 <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
-                                    <i th:class="${obj.dir} ? 'bi bi-folder' : 'bi bi-file'"></i>
+                                    <img th:if="${obj.dir}" th:src="@{/icons/folder.svg}" alt="Folder icon">
+                                    <img th:unless="${obj.dir}" th:src="@{/icons/file.svg}" alt="File icon">
                                     <span th:text=" ${obj.objName}">Object name</span>
                                 </a>
                             </div>
@@ -106,23 +106,27 @@
                                     <input type="hidden" name="path" th:value="${path}"/>
                                     <input type="hidden" name="objName" th:value="${obj.objName}"/>
                                     <input type="hidden" name="dir" th:value="${obj.dir}"/>
-                                    <button type="submit"><i class="bi bi-download"></i></button>
+                                    <button type="submit" class="btn btn-light"><i class="bi bi-download"></i></button>
                                 </form>
                             </div>
                             <div class="file-act-btn">
-                                <form th:action="@{/files}" th:object="${renameDto}" th:method="patch">
-                                    <input type="hidden" name="path" th:value="${path}"/>
-                                    <input type="hidden" name="objName" th:value="${obj.objName}"/>
-                                    <!-- TODO: modal -->
-                                    <input type="hidden" name="newObjName" th:value="NEW_OBJ_NAME"/>
-                                    <button type="submit"><i class="bi bi-pencil-square"></i></button>
-                                </form>
+                                <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                                        data-bs-target="#rename-modal" th:data-obj-name="${obj.objName}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <!--                                <form th:action="@{/files}" th:object="${renameDto}" th:method="patch">-->
+                                <!--                                    <input type="hidden" name="path" th:value="${path}"/>-->
+                                <!--                                    <input type="hidden" name="objName" th:value="${obj.objName}"/>-->
+                                <!--                                    &lt;!&ndash; TODO: modal &ndash;&gt;-->
+                                <!--                                    <input type="hidden" name="newObjName" th:value="NEW_OBJ_NAME"/>-->
+                                <!--                                    <button type="submit"><i class="bi bi-pencil-square"></i></button>-->
+                                <!--                                </form>-->
                             </div>
                             <div class="file-act-btn">
                                 <form th:action="@{/files}" th:object="${deleteDto}" th:method="delete">
                                     <input type="hidden" name="path" th:value="${path}"/>
                                     <input type="hidden" name="objName" th:value="${obj.objName}"/>
-                                    <button type="submit"><i class="bi bi-trash"></i></button>
+                                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
                             </div>
                         </li>
@@ -144,12 +148,12 @@
 </div>
 
 
-<!-- Modal -->
-<div class="modal fade" id="mkdir-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal create folder -->
+<div class="modal fade" id="mkdir-modal" tabindex="-1" aria-labelledby="mkdir-modal-label" aria-hidden="true">
     <div class="modal-dialog .modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="mkdir-modal-label">Create folder</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -159,7 +163,88 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="mkDir(this)"
-                        data-mk-path="files/create">Create</button>
+                        data-req-path="files/create">Create
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal rename object -->
+<div class="modal fade" id="rename-modal" tabindex="-1" aria-labelledby="rename-modal-label" aria-hidden="true">
+    <div class="modal-dialog .modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="rename-modal-label">Rename</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="new-obj-name">New name</label>
+                <input type="text" id="new-obj-name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="renameObj(this)"
+                        data-req-path="files" data-obj-name="">Ok
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+    </symbol>
+</svg>
+
+<!-- Modal success info -->
+<div class="modal fade" id="success-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog .modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="success-modal-label">Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+                        <use xlink:href="#check-circle-fill"/></svg>
+                    <div class="alert-text">
+                        An example success alert with an icon
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal error info-->
+<div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="error-modal-label" aria-hidden="true">
+    <div class="modal-dialog .modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="error-modal-label">Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                        <use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <div class="alert-text">
+                        An example danger alert with an icon
+                    </div>
+                </div>
             </div>
         </div>
     </div>
