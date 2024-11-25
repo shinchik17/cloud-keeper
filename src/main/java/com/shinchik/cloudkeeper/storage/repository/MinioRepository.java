@@ -3,6 +3,8 @@ package com.shinchik.cloudkeeper.storage.repository;
 import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -123,6 +125,26 @@ public class MinioRepository {
         }
     }
 
+    public void delete(Iterable<DeleteObject> objects) {
+        try {
+            Iterable<Result<DeleteError>> results = minioClient.removeObjects(
+                    RemoveObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .objects(objects)
+                            .build());
+            for (Result<DeleteError> result : results) {
+                DeleteError error = result.get();
+                log.info("Error in deleting object " + error.objectName() + "; " + error.message());
+            }
+
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            log.error(e.getMessage());
+            throw new MinioRepositoryException(e.getMessage());
+        }
+    }
+
 
     public void copy(String objPath, String copyPath) {
         try {
@@ -199,7 +221,7 @@ public class MinioRepository {
 
 
     public boolean isObjectDir(String objPath) {
-        if (objPath.endsWith("/")){
+        if (objPath.endsWith("/")) {
             objPath = objPath.substring(0, objPath.length() - 1);
         }
         // TODO: stream api?

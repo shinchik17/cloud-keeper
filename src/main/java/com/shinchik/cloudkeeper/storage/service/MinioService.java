@@ -1,12 +1,13 @@
 package com.shinchik.cloudkeeper.storage.service;
 
+import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
-import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import io.minio.SnowballObject;
+import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,14 +112,11 @@ public class MinioService {
         String objName = deleteDto.getObjName();
 
         if (isDir(fullPath + objName)) {
-
+            List<DeleteObject> delObjects = new LinkedList<>();
             List<Item> objectsMeta = minioRepository.listRecursively(fullPath + objName + "/");
-            for (Item item : objectsMeta) {
-                minioRepository.delete(item.objectName());
-            }
-
+            objectsMeta.forEach(x -> delObjects.add(new DeleteObject(x.objectName())));
+            minioRepository.delete(delObjects);
         } else {
-
             minioRepository.delete(fullPath + objName);
         }
 
@@ -128,11 +127,11 @@ public class MinioService {
         String fullPath = formFullPath(reqDto);
         List<BaseRespDto> objects = new ArrayList<>();
         for (Item obj : minioRepository.list(fullPath)) {
-            if (isDir(obj) && obj.objectName().equals(fullPath)){
+            if (isDir(obj) && obj.objectName().equals(fullPath)) {
                 continue;
             }
 
-            String objName = extractOrigName(obj.objectName().replaceAll("/$",""));
+            String objName = extractOrigName(obj.objectName().replaceAll("/$", ""));
             BaseRespDto objInfo = new BaseRespDto(reqDto.getUser(), reqDto.getPath(), objName, obj.isDir());
             objects.add(objInfo);
         }
@@ -147,14 +146,14 @@ public class MinioService {
         List<BaseRespDto> objects = new ArrayList<>();
         for (Item obj : minioRepository.listRecursively(fullPath)) {
 
-            if (isDir(obj) && obj.objectName().equals(fullPath)){
+            if (isDir(obj) && obj.objectName().equals(fullPath)) {
                 continue;
             }
-            if (!obj.objectName().contains(query)){
+            if (!obj.objectName().contains(query)) {
                 continue;
             }
 
-            String objName = removeUserPrefix(obj.objectName().replaceAll("/$",""));
+            String objName = removeUserPrefix(obj.objectName().replaceAll("/$", ""));
             BaseRespDto resultDto = new BaseRespDto(searchDto.getUser(), searchDto.getPath(), objName, obj.isDir());
             objects.add(resultDto);
         }
@@ -199,8 +198,6 @@ public class MinioService {
 
         return new ByteArrayInputStream(byteOutStream.toByteArray());
     }
-
-
 
 
     public boolean isDir(String fullObjPath) {
