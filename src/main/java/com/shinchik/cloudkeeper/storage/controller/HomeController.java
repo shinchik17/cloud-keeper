@@ -1,9 +1,13 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
+import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
+import com.shinchik.cloudkeeper.storage.exception.NoSuchFolderException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.*;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
+import com.shinchik.cloudkeeper.storage.util.PathParser;
 import com.shinchik.cloudkeeper.user.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 public class HomeController {
 
@@ -34,8 +39,21 @@ public class HomeController {
                        @AuthenticationPrincipal(expression = "getUser") User user,
                        Model model) {
 
-        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
+        path = PathParser.normalizePath(path);
 
+        boolean isDir;
+        try {
+            isDir = minioService.isDir(new BaseReqDto(user, "", path));
+            if (!isDir) {
+                throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
+            }
+        } catch (MinioRepositoryException e){
+            log.info("Requested path '%s' is not valid. Caught exception: %s".formatted(path, e.getMessage()));
+            throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
+        }
+
+
+        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
         List<BaseRespDto> userObjects = minioService.list(new BaseReqDto(user, path));
 
         model.addAttribute("path", path);
