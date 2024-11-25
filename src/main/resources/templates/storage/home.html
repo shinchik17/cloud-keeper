@@ -93,13 +93,17 @@
                 <div class="row pt-0">
                     <ul class="list-group">
                         <li class="list-group-item d-flex" th:each="obj : ${userObjects}">
-                            <div class="flex-grow-1">
+                            <div th:if="${obj.dir}" class="flex-grow-1">
                                 <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
-                                    <img th:if="${obj.dir}" th:src="@{/icons/folder.svg}" alt="Folder icon">
-                                    <img th:unless="${obj.dir}" th:src="@{/icons/file.svg}" alt="File icon">
+                                    <img th:src="@{/icons/folder.svg}" alt="Folder icon">
                                     <span th:text=" ${obj.objName}">Object name</span>
                                 </a>
                             </div>
+                            <div th:unless="${obj.dir}" class="flex-grow-1">
+                                <img  th:src="@{/icons/file.svg}" alt="File icon">
+                                <span th:text=" ${obj.objName}">Object name</span>
+                            </div>
+
                             <!-- TODO: reimplement th:method with JS Fetch API ?-->
                             <div class="file-act-btn">
                                 <form th:action="@{/files}" th:object="${downloadDto}" th:method="get">
@@ -216,7 +220,8 @@
             <div class="modal-body">
                 <div class="alert alert-success d-flex align-items-center" role="alert">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
-                        <use xlink:href="#check-circle-fill"/></svg>
+                        <use xlink:href="#check-circle-fill"/>
+                    </svg>
                     <div class="alert-text">
                         An example success alert with an icon
                     </div>
@@ -240,7 +245,8 @@
             <div class="modal-body">
                 <div class="alert alert-danger d-flex align-items-center" role="alert">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
-                        <use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <use xlink:href="#exclamation-triangle-fill"/>
+                    </svg>
                     <div class="alert-text">
                         An example danger alert with an icon
                     </div>

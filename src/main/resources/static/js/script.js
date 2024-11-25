@@ -35,7 +35,8 @@ Dropzone.options.myDropzone = {
     maxFilesize: 100,
     maxFiles: 100,
     parallelUploads: 100,
-    dictFileTooBig: "Размер файла больше {{maxFilesize}} мб!",
+    dictFileTooBig: "One or more files size exceeds limit ({{maxFilesize}} MB).",
+    dictMaxFilesExceeded: "You have reached the maximum uploading files limit ({{maxFiles}}). Not all files would be uploaded.",
 
     // Note: using "function()" here to bind `this` to
     // the Dropzone instance.
@@ -59,7 +60,7 @@ Dropzone.options.myDropzone = {
         this.on("error", function (file, message, xhr) {
             setErrorMessage(xhr && xhr.response ? JSON.parse(xhr.response).message : message);
             errorModal.show()
-            this.removeAllFiles();
+            this.removeAllFiles(true);
         });
 
     }
