@@ -92,9 +92,7 @@ public class MinioRepository {
         Map<Item, byte[]> resultMap = new HashMap<>();
         for (Item obj : objects) {
             try (InputStream stream = get(obj.objectName())) {
-
                 resultMap.put(obj, stream.readAllBytes());
-
             } catch (IOException e) {
                 String message = "Error downloading object %s".formatted(obj.objectName());
                 log.error(message);
@@ -108,17 +106,8 @@ public class MinioRepository {
         return resultMap;
     }
 
-    public List<InputStream> getByFolder(String folderPath) {
-        List<Item> objects = list(folderPath);
-        List<InputStream> resultList = new ArrayList<>();
-        for (Item object : objects) {
-            resultList.add(get(object.objectName()));
-        }
-        return resultList;
-    }
 
     public void delete(String objPath) {
-
         try {
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
@@ -171,7 +160,6 @@ public class MinioRepository {
     }
 
     public List<Item> list(String prefix, String startsAfter) {
-
         return extractItems(minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
@@ -191,27 +179,14 @@ public class MinioRepository {
                         .build()));
     }
 
-    public List<Item> listRecursively(String prefix, String startsAfter) {
-        return extractItems(minioClient.listObjects(
-                ListObjectsArgs.builder()
-                        .bucket(bucketName)
-                        .recursive(true)
-                        .prefix(prefix)
-                        .startAfter(startsAfter)
-                        .maxKeys(maxFindKeys)
-                        .build()));
-    }
-
 
     private List<Item> extractItems(Iterable<Result<Item>> resultIterable) {
         List<Item> items = new ArrayList<>();
 
         try {
-
             for (Result<Item> result : resultIterable) {
                 items.add(result.get());
             }
-
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
@@ -227,6 +202,7 @@ public class MinioRepository {
         if (objPath.endsWith("/")){
             objPath = objPath.substring(0, objPath.length() - 1);
         }
+        // TODO: stream api?
         if (!isObjectExist(objPath)) {
             for (Item item : list(objPath)) {
                 if (item.objectName().equals(objPath + "/")) {
@@ -248,7 +224,7 @@ public class MinioRepository {
             return true;
         } catch (ErrorResponseException e) {
             if (e.errorResponse().code().equals("NoSuchKey")) {
-                log.warn("No such object (%s) in storage".formatted(objPath));
+                log.info("There is no object '%s' in storage".formatted(objPath));
             } else {
                 log.warn(e.getMessage());
             }

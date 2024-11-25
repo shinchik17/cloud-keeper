@@ -50,7 +50,7 @@ public class MinioService {
         List<MultipartFile> files = uploadDto.getDocuments();
         String fullPath = formFullPath(uploadDto);
 
-        if (isTotalExceededSizeConstraints(files)) {
+        if (isTotalSizeExceededConstraints(files)) {
             throw new MaxUploadSizeExceededException(maxRequestSize);
         }
 
@@ -63,7 +63,8 @@ public class MinioService {
                 minioRepository.upload(multipartToSnowball(files, fullPath));
             }
         } catch (IOException | MinioServiceException e) {
-            throw new MinioServiceException(e);
+            log.error("Error during uploading files: %s".formatted(e.getMessage()));
+            throw new MinioServiceException("Failed to upload files");
         }
     }
 
@@ -192,7 +193,8 @@ public class MinioService {
             }
 
         } catch (IOException e) {
-            throw new MinioServiceException(e);
+            log.error("Error occurred while zipping folder: %s".formatted(e.getMessage()));
+            throw new MinioServiceException("Failed to download folder.");
         }
 
         return new ByteArrayInputStream(byteOutStream.toByteArray());
@@ -240,7 +242,7 @@ public class MinioService {
 
     }
 
-    private boolean isTotalExceededSizeConstraints(List<MultipartFile> files) {
+    private boolean isTotalSizeExceededConstraints(List<MultipartFile> files) {
         return files.stream().mapToLong(MultipartFile::getSize).sum() > maxRequestSize;
     }
 
