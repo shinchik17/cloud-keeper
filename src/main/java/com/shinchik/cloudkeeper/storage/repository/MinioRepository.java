@@ -228,6 +228,7 @@ public class MinioRepository {
         if (!isObjectExist(objPath)) {
             for (Item item : list(objPath)) {
                 if (item.objectName().equals(objPath + "/")) {
+                    log.info("Found folder '%s' in storage".formatted(objPath));
                     return true;
                 }
             }
@@ -246,7 +247,7 @@ public class MinioRepository {
             return true;
         } catch (ErrorResponseException e) {
             if (e.errorResponse().code().equals("NoSuchKey")) {
-                log.info("There is no object '%s' in storage".formatted(objPath));
+                log.debug("There is no object '%s' in storage".formatted(objPath));
             } else {
                 log.warn(e.getMessage());
             }

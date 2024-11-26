@@ -92,7 +92,7 @@
 
                 <div class="row pt-0">
                     <ul class="list-group">
-                        <li class="list-group-item files d-flex" th:each="obj : ${userObjects}">
+                        <li class="list-group-item file d-flex" th:each="obj : ${userObjects}">
                             <div th:if="${obj.dir}" class="flex-grow-1">
                                 <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
                                     <img th:src="@{/icons/folder.svg}" alt="Folder icon">
