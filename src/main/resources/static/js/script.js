@@ -1,16 +1,17 @@
 Dropzone.autoDiscover = false;
 const baseUrl = "http://" + window.location.host + window.location.pathname
 let renameModal = document.getElementById("rename-modal")
+let mkdirModal = document.getElementById("mkdir-modal")
 let fileInput = document.getElementById("file-upload");
 let uploadBtn = document.getElementById("upload-btn");
-let successModalElement = document.getElementById('success-modal')
-successModalElement.addEventListener("hide.bs.modal", reloadPage)
-successModalElement.querySelector("#success-modal .modal-footer button").addEventListener("click", reloadPage)
-let errorModalElement = document.getElementById('error-modal')
+let successModalElement = document.getElementById("success-modal")
+let errorModalElement = document.getElementById("error-modal")
 let successModal = new bootstrap.Modal(successModalElement)
 let errorModal = new bootstrap.Modal(errorModalElement)
 
 
+successModalElement.querySelector("#success-modal .modal-footer button").addEventListener("click", reloadPage)
+successModalElement.addEventListener("hide.bs.modal", reloadPage)
 renameModal.addEventListener("show.bs.modal", function (event) {
     let button = event.relatedTarget
     let objName = button.getAttribute("data-obj-name")
@@ -21,8 +22,21 @@ renameModal.addEventListener("show.bs.modal", function (event) {
     let okBtn = renameModal.querySelector(".modal-footer .btn-primary")
     okBtn.setAttribute("data-obj-name", objName)
 })
+renameModal.addEventListener("hide.bs.modal", clearRenameInput)
+mkdirModal.addEventListener("hide.bs.modal", clearMkdirInput)
 uploadBtn.addEventListener("click", () => fileInput.click())
 fileInput.addEventListener("change", uploadObj)
+// document.getElementById("rename-form").addEventListener("submit", function (event) {
+//     event.stopPropagation()
+//     event.preventDefault()
+//     renameModal.querySelector(".modal-footer .btn-primary").click()
+// })
+// document.getElementById("mkdir-form").addEventListener("submit", function (event) {
+//     event.preventDefault()
+//     event.stopPropagation()
+//     mkdirModal.querySelector(".modal-footer .btn-primary").click()
+// })
+
 
 Dropzone.options.myDropzone = {
     url: baseUrl + "files",
@@ -70,6 +84,16 @@ Dropzone.discover()
 
 
 function mkDir(mkBtn) {
+
+    let dirnameInput = document.getElementById("mk-dir-name")
+    if (!dirnameInput.checkValidity()) {
+        document.getElementById("rename-feedback").style.display = "block"
+        return
+    } else {
+        document.getElementById("rename-feedback").style.display = "none"
+    }
+
+
     let url = baseUrl + mkBtn.getAttribute("data-req-path");
     let dirname = document.getElementById("mk-dir-name").value
     let formData = new FormData();
@@ -78,9 +102,9 @@ function mkDir(mkBtn) {
     formData.append("_csrf", getCsrfToken())
 
     fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'ContentType': 'application/x-www-form-urlencoded;utf-8',
+            "ContentType": "application/x-www-form-urlencoded;utf-8",
         },
         body: formData
     })
@@ -107,9 +131,18 @@ function mkDir(mkBtn) {
 }
 
 function renameObj(renameBtn) {
+
+    let newNameInput = document.getElementById("new-obj-name")
+    if (!newNameInput.checkValidity()) {
+        document.getElementById("rename-feedback").style.display = "block"
+        return
+    } else {
+        document.getElementById("rename-feedback").style.display = "none"
+    }
+
     let url = baseUrl + renameBtn.getAttribute("data-req-path");
-    let objName = renameBtn.getAttribute("data-obj-name")
     let newObjName = document.getElementById("new-obj-name").value;
+    let objName = renameBtn.getAttribute("data-obj-name")
     let formData = new FormData();
     formData.append("path", getCurPath());
     formData.append("objName", objName);
@@ -118,9 +151,9 @@ function renameObj(renameBtn) {
     formData.append("_method", "PATCH")
 
     fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'ContentType': 'application/x-www-form-urlencoded;utf-8',
+            "ContentType": "application/x-www-form-urlencoded;utf-8",
         },
         body: formData
     })
@@ -157,9 +190,9 @@ function uploadObj() {
     }
 
     fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'ContentType': 'multipart/form-data;utf-8',
+            "ContentType": "multipart/form-data;utf-8",
         },
         body: formData
     })
@@ -182,8 +215,14 @@ function uploadObj() {
         })
 }
 
-function clearDirName(){
+function clearMkdirInput() {
     document.getElementById("mk-dir-name").value = ""
+    document.getElementById("mkdir-feedback").style.display = "none"
+}
+
+function clearRenameInput() {
+    document.getElementById("new-obj-name").value = ""
+    document.getElementById("rename-feedback").style.display = "none"
 }
 
 // TODO: check if it would be more convenient to call "show" inside these functions
@@ -222,6 +261,82 @@ function getCsrfToken() {
 
     return csrfToken;
 }
+
+function setSearchCustomValidity() {
+    let input = document.getElementsByName("query")[0];
+    input.addEventListener("invalid", event => {
+        if (event.target.validity.valueMissing) {
+            event.target.setCustomValidity("Search query must contain at least 1 non-space character");
+        } else if (event.target.validity.patternMismatch) {
+            event.target.setCustomValidity("Search query must contain from 1 to 40 " +
+                "non-whitespace characters (latin letters, numbers and symbols @_. are allowed");
+        }
+    })
+    input.addEventListener("change", event => {
+        event.target.setCustomValidity("");
+    })
+}
+
+function setNamesCustomValidity() {
+    let inputs = document.querySelectorAll(".needs-validation input[type='text']")
+
+    Array.from(inputs).forEach(input => {
+            input.addEventListener("invalid", event => {
+                if (event.target.validity.valueMissing) {
+                    event.target.setCustomValidity("Name cannot be empty");
+                } else if (event.target.validity.patternMismatch) {
+                    event.target.setCustomValidity("Name must contain from 1 to 40 " +
+                        "non-whitespace characters (latin letters, numbers and symbols @_. are allowed");
+                }
+            })
+            input.addEventListener("change", event => {
+                event.target.setCustomValidity("");
+            })
+        })
+}
+
+    function clearDefaultValidity() {
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll(".needs-validation")
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener("submit", event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add("was-validated")
+            }, false)
+        })
+    }
+
+clearDefaultValidity();
+setSearchCustomValidity();
+// setNamesCustomValidity();
+
+// function validateObjName(name){
+//     if (typeof name !== "string"){
+//         throw new Error("Name is undefined");
+//     }
+//
+//     //should be in the word\word\word format
+//     // [a-zA-Z0-9@_.]{4,50}
+//     let pattern=/[a-zA-Z0-9@_.]{1,20}/;
+//
+//     //If the inputString is NOT a match
+//     if (!pattern.test(inputString)) {
+//         alert("not a match");
+//     }
+//     else
+//     {
+//         alert("match");
+//     }
+//
+//     "Allowed latin letters, numbers and symbols @_.!#$%^&*. 20 characters maximum."
+// }
 
 //
 // myDropzone.on("sendingmultiple", function (files, xhr, formData) {

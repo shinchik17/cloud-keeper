@@ -38,8 +38,9 @@
                     <input class="form-control me-2" type="search" name="query" required
                            placeholder="Search for files"
                            aria-label="Search"
-                           pattern=".*\S+.*"
-                           title="">
+                           pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}"
+                    title="">
+                    <!--pattern=".*\S+.*"-->
                     <button class="btn btn-outline-primary" type="submit">Search</button>
                 </form>
             </div>
@@ -118,13 +119,6 @@
                                         data-bs-target="#rename-modal" th:data-obj-name="${obj.objName}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <!--                                <form th:action="@{/files}" th:object="${renameDto}" th:method="patch">-->
-                                <!--                                    <input type="hidden" name="path" th:value="${path}"/>-->
-                                <!--                                    <input type="hidden" name="objName" th:value="${obj.objName}"/>-->
-                                <!--                                    &lt;!&ndash; TODO: modal &ndash;&gt;-->
-                                <!--                                    <input type="hidden" name="newObjName" th:value="NEW_OBJ_NAME"/>-->
-                                <!--                                    <button type="submit"><i class="bi bi-pencil-square"></i></button>-->
-                                <!--                                </form>-->
                             </div>
                             <div class="file-act-btn">
                                 <form th:action="@{/files}" th:object="${deleteDto}" th:method="delete">
@@ -161,8 +155,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <label for="mk-dir-name">Enter name</label>
-                <input type="text" id="mk-dir-name">
+                <form action="#" id="mkdir-form" class="needs-validation" novalidate>
+                    <label for="mk-dir-name">Enter name</label>
+                    <input type="text" id="mk-dir-name" required pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}">
+                    <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
+                    <div class="invalid-feedback p-0" id="mkdir-feedback">
+                        Allowed spaces, latin letters, numbers and symbols @_. from 1 to 40 characters length.
+                    </div>
+                </form>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearDirName()">Cancel</button>
@@ -184,8 +185,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <label for="new-obj-name">New name</label>
-                <input type="text" id="new-obj-name">
+                <form action="#" id="rename-form" class="needs-validation" novalidate>
+                    <label for="new-obj-name">New name</label>
+                    <input type="text" id="new-obj-name" required pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}">
+                    <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
+                    <div class="invalid-feedback p-0" id="rename-feedback">
+                        Allowed spaces, latin letters, numbers and symbols @_. from 1 to 40 characters length.
+                    </div>
+                </form>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -262,8 +270,9 @@
 <!--<script src="../../static/js/bootstrap.bundle.min.js"></script>-->
 <!--<script src="../../static/js/drag_handling.js"></script>-->
 <!--<script src="../../static/js/script.js"></script>-->
+<!--<script th:src="@{/js/check-form-validity.js}"></script>-->
+<!--<script th:src="@{/js/checkFormValidity.js}"></script>-->
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/js/drag_handling.js}"></script>
 <script th:src="@{/js/script.js}"></script>
 </body>
 </html>

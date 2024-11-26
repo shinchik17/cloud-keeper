@@ -60,19 +60,20 @@ input[type="search"] {
     border-radius: 1rem;
 }
 
-
-.display-1 {
-    padding-bottom: 5rem
+.btn-clear {
+    border-radius: 1rem;
+    padding: 0 0.5rem;
+    font-size: 1.5rem;
 }
 
 .row div{
     padding: 10px;
 }
 
-.form-check-input {
-    width: 2rem;
-    height: 2rem;
-}
+/*.form-check-input {*/
+/*    width: 2rem;*/
+/*    height: 2rem;*/
+/*}*/
 
 .list-group-item {
     padding: 0 5px;
@@ -85,28 +86,17 @@ input[type="search"] {
 }
 
 .left-pane {
-    /*background-color: var(--left-pane-color);*/
-    /*background-color: var(--main-box-color);*/
     border-radius: 15px;
-    /*max-width: ;*/
     max-width: 200px;
     min-width: 100px;
-    /*margin-top: 10px;*/
     min-height: 500px;
 }
 
-/*.main-box {*/
-/*    */
-/*}*/
-
 .files-box {
-    /*background-color: var(--files-box-bg-color);*/
     border-radius: 15px;
-    /*margin: 10px 5px 10px;*/
     padding: 0 20px;
     min-height: 300px;
     min-width: 300px;
-    /*background-color: black;*/
 }
 
 .dropzone-div {
@@ -134,9 +124,7 @@ input[type="search"] {
     background-color: rgb(226, 226, 226);
     font-weight: bold;
 }
-/*.main-container {*/
-/*    min-height: calc(100vh - 400px);*/
-/*}*/
+
 
 
 /* debug */
