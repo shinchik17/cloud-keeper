@@ -115,9 +115,10 @@ function renameObj(renameBtn) {
     formData.append("objName", objName);
     formData.append("newObjName", String(newObjName));
     formData.append("_csrf", getCsrfToken())
+    formData.append("_method", "PATCH")
 
     fetch(url, {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
             'ContentType': 'application/x-www-form-urlencoded;utf-8',
         },
@@ -208,7 +209,8 @@ function removeExtension(filename) {
 
 function getCurPath() {
     let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
-    return typeof (path) === "string" ? encodeURIComponent(path) : "";
+    // return typeof (path) === "string" ? encodeURIComponent(path) : "";
+    return typeof (path) === "string" ? path : "";
 }
 
 function getCsrfToken() {
