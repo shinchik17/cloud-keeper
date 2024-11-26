@@ -118,13 +118,6 @@
                                         data-bs-target="#rename-modal" th:data-obj-name="${obj.objName}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <!--                                <form th:action="@{/files}" th:object="${renameDto}" th:method="patch">-->
-                                <!--                                    <input type="hidden" name="path" th:value="${path}"/>-->
-                                <!--                                    <input type="hidden" name="objName" th:value="${obj.objName}"/>-->
-                                <!--                                    &lt;!&ndash; TODO: modal &ndash;&gt;-->
-                                <!--                                    <input type="hidden" name="newObjName" th:value="NEW_OBJ_NAME"/>-->
-                                <!--                                    <button type="submit"><i class="bi bi-pencil-square"></i></button>-->
-                                <!--                                </form>-->
                             </div>
                             <div class="file-act-btn">
                                 <form th:action="@{/files}" th:object="${deleteDto}" th:method="delete">
@@ -162,7 +155,10 @@
             </div>
             <div class="modal-body">
                 <label for="mk-dir-name">Enter name</label>
-                <input type="text" id="mk-dir-name">
+                <input type="text" id="mk-dir-name" required pattern="[a-zA-Z0-9@_.]{1,20}">
+                <div class="invalid-feedback p-0" id="mkdir-feedback">
+                    Allowed latin letters, numbers and symbols @_.!#$%^&*. 20 characters maximum.
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearDirName()">Cancel</button>
@@ -186,6 +182,9 @@
             <div class="modal-body">
                 <label for="new-obj-name">New name</label>
                 <input type="text" id="new-obj-name">
+                <div class="invalid-feedback p-0" id="rename-feedback">
+                    Allowed latin letters, numbers and symbols @_.!#$%^&*. 20 characters maximum.
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

@@ -107,9 +107,16 @@ function mkDir(mkBtn) {
 }
 
 function renameObj(renameBtn) {
+
+    let newNameInput = document.getElementById("new-obj-name")
+    if (!newNameInput.checkValidity()){
+        document.getElementById("rename-feedback").textContent = ""
+        document.getElementById("rename-feedback").style.display = "block"
+    }
+
     let url = baseUrl + renameBtn.getAttribute("data-req-path");
-    let objName = renameBtn.getAttribute("data-obj-name")
     let newObjName = document.getElementById("new-obj-name").value;
+    let objName = renameBtn.getAttribute("data-obj-name")
     let formData = new FormData();
     formData.append("path", getCurPath());
     formData.append("objName", objName);
@@ -222,6 +229,27 @@ function getCsrfToken() {
 
     return csrfToken;
 }
+
+// function validateObjName(name){
+//     if (typeof name !== "string"){
+//         throw new Error("Name is undefined");
+//     }
+//
+//     //should be in the word\word\word format
+//     // [a-zA-Z0-9@_.]{4,50}
+//     let pattern=/[a-zA-Z0-9@_.]{1,20}/;
+//
+//     //If the inputString is NOT a match
+//     if (!pattern.test(inputString)) {
+//         alert("not a match");
+//     }
+//     else
+//     {
+//         alert("match");
+//     }
+//
+//     "Allowed latin letters, numbers and symbols @_.!#$%^&*. 20 characters maximum."
+// }
 
 //
 // myDropzone.on("sendingmultiple", function (files, xhr, formData) {
