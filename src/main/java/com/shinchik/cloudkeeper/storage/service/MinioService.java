@@ -74,7 +74,7 @@ public class MinioService {
     public InputStreamResource download(BaseReqDto downloadDto) {
         String fullObjPath = formFullPath(downloadDto) + downloadDto.getObjName();
         if (minioRepository.isObjectDir(fullObjPath)) {
-            return new InputStreamResource(getZippedFolder(fullObjPath + "/"));
+            return new InputStreamResource(getZippedFolder(fullObjPath + "/", downloadDto.getObjName()));
         } else {
             return new InputStreamResource(minioRepository.get(fullObjPath));
         }
@@ -174,8 +174,7 @@ public class MinioService {
     }
 
 
-    private ByteArrayInputStream getZippedFolder(String fullPath) {
-
+    private ByteArrayInputStream getZippedFolder(String fullPath, String folderName) {
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutStream = new ZipOutputStream(byteOutStream)) {
@@ -185,7 +184,7 @@ public class MinioService {
             for (Map.Entry<Item, byte[]> entry : objectsMap.entrySet()) {
                 Item metaInfo = entry.getKey();
                 byte[] buffer = entry.getValue();
-                String name = extractOrigName(metaInfo.objectName());
+                String name = extractNameFromPath(metaInfo.objectName(), fullPath);
                 zipOutStream.putNextEntry(new ZipEntry(name));
                 zipOutStream.write(buffer);
                 zipOutStream.closeEntry();
@@ -253,6 +252,11 @@ public class MinioService {
 
     private static String extractOrigName(String fullObjPath) {
         return fullObjPath.substring(fullObjPath.lastIndexOf("/") + 1);
+    }
+
+    private static String extractNameFromPath(String fullObjPath, String path) {
+        fullObjPath =  fullObjPath.substring(fullObjPath.lastIndexOf(path));
+        return removeUserPrefix(fullObjPath);
     }
 
 }
