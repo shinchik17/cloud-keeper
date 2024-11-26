@@ -5,7 +5,7 @@ import com.shinchik.cloudkeeper.storage.exception.NoSuchFolderException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.*;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
-import com.shinchik.cloudkeeper.storage.util.PathParser;
+import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class HomeController {
     }
 
     @GetMapping("/welcome")
-    public String welcome(){
+    public String welcome() {
         return "welcome";
     }
 
@@ -39,7 +39,7 @@ public class HomeController {
                        @AuthenticationPrincipal(expression = "getUser") User user,
                        Model model) {
 
-        path = PathParser.normalizePath(path);
+        path = PathUtils.normalize(path);
 
         boolean isDir;
         try {
@@ -47,7 +47,7 @@ public class HomeController {
             if (!isDir) {
                 throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
             }
-        } catch (MinioRepositoryException e){
+        } catch (MinioRepositoryException e) {
             log.info("Requested path '%s' is not valid. Caught exception: %s".formatted(path, e.getMessage()));
             throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
         }

@@ -5,6 +5,7 @@ import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
+import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.util.ValidationUtil;
 import jakarta.validation.Valid;
@@ -48,7 +49,7 @@ public class ObjectController {
 
         minioService.upload(uploadDto);
 
-        return "redirect:/?path=%s".formatted(uploadDto.getPath());
+        return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(uploadDto));
     }
 
 
@@ -89,7 +90,7 @@ public class ObjectController {
 
         minioService.rename(renameDto);
 
-        return "redirect:/?path=%s".formatted(renameDto.getPath());
+        return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(renameDto));
     }
 
     @DeleteMapping
@@ -104,7 +105,7 @@ public class ObjectController {
 
         minioService.delete(deleteDto);
 
-        return "redirect:/?path=%s".formatted(deleteDto.getPath());
+        return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(deleteDto));
     }
 
 
@@ -120,7 +121,7 @@ public class ObjectController {
 
         minioService.createFolder(mkDirDto);
 
-        return "redirect:/?path=%s".formatted(mkDirDto.getPath());
+        return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(mkDirDto));
 
     }
 
