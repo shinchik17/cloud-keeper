@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 
@@ -12,11 +13,17 @@ import java.util.LinkedHashMap;
 @Setter
 public class Breadcrumb {
 
-    LinkedHashMap<String, String> pathItems;
-    String curDir;
+    private LinkedHashMap<String, String> pathItems;
+    private String curDir;
 
     public Breadcrumb(LinkedHashMap<String, String> pathItems, String curDir) {
         this.pathItems = pathItems;
         this.curDir = curDir;
     }
+
+    public String getLastPath(){
+        return pathItems.values().stream().max(Comparator.comparingInt(String::length)).orElse("");
+    }
+
+
 }

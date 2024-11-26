@@ -181,6 +181,10 @@ function uploadObj() {
         })
 }
 
+function clearDirName(){
+    document.getElementById("mk-dir-name").value = ""
+}
+
 // TODO: check if it would be more convenient to call "show" inside these functions
 function setSuccessMessage(message) {
     successModalElement.querySelector(".alert-text").textContent = message;

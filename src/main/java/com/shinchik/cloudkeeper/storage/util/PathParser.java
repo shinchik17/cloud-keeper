@@ -13,6 +13,10 @@ public class PathParser {
     public static String normalizePath(@NotNull String path){
 
         path = path.trim().replaceAll("\\s+", " ");
+        if (path.startsWith("/")){
+            path = path.substring(1);
+        }
+
         try {
             return URI.create(path).normalize().toString();
         } catch (IllegalArgumentException | NullPointerException e) {

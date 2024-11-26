@@ -21,4 +21,8 @@ public class BaseRespDto {
     @Setter(AccessLevel.NONE)
     private boolean dir;
 
+    public BaseRespDto(String path, String objName) {
+        this.path = path;
+        this.objName = objName;
+    }
 }

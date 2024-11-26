@@ -35,7 +35,7 @@
             </ul>
             <div class="container-fluid">
                 <form th:action="@{/search}" th:method="get" class="d-flex justify-content-center">
-                    <input class="form-control me-2" type="search" name="search-query" required
+                    <input class="form-control me-2" type="search" name="query" required
                            placeholder="Search for files"
                            aria-label="Search"
                            pattern=".*\S+.*"
@@ -92,7 +92,7 @@
 
                 <div class="row pt-0">
                     <ul class="list-group">
-                        <li class="list-group-item d-flex" th:each="obj : ${userObjects}">
+                        <li class="list-group-item files d-flex" th:each="obj : ${userObjects}">
                             <div th:if="${obj.dir}" class="flex-grow-1">
                                 <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
                                     <img th:src="@{/icons/folder.svg}" alt="Folder icon">
@@ -165,7 +165,7 @@
                 <input type="text" id="mk-dir-name">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearDirName()">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="mkDir(this)"
                         data-req-path="files/create">Create
                 </button>
