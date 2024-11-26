@@ -204,7 +204,7 @@ function removeExtension(filename) {
 
 function getCurPath() {
     let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
-    return typeof (path) === "string" ? path : "";
+    return typeof (path) === "string" ? encodeURIComponent(path) : "";
 }
 
 function getCsrfToken() {
