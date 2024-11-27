@@ -55,7 +55,12 @@ Dropzone.options.myDropzone = {
     // Note: using "function()" here to bind `this` to
     // the Dropzone instance.
     init: function () {
+        // TODO: implement backend handling filenames violations
         // this.on("addedfile", file => {
+        //     if (/(?=.*\S)[a-zA-Z0-9/@_.\s]{1,40}/.test(file.fullPath)){
+        //         throw Error("One or several files names violate naming rules. Not File name must contain from 1 to 40 " +
+        //             "non-whitespace characters (latin letters, numbers and symbols @_. are allowed")
+        //     }
         //     console.log("A file has been added");
         // });
 
@@ -216,12 +221,10 @@ function uploadObj() {
 }
 
 function clearMkdirInput() {
-    document.getElementById("mk-dir-name").value = ""
     document.getElementById("mkdir-feedback").style.display = "none"
 }
 
 function clearRenameInput() {
-    document.getElementById("new-obj-name").value = ""
     document.getElementById("rename-feedback").style.display = "none"
 }
 
@@ -277,20 +280,21 @@ function setSearchCustomValidity() {
     })
 }
 
-function setNamesCustomValidity() {
+function addAutoClearValidityErrors() {
     let inputs = document.querySelectorAll(".needs-validation input[type='text']")
 
     Array.from(inputs).forEach(input => {
-            input.addEventListener("invalid", event => {
-                if (event.target.validity.valueMissing) {
-                    event.target.setCustomValidity("Name cannot be empty");
-                } else if (event.target.validity.patternMismatch) {
-                    event.target.setCustomValidity("Name must contain from 1 to 40 " +
-                        "non-whitespace characters (latin letters, numbers and symbols @_. are allowed");
-                }
-            })
+            // input.addEventListener("invalid", event => {
+            //     if (event.target.validity.valueMissing) {
+            //         event.target.setCustomValidity("Name cannot be empty");
+            //     } else if (event.target.validity.patternMismatch) {
+            //         event.target.setCustomValidity("Name must contain from 1 to 40 " +
+            //             "non-whitespace characters (latin letters, numbers and symbols @_. are allowed");
+            //     }
+            // })
             input.addEventListener("change", event => {
-                event.target.setCustomValidity("");
+                // event.target.setCustomValidity("");
+                input.closest("form").classList.add("was-validated");
             })
         })
 }
@@ -304,18 +308,18 @@ function setNamesCustomValidity() {
         Array.from(forms).forEach(form => {
             form.addEventListener("submit", event => {
                 if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
 
-                form.classList.add("was-validated")
+                form.classList.add("was-validated");
             }, false)
         })
     }
 
 clearDefaultValidity();
 setSearchCustomValidity();
-// setNamesCustomValidity();
+addAutoClearValidityErrors();
 
 // function validateObjName(name){
 //     if (typeof name !== "string"){
