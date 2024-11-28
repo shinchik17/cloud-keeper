@@ -139,7 +139,7 @@ public class MinioService {
         return objects;
     }
 
-
+    // TODO: reimplement regarding to case-insensitive search and finding middle "folders"
     public List<BaseRespDto> search(BaseReqDto searchDto) {
         String fullPath = formFullPath(searchDto);
         String query = searchDto.getObjName();

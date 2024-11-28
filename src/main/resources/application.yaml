@@ -38,6 +38,12 @@ server:
       cookie:
         secure: true
 
+frontend:
+  validation:
+    pattern:
+      obj-name: (?=.*\S)[^\.\/\\]{1,40}
+      search: .*\S+.*
+
 
 minio:
   client:
