@@ -1,14 +1,20 @@
+const MAX_FILE_SIZE = 100  // MiB
+const MAX_FILES = 100
+
+
 Dropzone.autoDiscover = false;
 const baseUrl = "http://" + window.location.host + window.location.pathname
-let renameModal = document.getElementById("rename-modal")
-let mkdirModal = document.getElementById("mkdir-modal")
-let fileInput = document.getElementById("file-upload");
-let uploadBtn = document.getElementById("upload-btn");
-let successModalElement = document.getElementById("success-modal")
-let errorModalElement = document.getElementById("error-modal")
-let successModal = new bootstrap.Modal(successModalElement)
-let errorModal = new bootstrap.Modal(errorModalElement)
-
+const renameModal = document.getElementById("rename-modal")
+const mkdirModal = document.getElementById("mkdir-modal")
+const fileInput = document.getElementById("file-upload");
+const uploadBtn = document.getElementById("upload-btn");
+const successModalElement = document.getElementById("success-modal")
+const errorModalElement = document.getElementById("error-modal")
+const successModal = new bootstrap.Modal(successModalElement)
+const errorModal = new bootstrap.Modal(errorModalElement)
+const uploadDropzoneBtn = document.getElementById("dz-upload-btn")
+const clearDropzoneBtn = document.getElementById("dz-clear-btn")
+const toolsDropzoneBtn = document.getElementById("dz-tools")
 
 successModalElement.querySelector("#success-modal .modal-footer button").addEventListener("click", reloadPage)
 successModalElement.addEventListener("hide.bs.modal", reloadPage)
@@ -26,16 +32,27 @@ renameModal.addEventListener("hide.bs.modal", clearRenameInput)
 mkdirModal.addEventListener("hide.bs.modal", clearMkdirInput)
 uploadBtn.addEventListener("click", () => fileInput.click())
 fileInput.addEventListener("change", uploadObj)
-// document.getElementById("rename-form").addEventListener("submit", function (event) {
-//     event.stopPropagation()
-//     event.preventDefault()
-//     renameModal.querySelector(".modal-footer .btn-primary").click()
-// })
-// document.getElementById("mkdir-form").addEventListener("submit", function (event) {
-//     event.preventDefault()
-//     event.stopPropagation()
-//     mkdirModal.querySelector(".modal-footer .btn-primary").click()
-// })
+uploadDropzoneBtn.addEventListener("click", function () {
+    let dropzoneElement = document.getElementById("my-dropzone")
+    let files = dropzoneElement.dropzone.getQueuedFiles()
+    let totalSize = 0;
+    for (let i = 0; i < files.length; i++) {
+        totalSize += files[i].size
+
+        if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
+            setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
+            errorModal.show()
+            return;
+        }
+    }
+
+    dropzoneElement.dropzone.processQueue();
+
+})
+clearDropzoneBtn.addEventListener("click", function () {
+    let dropzoneElement = document.getElementById("my-dropzone")
+    dropzoneElement.dropzone.removeAllFiles();
+})
 
 
 Dropzone.options.myDropzone = {
@@ -45,22 +62,43 @@ Dropzone.options.myDropzone = {
     },
     paramName: "documents",
     uploadMultiple: true,
-    autoProcessQueue: true,
-    maxFilesize: 100,
-    maxFiles: 100,
-    parallelUploads: 100,
-    dictFileTooBig: "One or more files size exceeds limit ({{maxFilesize}} MB).",
-    dictMaxFilesExceeded: "You have reached the maximum uploading files limit ({{maxFiles}}). Not all files would be uploaded.",
+    addRemoveLinks: true,
+    autoProcessQueue: false,
+    autoQueue: true,
+    maxFilesize: MAX_FILE_SIZE,
+    maxFiles: MAX_FILES,
+    parallelUploads: MAX_FILES,
+    dictFileTooBig: `Total size of uploading files exceeds limit (${MAX_FILE_SIZE} MiB).`,
+    dictMaxFilesExceeded: `You have reached the maximum uploading files limit (${MAX_FILES}). Not all files would be uploaded.`,
 
     // Note: using "function()" here to bind `this` to
     // the Dropzone instance.
-    init: function () {
+    init: function (dictMaxFilesExceeded) {
         // TODO: implement backend handling filenames violations
-        // this.on("addedfile", file => {
-        //     if (/(?=.*\S)[a-zA-Z0-9/@_.\s]{1,40}/.test(file.fullPath)){
-        //         throw Error("One or several files names violate naming rules. Not File name must contain from 1 to 40 " +
-        //             "non-whitespace characters (latin letters, numbers and symbols @_. are allowed")
+
+        // let
+
+        // this.on("addedfiles", function(files) {
+        //
+        //     if (files.length > MAX_FILES) {
+        //         setErrorMessage(this.dictMaxFilesExceeded)
+        //         errorModal.show()
+        //         return;
         //     }
+        //
+        //     let totalSize = 0;
+        //     for (let i = 0; i < files.length; i++) {
+        //         this.emit("addedfile", files[i]);
+        //         totalSize += files[i].size
+        //
+        //         if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
+        //             setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
+        //             errorModal.show()
+        //             return;
+        //         }
+        //
+        //     }
+        //
         //     console.log("A file has been added");
         // });
 
@@ -73,19 +111,50 @@ Dropzone.options.myDropzone = {
         this.on("successmultiple", function (file, message, xhr) {
             setSuccessMessage("Files uploaded successfully");
             successModal.show();
-            this.removeAllFiles();
+            this.reset();
         });
 
-        this.on("error", function (file, message, xhr) {
-            setErrorMessage(xhr && xhr.response ? JSON.parse(xhr.response).message : message);
+
+        this.on("maxfilesexceeded", function (file, message) {
+            setErrorMessage(this.options.dictMaxFilesExceeded);
             errorModal.show()
-            this.removeAllFiles(true);
+
+            for (let file of this.files.slice()) {
+                if ((file.status !== Dropzone.QUEUED)) {
+                    this.removeFile(file);
+                }
+            }
         });
+
+
+        this.on("error", function (file, message, xhr) {
+
+            if (message !== this.options.dictMaxFilesExceeded) {
+                setErrorMessage(xhr && xhr.response ? JSON.parse(xhr.response).message : message);
+                errorModal.show()
+                this.removeAllFiles(true);
+            }
+
+        });
+
+        this.on("addedfile", function () {
+            toolsDropzoneBtn.classList.remove("d-none")
+
+        })
+
+        this.on("removedfile", function () {
+            if (this.getQueuedFiles().length === 0) {
+                toolsDropzoneBtn.classList.add("d-none")
+            }
+        })
+
 
     }
 };
 
 Dropzone.discover()
+
+
 
 
 function mkDir(mkBtn) {
@@ -190,8 +259,23 @@ function uploadObj() {
     formData.append("_csrf", getCsrfToken())
 
     let files = fileInput.files;
+    if (files.length > MAX_FILES) {
+        setErrorMessage(Dropzone.options.myDropzone.dictMaxFilesExceeded)
+        errorModal.show()
+        return;
+    }
+
+    let totalSize = 0;
     for (let i = 0; i < files.length; i++) {
         formData.append(`documents[${i}]`, files[i], files[i].name);
+        totalSize += files[i].size
+
+        if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
+            setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
+            errorModal.show()
+            return;
+        }
+
     }
 
     fetch(url, {
@@ -204,12 +288,12 @@ function uploadObj() {
         .then(response => {
             if (response.ok) {
                 // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
-                setSuccessMessage(`Files have been uploaded successfully`)
-                successModal.show()
+                setSuccessMessage(`Files have been uploaded successfully`);
+                successModal.show();
             } else {
                 // TODO: exception handling
-                setErrorMessage("Failed to upload")
-                errorModal.show()
+                setErrorMessage("Failed to upload");
+                errorModal.show();
             }
         })
 
@@ -221,11 +305,11 @@ function uploadObj() {
 }
 
 function clearMkdirInput() {
-    document.getElementById("mkdir-feedback").style.display = "none"
+    document.getElementById("mkdir-feedback").style.display = "none";
 }
 
 function clearRenameInput() {
-    document.getElementById("rename-feedback").style.display = "none"
+    document.getElementById("rename-feedback").style.display = "none";
 }
 
 // TODO: check if it would be more convenient to call "show" inside these functions
@@ -259,7 +343,7 @@ function getCsrfToken() {
     let csrfToken = document.querySelector("input[name='_csrf']").value;
 
     if (typeof csrfToken !== "string") {
-        throw new Error("CSRF token not found")
+        throw new Error("CSRF token not found");
     }
 
     return csrfToken;
@@ -268,11 +352,8 @@ function getCsrfToken() {
 function setSearchCustomValidity() {
     let input = document.getElementsByName("query")[0];
     input.addEventListener("invalid", event => {
-        if (event.target.validity.valueMissing) {
-            event.target.setCustomValidity("Search query must contain at least 1 non-space character");
-        } else if (event.target.validity.patternMismatch) {
-            event.target.setCustomValidity("Search query must contain from 1 to 40 " +
-                "non-whitespace characters (latin letters, numbers and symbols @_. are allowed");
+        if (event.target.validity.valueMissing || event.target.validity.patternMismatch) {
+            event.target.setCustomValidity("Search query must contain at least 1 non-whitespacespace character");
         }
     })
     input.addEventListener("change", event => {
@@ -281,87 +362,38 @@ function setSearchCustomValidity() {
 }
 
 function addAutoClearValidityErrors() {
-    let inputs = document.querySelectorAll(".needs-validation input[type='text']")
+    let inputs = document.querySelectorAll(".needs-validation input[type='text']");
 
     Array.from(inputs).forEach(input => {
-            // input.addEventListener("invalid", event => {
-            //     if (event.target.validity.valueMissing) {
-            //         event.target.setCustomValidity("Name cannot be empty");
-            //     } else if (event.target.validity.patternMismatch) {
-            //         event.target.setCustomValidity("Name must contain from 1 to 40 " +
-            //             "non-whitespace characters (latin letters, numbers and symbols @_. are allowed");
-            //     }
-            // })
-            input.addEventListener("change", event => {
-                // event.target.setCustomValidity("");
-                input.closest("form").classList.add("was-validated");
-            })
+        input.addEventListener("change", event => {
+            input.closest("form").classList.add("was-validated");
         })
+    })
 }
 
-    function clearDefaultValidity() {
+function clearDefaultValidity() {
 
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        const forms = document.querySelectorAll(".needs-validation")
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll(".needs-validation")
 
-        // Loop over them and prevent submission
-        Array.from(forms).forEach(form => {
-            form.addEventListener("submit", event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+        form.addEventListener("submit", event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
-                form.classList.add("was-validated");
-            }, false)
-        })
-    }
+            form.classList.add("was-validated");
+        }, false)
+    })
+}
 
 clearDefaultValidity();
 setSearchCustomValidity();
 addAutoClearValidityErrors();
 
-// function validateObjName(name){
-//     if (typeof name !== "string"){
-//         throw new Error("Name is undefined");
-//     }
-//
-//     //should be in the word\word\word format
-//     // [a-zA-Z0-9@_.]{4,50}
-//     let pattern=/[a-zA-Z0-9@_.]{1,20}/;
-//
-//     //If the inputString is NOT a match
-//     if (!pattern.test(inputString)) {
-//         alert("not a match");
-//     }
-//     else
-//     {
-//         alert("match");
-//     }
-//
-//     "Allowed latin letters, numbers and symbols @_.!#$%^&*. 20 characters maximum."
-// }
 
-//
-// myDropzone.on("sendingmultiple", function (files, xhr, formData) {
-//     formData.append('data', JSON.stringify(files));
-//     let currentPath = document.querySelector('input[name="currentPath"]').value;
-//     formData.append('path', currentPath);
-// });
-//
-// myDropzone.on("success", function (file, response) {
-//     var data = document.getElementById("data");
-//     data.style.display = "block";
-//     data.innerHTML = response;
-//     this.removeFile(file);
-// });
-//
-// myDropzone.on("error", function (file, message, xhr) {
-//     file.previewElement.querySelector('.dz-error-message').innerText = xhr && xhr.response
-//         ? JSON.parse(xhr.response).message
-//         : message;
-// });
-//
 // myDropzone.on("uploadprogress", function (file, progress, bytesSent) {
 //     file.previewElement.querySelector('.dz-progress .dz-upload').style.width = progress + "%";
 // });

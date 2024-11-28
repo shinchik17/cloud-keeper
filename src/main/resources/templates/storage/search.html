@@ -36,7 +36,7 @@
                            th:value="${query}"
                            placeholder="Search for files"
                            aria-label="Search"
-                           pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}"
+                           th:pattern="${searchPattern}"
                            title="">
                     <button class="btn btn-outline-primary" type="submit">Search</button>
                 </form>

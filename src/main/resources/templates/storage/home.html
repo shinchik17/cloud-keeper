@@ -38,8 +38,8 @@
                     <input class="form-control me-2" type="search" name="query" required
                            placeholder="Search for files"
                            aria-label="Search"
-                           pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}"
-                    title="">
+                           th:pattern="${searchPattern}"
+                           title="">
                     <!--pattern=".*\S+.*"-->
                     <button class="btn btn-outline-primary" type="submit">Search</button>
                 </form>
@@ -101,11 +101,9 @@
                                 </a>
                             </div>
                             <div th:unless="${obj.dir}" class="flex-grow-1">
-                                <img  th:src="@{/icons/file.svg}" alt="File icon">
+                                <img th:src="@{/icons/file.svg}" alt="File icon">
                                 <span th:text=" ${obj.objName}">Object name</span>
                             </div>
-
-                            <!-- TODO: reimplement th:method with JS Fetch API ?-->
                             <div class="file-act-btn">
                                 <form th:action="@{/files}" th:object="${downloadDto}" th:method="get">
                                     <input type="hidden" name="path" th:value="${path}"/>
@@ -133,7 +131,15 @@
                     </ul>
                 </div>
             </div>
-
+            <!-- Style as big buttons -->
+            <div class="row pt-0 pb-0 container justify-content-center d-none" id="dz-tools">
+                <div class="col d-flex justify-content-center justify-content-md-end">
+                    <button type="button" class="btn btn-primary" id="dz-upload-btn">Upload</button>
+                </div>
+                <div class="col d-flex justify-content-center justify-content-md-start">
+                    <button type="button" class="btn btn-danger" id="dz-clear-btn">Clear</button>
+                </div>
+            </div>
             <div class="dropzone-div">
                 <form th:action="@{/files}" th:method="post" class="dropzone" id="my-dropzone">
                     <input type="hidden" name="path" th:value="${path}">
@@ -157,16 +163,19 @@
             <div class="modal-body">
                 <form action="#" id="mkdir-form" class="needs-validation" novalidate>
                     <label for="mk-dir-name">Enter name</label>
-                    <input type="text" id="mk-dir-name" required pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}">
+                    <input type="text" id="mk-dir-name" required th:pattern="${namePattern}">
                     <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
                     <div class="invalid-feedback p-0" id="mkdir-feedback">
-                        Allowed spaces, latin letters, numbers and symbols @_. from 1 to 40 characters length.
+                        Allowed characters except for dot and slashes. Max length is 40 (at least 1 non-whitespace
+                        character).
                     </div>
                 </form>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearDirName()">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearDirName()">
+                    Cancel
+                </button>
                 <button type="button" class="btn btn-primary" onclick="mkDir(this)"
                         data-req-path="files/create">Create
                 </button>
@@ -187,10 +196,11 @@
             <div class="modal-body">
                 <form action="#" id="rename-form" class="needs-validation" novalidate>
                     <label for="new-obj-name">New name</label>
-                    <input type="text" id="new-obj-name" required pattern="(?=.*\S)[a-zA-Z0-9@_.\s]{1,40}">
+                    <input type="text" id="new-obj-name" required th:pattern="${namePattern}">
                     <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
                     <div class="invalid-feedback p-0" id="rename-feedback">
-                        Allowed spaces, latin letters, numbers and symbols @_. from 1 to 40 characters length.
+                        Allowed characters except for dot and slashes. Max length is 40 (at least 1 non-whitespace
+                        character).
                     </div>
                 </form>
 
