@@ -102,6 +102,7 @@ input[type="search"] {
 .dropzone-div {
     padding: 20px 20px 10px !important;
     min-width: 300px;
+    /*max-height: 300px;*/
     /*min-height: 200px;*/
     /*min-height: 300px;*/
 }
