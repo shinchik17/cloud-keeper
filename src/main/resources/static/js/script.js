@@ -1,9 +1,8 @@
+Dropzone.autoDiscover = false;
 const MAX_FILE_SIZE = 100  // MiB
 const MAX_FILES = 100
-
-
-Dropzone.autoDiscover = false;
 const baseUrl = "http://" + window.location.host + window.location.pathname
+
 const renameModal = document.getElementById("rename-modal")
 const mkdirModal = document.getElementById("mkdir-modal")
 const fileInput = document.getElementById("file-upload");
@@ -14,7 +13,7 @@ const successModal = new bootstrap.Modal(successModalElement)
 const errorModal = new bootstrap.Modal(errorModalElement)
 const uploadDropzoneBtn = document.getElementById("dz-upload-btn")
 const clearDropzoneBtn = document.getElementById("dz-clear-btn")
-const toolsDropzoneBtn = document.getElementById("dz-tools")
+const toolsDropzoneDiv = document.getElementById("dz-tools")
 
 successModalElement.querySelector("#success-modal .modal-footer button").addEventListener("click", reloadPage)
 successModalElement.addEventListener("hide.bs.modal", reloadPage)
@@ -32,29 +31,10 @@ renameModal.addEventListener("hide.bs.modal", clearRenameInput)
 mkdirModal.addEventListener("hide.bs.modal", clearMkdirInput)
 uploadBtn.addEventListener("click", () => fileInput.click())
 fileInput.addEventListener("change", uploadObj)
-uploadDropzoneBtn.addEventListener("click", function () {
-    let dropzoneElement = document.getElementById("my-dropzone")
-    let files = dropzoneElement.dropzone.getQueuedFiles()
-    let totalSize = 0;
-    for (let i = 0; i < files.length; i++) {
-        totalSize += files[i].size
+uploadDropzoneBtn.addEventListener("click", () => uploadDropzoneFiles())
+clearDropzoneBtn.addEventListener("click", () => clearDropzone())
 
-        if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
-            setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
-            errorModal.show()
-            return;
-        }
-    }
-
-    dropzoneElement.dropzone.processQueue();
-
-})
-clearDropzoneBtn.addEventListener("click", function () {
-    let dropzoneElement = document.getElementById("my-dropzone")
-    dropzoneElement.dropzone.removeAllFiles();
-})
-
-
+/* Dropzone options, events and additional functions */
 Dropzone.options.myDropzone = {
     url: baseUrl + "files",
     renameFile: function (file) {
@@ -76,20 +56,14 @@ Dropzone.options.myDropzone = {
     init: function () {
         // TODO: implement backend handling filenames violations
 
-        this.on("success", function (file, response) {
-            if (file.previewElement) {
-                file.previewElement.classList.add("dz-success");
-            }
-        });
-
-        this.on("successmultiple", function (file, message, xhr) {
+        this.on("successmultiple", function () {
             setSuccessMessage("Files uploaded successfully");
             successModal.show();
             this.reset();
+            hideDropzoneTools();
         });
 
-
-        this.on("maxfilesexceeded", function (file, message) {
+        this.on("maxfilesexceeded", function () {
             setErrorMessage(this.options.dictMaxFilesExceeded);
             errorModal.show()
 
@@ -100,7 +74,6 @@ Dropzone.options.myDropzone = {
             }
         });
 
-
         this.on("error", function (file, message, xhr) {
             if (message !== this.options.dictMaxFilesExceeded) {
                 setErrorMessage(xhr && xhr.response ? JSON.parse(xhr.response).message : message);
@@ -110,25 +83,45 @@ Dropzone.options.myDropzone = {
         });
 
         this.on("addedfile", function () {
-            toolsDropzoneBtn.classList.remove("d-none")
-
+            showDropzoneTools();
         })
 
         this.on("removedfile", function () {
             if (this.getQueuedFiles().length === 0) {
-                toolsDropzoneBtn.classList.add("d-none")
+                hideDropzoneTools()
             }
         })
-
-
     }
 };
 
 Dropzone.discover()
 
+function uploadDropzoneFiles() {
+    let dropzoneElement = document.getElementById("my-dropzone")
+    let files = dropzoneElement.dropzone.getQueuedFiles()
+    let totalSize = 0;
+    for (let i = 0; i < files.length; i++) {
+        totalSize += files[i].size
+
+        if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
+            setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
+            errorModal.show()
+            return;
+        }
+    }
+
+    dropzoneElement.dropzone.processQueue();
+}
+
+function clearDropzone(){
+    let dropzoneElement = document.getElementById("my-dropzone")
+    dropzoneElement.dropzone.removeAllFiles();
+    dropzoneElement.dropzone.reset();
+    hideDropzoneTools()
+}
 
 
-
+/* Business logic */
 function mkDir(mkBtn) {
 
     let dirnameInput = document.getElementById("mk-dir-name")
@@ -148,11 +141,9 @@ function mkDir(mkBtn) {
     formData.append("_csrf", getCsrfToken())
 
     fetch(url, {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "ContentType": "application/x-www-form-urlencoded;utf-8",
-        },
-        body: formData
+        }, body: formData
     })
         .then(response => {
             if (response.ok) {
@@ -197,11 +188,9 @@ function renameObj(renameBtn) {
     formData.append("_method", "PATCH")
 
     fetch(url, {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "ContentType": "application/x-www-form-urlencoded;utf-8",
-        },
-        body: formData
+        }, body: formData
     })
         .then(response => {
             if (response.ok) {
@@ -234,11 +223,10 @@ function uploadObj() {
     if (files.length > MAX_FILES) {
         setErrorMessage(Dropzone.options.myDropzone.dictMaxFilesExceeded)
         errorModal.show()
-        return;
     }
 
     let totalSize = 0;
-    for (let i = 0; i < files.length; i++) {
+    for (let i = 0; i < Math.min(files.length, MAX_FILES); i++) {
         formData.append(`documents[${i}]`, files[i], files[i].name);
         totalSize += files[i].size
 
@@ -251,11 +239,9 @@ function uploadObj() {
     }
 
     fetch(url, {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "ContentType": "multipart/form-data;utf-8",
-        },
-        body: formData
+        }, body: formData
     })
         .then(response => {
             if (response.ok) {
@@ -276,6 +262,8 @@ function uploadObj() {
         })
 }
 
+
+/* Modals, inputs visual effects handling */
 function clearMkdirInput() {
     document.getElementById("mkdir-feedback").style.display = "none";
 }
@@ -283,7 +271,6 @@ function clearMkdirInput() {
 function clearRenameInput() {
     document.getElementById("rename-feedback").style.display = "none";
 }
-
 // TODO: check if it would be more convenient to call "show" inside these functions
 function setSuccessMessage(message) {
     successModalElement.querySelector(".alert-text").textContent = message;
@@ -293,35 +280,19 @@ function setErrorMessage(message) {
     errorModalElement.querySelector(".alert-text").textContent = message;
 }
 
-function reloadPage() {
-    location.reload();
+function hideDropzoneTools() {
+    toolsDropzoneDiv.classList.add("d-none")
+    uploadBtn.classList.remove("d-none")
 }
 
-function removeExtension(filename) {
-    let lastDotIndex = filename.lastIndexOf(".");
-    if (lastDotIndex !== -1) {
-        return filename.substring(0, lastDotIndex);
-    }
-    return filename
+function showDropzoneTools() {
+    toolsDropzoneDiv.classList.remove("d-none")
+    uploadBtn.classList.add("d-none")
 }
 
-function getCurPath() {
-    let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
-    // return typeof (path) === "string" ? encodeURIComponent(path) : "";
-    return typeof (path) === "string" ? path : "";
-}
 
-function getCsrfToken() {
-    let csrfToken = document.querySelector("input[name='_csrf']").value;
-
-    if (typeof csrfToken !== "string") {
-        throw new Error("CSRF token not found");
-    }
-
-    return csrfToken;
-}
-
-function setSearchCustomValidity() {
+/* Custom validity settings */
+function setSearchInputCustomValidity() {
     let input = document.getElementsByName("query")[0];
     input.addEventListener("invalid", event => {
         if (event.target.validity.valueMissing || event.target.validity.patternMismatch) {
@@ -335,7 +306,6 @@ function setSearchCustomValidity() {
 
 function addAutoClearValidityErrors() {
     let inputs = document.querySelectorAll(".needs-validation input[type='text']");
-
     Array.from(inputs).forEach(input => {
         input.addEventListener("change", event => {
             input.closest("form").classList.add("was-validated");
@@ -344,10 +314,8 @@ function addAutoClearValidityErrors() {
 }
 
 function clearDefaultValidity() {
-
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     const forms = document.querySelectorAll(".needs-validation")
-
     // Loop over them and prevent submission
     Array.from(forms).forEach(form => {
         form.addEventListener("submit", event => {
@@ -362,31 +330,40 @@ function clearDefaultValidity() {
 }
 
 clearDefaultValidity();
-setSearchCustomValidity();
+setSearchInputCustomValidity();
 addAutoClearValidityErrors();
+
+
+/* Miscellaneous */
+function removeExtension(filename) {
+    let lastDotIndex = filename.lastIndexOf(".");
+    if (lastDotIndex !== -1) {
+        return filename.substring(0, lastDotIndex);
+    }
+    return filename
+}
+
+function getCurPath() {
+    let path = document.getElementById("my-dropzone").querySelector("input[name='path']").value
+    return typeof (path) === "string" ? path : "";
+}
+
+function getCsrfToken() {
+    let csrfToken = document.querySelector("input[name='_csrf']").value;
+
+    if (typeof csrfToken !== "string") {
+        throw new Error("CSRF token not found");
+    }
+
+    return csrfToken;
+}
+
+function reloadPage() {
+    location.reload();
+}
 
 
 // myDropzone.on("uploadprogress", function (file, progress, bytesSent) {
 //     file.previewElement.querySelector('.dz-progress .dz-upload').style.width = progress + "%";
 // });
-//
-// myDropzone.on("addedfile", function () {
-//     document.getElementById("startUpload").style.display = "block";
-//     document.getElementById("clearQueue").style.display = "block";
-// });
-//
-// myDropzone.on("removedfile", function () {
-//     if (myDropzone.getQueuedFiles().length === 0) {
-//         document.getElementById("startUpload").style.display = "none";
-//         document.getElementById("clearQueue").style.display = "none";
-//     }
-// });
-//
-// document.getElementById('startUpload').addEventListener('click', function () {
-//     myDropzone.processQueue();
-// });
-//
-// document.getElementById('clearQueue').addEventListener('click', function () {
-//     myDropzone.removeAllFiles();
-// })
-// TODO: handle functions such as remove after fail an so on
+
