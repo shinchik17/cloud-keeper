@@ -44,7 +44,7 @@ public class HomeController {
         boolean isDir;
         try {
             isDir = minioService.isDir(new BaseReqDto(user, "", path));
-            if (!isDir) {
+            if (!isDir && !path.isEmpty()) {
                 throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
             }
         } catch (MinioRepositoryException e) {
