@@ -7,6 +7,8 @@ const renameModal = document.getElementById("rename-modal")
 const mkdirModal = document.getElementById("mkdir-modal")
 const fileInput = document.getElementById("file-upload");
 const uploadBtn = document.getElementById("upload-btn");
+const mkDirBtn = document.getElementById("mkdir-btn");
+const rmAllBtn = document.getElementById("rm-all-btn");
 const successModalElement = document.getElementById("success-modal")
 const errorModalElement = document.getElementById("error-modal")
 const successModal = new bootstrap.Modal(successModalElement)
@@ -31,10 +33,21 @@ renameModal.addEventListener("hide.bs.modal", clearRenameInput)
 mkdirModal.addEventListener("hide.bs.modal", clearMkdirInput)
 uploadBtn.addEventListener("click", () => fileInput.click())
 fileInput.addEventListener("change", uploadObj)
-uploadDropzoneBtn.addEventListener("click", () => uploadDropzoneFiles())
-clearDropzoneBtn.addEventListener("click", () => clearDropzone())
-
+uploadDropzoneBtn.addEventListener("click", uploadDropzoneFiles)
+clearDropzoneBtn.addEventListener("click", clearDropzone)
+document.getElementById("rename-form").addEventListener("submit", function (event) {
+    event.stopPropagation()
+    event.preventDefault()
+    renameModal.querySelector(".modal-footer .btn-primary").click()
+})
+document.getElementById("mkdir-form").addEventListener("submit", function (event) {
+    event.preventDefault()
+    event.stopPropagation()
+    mkdirModal.querySelector(".modal-footer .btn-primary").click()
+})
 /* Dropzone options, events and additional functions */
+
+
 Dropzone.options.myDropzone = {
     url: baseUrl + "files",
     renameFile: function (file) {
@@ -60,7 +73,7 @@ Dropzone.options.myDropzone = {
             setSuccessMessage("Files uploaded successfully");
             successModal.show();
             this.reset();
-            hideDropzoneTools();
+            showLeftPaneTools();
         });
 
         this.on("maxfilesexceeded", function () {
@@ -88,7 +101,7 @@ Dropzone.options.myDropzone = {
 
         this.on("removedfile", function () {
             if (this.getQueuedFiles().length === 0) {
-                hideDropzoneTools()
+                showLeftPaneTools()
             }
         })
     }
@@ -113,11 +126,11 @@ function uploadDropzoneFiles() {
     dropzoneElement.dropzone.processQueue();
 }
 
-function clearDropzone(){
+function clearDropzone() {
     let dropzoneElement = document.getElementById("my-dropzone")
     dropzoneElement.dropzone.removeAllFiles();
     dropzoneElement.dropzone.reset();
-    hideDropzoneTools()
+    showLeftPaneTools()
 }
 
 
@@ -262,6 +275,49 @@ function uploadObj() {
         })
 }
 
+function removeObj(rmBtn) {
+    let url = baseUrl + rmBtn.getAttribute("data-req-path");
+    let path = rmBtn.getAttribute("data-path")
+    path = path !== null ? path : ""
+    let objName = rmBtn.getAttribute("data-obj-name")
+    let formData = new FormData();
+    formData.append("_csrf", getCsrfToken())
+    formData.append("path", path)
+    formData.append("objName", objName)
+    formData.append("_method", "DELETE")
+
+
+    fetch(url, {
+        method: "POST", headers: {
+            "ContentType": "application/x-www-form-urlencoded;utf-8",
+        }, body: formData
+    })
+        .then(response => {
+            if (response.ok) {
+
+                setSuccessMessage(`Files have been deleted successfully`);
+                if (path === "" && objName === "") {
+                    successModal._addEventListeners("hide.bs.modal", reloadPage)
+                } else {
+                    rmBtn.closest(".list-group-item").remove()
+                }
+                successModal.show();
+
+
+            } else {
+                // TODO: exception handling
+                setErrorMessage("Failed to remove");
+                errorModal.show();
+            }
+        })
+
+        .catch(error => {
+            console.error(`While uploading the error occurred: ${error}`)
+            // setErrorMessage("Failed to rename")
+            // errorModal.show()
+        })
+}
+
 
 /* Modals, inputs visual effects handling */
 function clearMkdirInput() {
@@ -271,6 +327,7 @@ function clearMkdirInput() {
 function clearRenameInput() {
     document.getElementById("rename-feedback").style.display = "none";
 }
+
 // TODO: check if it would be more convenient to call "show" inside these functions
 function setSuccessMessage(message) {
     successModalElement.querySelector(".alert-text").textContent = message;
@@ -280,14 +337,23 @@ function setErrorMessage(message) {
     errorModalElement.querySelector(".alert-text").textContent = message;
 }
 
-function hideDropzoneTools() {
+function showLeftPaneTools() {
     toolsDropzoneDiv.classList.add("d-none")
     uploadBtn.classList.remove("d-none")
+    mkDirBtn.classList.remove("d-none")
+    if (getCurPath() === "") {
+        rmAllBtn.classList.remove("d-none")
+    }
+
 }
 
 function showDropzoneTools() {
     toolsDropzoneDiv.classList.remove("d-none")
     uploadBtn.classList.add("d-none")
+    mkDirBtn.classList.add("d-none")
+    if (getCurPath() === "") {
+        rmAllBtn.classList.add("d-none")
+    }
 }
 
 

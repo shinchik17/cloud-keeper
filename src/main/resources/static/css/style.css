@@ -80,6 +80,10 @@ input[type="search"] {
     /*border-radius: 10px;*/
 }
 
+.list-group {
+    max-height: 500px;
+}
+
 .row .file-act-btn {
     padding: 2px;
     margin: auto;
@@ -111,6 +115,10 @@ input[type="search"] {
     border-radius: 15px;
     max-height: 300px;
     /*min-height: 300px;*/
+}
+
+.dz-message {
+    margin: 3em !important;
 }
 
 .breadcrumb {

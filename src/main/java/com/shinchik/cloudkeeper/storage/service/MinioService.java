@@ -110,10 +110,11 @@ public class MinioService {
     public void delete(BaseReqDto deleteDto) {
         String fullPath = formFullPath(deleteDto);
         String objName = deleteDto.getObjName();
+        String folderSearchPath = (fullPath + objName + "/").replace("//", "/");
 
         if (isDir(fullPath + objName)) {
             List<DeleteObject> delObjects = new LinkedList<>();
-            List<Item> objectsMeta = minioRepository.listRecursively(fullPath + objName + "/");
+            List<Item> objectsMeta = minioRepository.listRecursively(folderSearchPath);
             objectsMeta.forEach(x -> delObjects.add(new DeleteObject(x.objectName())));
             minioRepository.delete(delObjects);
         } else {
