@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -18,7 +20,7 @@ public interface BreadcrumbMapper {
     BreadcrumbMapper INSTANCE = Mappers.getMapper(BreadcrumbMapper.class);
 
     @Mapping(target = "pathItems", source = "path", qualifiedByName = "splitPath")
-    @Mapping(target = "curDir", source = "path", qualifiedByName = "getCurDir")
+    @Mapping(target = "lastPart", source = "path", qualifiedByName = "getCurDir")
     Breadcrumb mapToModel(String path);
 
     @Named("splitPath")

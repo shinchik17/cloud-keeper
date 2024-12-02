@@ -14,11 +14,11 @@ import java.util.LinkedHashMap;
 public class Breadcrumb {
 
     private LinkedHashMap<String, String> pathItems;
-    private String curDir;
+    private String lastPart;
 
-    public Breadcrumb(LinkedHashMap<String, String> pathItems, String curDir) {
+    public Breadcrumb(LinkedHashMap<String, String> pathItems, String lastPart) {
         this.pathItems = pathItems;
-        this.curDir = curDir;
+        this.lastPart = lastPart;
     }
 
     public String getLastPath(){

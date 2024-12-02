@@ -1,11 +1,13 @@
 package com.shinchik.cloudkeeper.storage.service;
 
 import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
+import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
+import com.shinchik.cloudkeeper.user.model.User;
 import io.minio.SnowballObject;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
@@ -22,10 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -64,10 +63,35 @@ public class MinioService {
             } else {
                 minioRepository.upload(multipartToSnowball(files, fullPath));
             }
+
+            createIntermediateFolders(files, uploadDto.getUser(), uploadDto.getPath());
+
         } catch (IOException | MinioServiceException e) {
             log.error("Error during uploading files: %s".formatted(e.getMessage()));
             throw new MinioServiceException("Failed to upload files");
         }
+
+
+
+    }
+
+
+    /**
+     * Makes from intermediate path parts explicit folders
+     *
+     * @param files - uploading files
+     * @param user - user who uploads
+     * @param path - current path (folder)
+     */
+    private void createIntermediateFolders(List<MultipartFile> files, User user, String path){
+        files.stream()
+                .map(f -> BreadcrumbMapper.INSTANCE.mapToModel(f.getOriginalFilename()).getPathItems().values())
+                .flatMap(Collection::stream)
+                .filter(x -> !x.isEmpty())
+                .map(s -> s.replaceFirst("^/", ""))
+                .distinct()
+                .map(p -> new BaseReqDto(user, path, p))
+                .forEach(this::createFolder);
     }
 
 
@@ -140,17 +164,19 @@ public class MinioService {
         return objects;
     }
 
-    // TODO: reimplement regarding to case-insensitive search and finding middle "folders"
+
     public List<BaseRespDto> search(BaseReqDto searchDto) {
         String fullPath = formFullPath(searchDto);
-        String query = searchDto.getObjName();
+        String query = searchDto.getObjName().trim().toLowerCase();
         List<BaseRespDto> objects = new ArrayList<>();
-        for (Item obj : minioRepository.listRecursively(fullPath)) {
+        List<Item> userObjects = minioRepository.listRecursively(fullPath);
+        for (Item obj : userObjects) {
 
             if (isDir(obj) && obj.objectName().equals(fullPath)) {
                 continue;
             }
-            if (!obj.objectName().contains(query)) {
+            String shortObjName = BreadcrumbMapper.INSTANCE.mapToModel(obj.objectName()).getLastPart().toLowerCase();
+            if (!shortObjName.contains(query)) {
                 continue;
             }
 
@@ -256,7 +282,7 @@ public class MinioService {
     }
 
     private static String extractNameFromPath(String fullObjPath, String path) {
-        fullObjPath =  fullObjPath.substring(fullObjPath.lastIndexOf(path));
+        fullObjPath = fullObjPath.substring(fullObjPath.lastIndexOf(path));
         return removeUserPrefix(fullObjPath);
     }
 

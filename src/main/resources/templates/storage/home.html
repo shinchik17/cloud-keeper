@@ -83,12 +83,12 @@
                 <div class="row p-0 m-0">
                     <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item" th:unless="${breadcrumb.curDir.isBlank()}"
+                            <li class="breadcrumb-item" th:unless="${breadcrumb.getLastPart.isBlank()}"
                                 th:each="part : ${breadcrumb.pathItems}">
                                 <a th:href="@{/(path=${part.value})}" th:text="${part.key}">Home</a>
                             </li>
                             <li class="breadcrumb-item active " aria-current="page"
-                                th:text="${breadcrumb.curDir.isBlank()} ? Home : ${breadcrumb.curDir}">Folder
+                                th:text="${breadcrumb.getLastPart.isBlank()} ? Home : ${breadcrumb.getLastPart}">Folder
                             </li>
                         </ol>
                     </nav>
