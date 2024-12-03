@@ -41,7 +41,7 @@ server:
 frontend:
   validation:
     pattern:
-      obj-name: (?=.*\S)[\w\!\-\.\*\'\(\)\s]{1,40}
+      obj-name: (?=.*\S)[\w\!\-\.\*'\(\)\s]{1,40}
       search: .*\S+.*
 
 
