@@ -1,6 +1,6 @@
 package com.shinchik.cloudkeeper.storage.exception;
 
-public class NoSuchFolderException extends RuntimeException{
+public class NoSuchFolderException extends NoSuchObjectException{
     public NoSuchFolderException(String message) {
         super(message);
     }

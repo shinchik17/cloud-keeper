@@ -275,7 +275,7 @@ function uploadObj() {
         })
 }
 
-function removeObj(rmBtn) {
+function deleteObj(rmBtn) {
     let url = baseUrl + rmBtn.getAttribute("data-req-path");
     let path = rmBtn.getAttribute("data-path")
     path = path !== null ? path : ""
@@ -315,6 +315,52 @@ function removeObj(rmBtn) {
             console.error(`While uploading the error occurred: ${error}`)
             // setErrorMessage("Failed to rename")
             // errorModal.show()
+        })
+}
+
+function downloadObj(downloadBtn) {
+    let url = baseUrl + downloadBtn.getAttribute("data-req-path");
+    let path = downloadBtn.getAttribute("data-path")
+    path = path !== null ? path : ""
+    let objName = downloadBtn.getAttribute("data-obj-name")
+    url = url + `?path=${path}&objName=${objName}`
+
+    fetch(url, {
+        method: "GET",
+    })
+        .then(response => {
+            if (!response.ok) {
+                response.text().then(text => {
+                    setErrorMessage(text);
+                    successModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModal.show();
+                    console.error(text);
+                })
+            } else {
+                let disposition = response.headers.get("Content-Disposition");
+                let filename = disposition.split("; ")[1].replaceAll("filename=", "").replaceAll("\"", "");
+
+                response.blob().then(blob => {
+                    // Create a link element
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename; // Set the filename
+
+                    // Append to the body (required for Firefox)
+                    document.body.appendChild(link);
+
+                    // Programmatically click the link to trigger the download
+                    link.click();
+
+                    // Clean up and remove the link
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(link.href); // Free up memory
+                })
+            }
+        })
+
+        .catch(error => {
+            console.error(`While uploading the error occurred: ${error}`)
         })
 }
 

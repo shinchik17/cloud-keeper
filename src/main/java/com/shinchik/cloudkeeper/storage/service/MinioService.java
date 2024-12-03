@@ -1,6 +1,8 @@
 package com.shinchik.cloudkeeper.storage.service;
 
 import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
+import com.shinchik.cloudkeeper.storage.exception.NoSuchFolderException;
+import com.shinchik.cloudkeeper.storage.exception.NoSuchObjectException;
 import com.shinchik.cloudkeeper.storage.exception.SuchFolderExistsException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
@@ -81,6 +83,10 @@ public class MinioService {
         if (minioRepository.isObjectDir(fullObjPath)) {
             return new InputStreamResource(getZippedFolder(fullObjPath + "/"));
         } else {
+            if (!minioRepository.isObjectExist(fullObjPath)) {
+                log.error("Attempted to download '{}' but it does not exist", fullObjPath);
+                throw new NoSuchObjectException(fullObjPath);
+            }
             return new InputStreamResource(minioRepository.get(fullObjPath));
         }
 
@@ -120,9 +126,20 @@ public class MinioService {
         if (isDir(fullPath + objName)) {
             List<DeleteObject> delObjects = new LinkedList<>();
             List<Item> objectsMeta = minioRepository.listRecursively(folderSearchPath);
+
+            if (objectsMeta.isEmpty()) {
+                log.warn("Attempted to delete folder '{}' but it does not exist", folderSearchPath);
+                throw new NoSuchObjectException(folderSearchPath);
+            }
             objectsMeta.forEach(x -> delObjects.add(new DeleteObject(x.objectName())));
             minioRepository.delete(delObjects);
+
         } else {
+
+            if (!minioRepository.isObjectExist(fullPath + objName)){
+                log.warn("Attempted to delete object '{}' but it does not exist", fullPath + objName);
+                throw new NoSuchObjectException(fullPath + objName);
+            }
             minioRepository.delete(fullPath + objName);
         }
 

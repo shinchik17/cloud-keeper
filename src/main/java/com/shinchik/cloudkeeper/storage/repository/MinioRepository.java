@@ -215,7 +215,7 @@ public class MinioRepository {
         return items;
     }
 
-
+    // TODO: rethink method due to new approach to folders
     public boolean isObjectDir(String objPath) {
         if (objPath.endsWith("/")) {
             objPath = objPath.substring(0, objPath.length() - 1);
