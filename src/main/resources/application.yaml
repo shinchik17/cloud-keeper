@@ -41,7 +41,7 @@ server:
 frontend:
   validation:
     pattern:
-      obj-name: (?=.*\S)[^\.\/\\]{1,40}
+      obj-name: (?=.*\S)[\w\!\-\.\*\'\(\)\s]{1,40}
       search: .*\S+.*
 
 
@@ -51,4 +51,3 @@ minio:
     user: ${MINIO_ROOT_USER}
     password: ${MINIO_ROOT_PASSWORD}
   bucket-name: user-files
-  max-listed-objects: 20
