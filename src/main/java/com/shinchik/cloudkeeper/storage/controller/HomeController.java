@@ -1,17 +1,19 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
-import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
+import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import com.shinchik.cloudkeeper.storage.exception.NoSuchFolderException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.*;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -45,10 +47,11 @@ public class HomeController {
         try {
             isDir = minioService.isDir(new BaseReqDto(user, "", path));
             if (!isDir && !path.isEmpty()) {
+                log.info("Requested path '{}' does not exist", path);
                 throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
             }
         } catch (MinioRepositoryException e) {
-            log.info("Requested path '%s' is not valid. Caught exception: %s".formatted(path, e.getMessage()));
+            log.info("Requested path '{}' is not valid. Caught exception: {}", path, e.getMessage());
             throw new NoSuchFolderException("Folder '%s' not found".formatted(path));
         }
 
@@ -68,6 +71,7 @@ public class HomeController {
 
         return "storage/home";
     }
+
 
 
 

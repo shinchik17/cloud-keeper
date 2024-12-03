@@ -7,7 +7,7 @@ import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
-import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
+import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

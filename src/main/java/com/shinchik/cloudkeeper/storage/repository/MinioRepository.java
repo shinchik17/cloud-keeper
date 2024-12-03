@@ -1,12 +1,16 @@
 package com.shinchik.cloudkeeper.storage.repository;
 
-import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
+import com.shinchik.cloudkeeper.storage.exception.repository.DeleteException;
+import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
+import com.shinchik.cloudkeeper.storage.exception.repository.ObjectDoesNotExistException;
+import com.shinchik.cloudkeeper.storage.exception.repository.UploadException;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -24,15 +28,12 @@ import java.util.Map;
 public class MinioRepository {
 
     private final String bucketName;
-    private final int maxFindKeys;
     private final MinioClient minioClient;
 
     public MinioRepository(MinioClient minioClient,
-                           @Value("${minio.bucket-name}") String bucketName,
-                           @Value("${minio.max-listed-objects}") int maxFindKeys) {
+                           @Value("${minio.bucket-name}") String bucketName) {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
-        this.maxFindKeys = maxFindKeys;
     }
 
     public void upload(String objPath, InputStream fileStream, long size) {
@@ -46,8 +47,8 @@ public class MinioRepository {
         } catch (IOException | ErrorResponseException | InsufficientDataException | InternalException |
                  InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error(e.getMessage());
-            throw new MinioRepositoryException(e.getMessage());
+            log.error("During uploading single object an exception occurred: {}", e.getMessage());
+            throw new UploadException(e.getMessage());
         }
     }
 
@@ -61,8 +62,8 @@ public class MinioRepository {
         } catch (IOException | ErrorResponseException | InsufficientDataException | InternalException |
                  InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error(e.getMessage());
-            throw new MinioRepositoryException(e.getMessage());
+            log.error("During uploading multiple objects an exception occurred: {}", e.getMessage());
+            throw new UploadException(e.getMessage());
         }
     }
 
@@ -70,6 +71,7 @@ public class MinioRepository {
     public InputStream get(String objPath) {
 
         if (!isObjectExist(objPath)) {
+            log.error("Object {} does not exist", objPath);
             throw new MinioRepositoryException("File %s not found".formatted(objPath));
         }
 
@@ -83,8 +85,8 @@ public class MinioRepository {
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error(e.getMessage());
-            throw new MinioRepositoryException(e.getMessage());
+            log.error("During accessing object {} an exception occurred: {}", objPath, e.getMessage());
+            throw new ObjectDoesNotExistException(e.getMessage());
         }
 
     }
@@ -96,14 +98,10 @@ public class MinioRepository {
             try (InputStream stream = get(obj.objectName())) {
                 resultMap.put(obj, stream.readAllBytes());
             } catch (IOException e) {
-                String message = "Error downloading object %s".formatted(obj.objectName());
-                log.error(message);
-                throw new MinioRepositoryException(message);
-            } catch (Exception e) {
-                log.error(e.getMessage());
+                log.error("During handling object {} inside getAfterPath an exception occurred: {}",
+                        obj.objectName(), e.getMessage());
                 throw new MinioRepositoryException(e.getMessage());
             }
-
         }
         return resultMap;
     }
@@ -120,8 +118,8 @@ public class MinioRepository {
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
-            log.error(e.getMessage());
-            throw new MinioRepositoryException(e.getMessage());
+            log.error("During deleting object {} an exception occurred: {}", objPath, e.getMessage());
+            throw new DeleteException(e.getMessage());
         }
     }
 
@@ -134,14 +132,14 @@ public class MinioRepository {
                             .build());
             for (Result<DeleteError> result : results) {
                 DeleteError error = result.get();
-                log.info("Error in deleting object " + error.objectName() + "; " + error.message());
+                log.error("During deleting object {} an exception occurred: {}", error.objectName(), error.message());
             }
 
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
-            log.error(e.getMessage());
-            throw new MinioRepositoryException(e.getMessage());
+            log.error("During deleting multiple objects an exception occurred: {}", e.getMessage());
+            throw new DeleteException(e.getMessage());
         }
     }
 
@@ -162,7 +160,7 @@ public class MinioRepository {
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
-            log.error(e.getMessage());
+            log.error("During copying '{}' to '{}' an exception occurred: {}", objPath, copyPath, e.getMessage());
             throw new MinioRepositoryException(e.getMessage());
         }
     }
@@ -177,7 +175,6 @@ public class MinioRepository {
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
                         .prefix(prefix)
-                        .maxKeys(maxFindKeys)
                         .build()));
     }
 
@@ -187,18 +184,16 @@ public class MinioRepository {
                         .bucket(bucketName)
                         .prefix(prefix)
                         .startAfter(startsAfter)
-                        .maxKeys(maxFindKeys)
                         .build()));
     }
 
-    // TODO: add maxKeys params
+
     public List<Item> listRecursively(String prefix) {
         return extractItems(minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
                         .recursive(true)
                         .prefix(prefix)
-                        .maxKeys(maxFindKeys)
                         .build()));
     }
 
@@ -213,7 +208,7 @@ public class MinioRepository {
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error(e.getMessage());
+            log.error("During extracting items an exception occurred: {}", e.getMessage());
             throw new MinioRepositoryException(e.getMessage());
         }
 
@@ -225,11 +220,11 @@ public class MinioRepository {
         if (objPath.endsWith("/")) {
             objPath = objPath.substring(0, objPath.length() - 1);
         }
-        // TODO: stream api?
+
         if (!isObjectExist(objPath)) {
             for (Item item : list(objPath)) {
                 if (item.objectName().equals(objPath + "/")) {
-                    log.info("Found folder '%s' in storage".formatted(objPath));
+                    log.debug("'{}' is folder", objPath);
                     return true;
                 }
             }
@@ -248,16 +243,17 @@ public class MinioRepository {
             return true;
         } catch (ErrorResponseException e) {
             if (e.errorResponse().code().equals("NoSuchKey")) {
-                log.debug("There is no object '%s' in storage".formatted(objPath));
+                log.debug("Requested object '{}' not found", objPath);
             } else {
-                log.warn(e.getMessage());
+                log.warn("During checking existence of '{}' an exception occurred: {}", objPath, e.getMessage());
             }
             return false;
         } catch (InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error(e.getMessage());
-            throw new MinioRepositoryException(e.getMessage());
+            log.error("During checking existence of '{}' an exception occurred: {}", objPath, e.getMessage());
+            return false;
+//            throw new MinioRepositoryException(e.getMessage());
         }
 
     }

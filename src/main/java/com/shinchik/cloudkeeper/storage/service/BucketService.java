@@ -1,6 +1,6 @@
 package com.shinchik.cloudkeeper.storage.service;
 
-import com.shinchik.cloudkeeper.storage.exception.MinioRepositoryException;
+import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -8,8 +8,6 @@ import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

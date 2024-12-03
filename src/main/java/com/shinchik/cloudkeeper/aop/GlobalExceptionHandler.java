@@ -19,21 +19,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public String handleNoResourceFound(NoResourceFoundException e, Model model){
-        String errorMessage = "Status %d: resource /%s not found.".formatted(e.getBody().getStatus(), e.getResourcePath());
-        log.warn(errorMessage);
-        model.addAttribute("errorMessage", errorMessage);
+        log.warn("Status {}: resource /{} not found.", e.getBody().getStatus(), e.getResourcePath());
+        model.addAttribute("errorMessage",
+                "How did you get here? Anyway, go back to home page it's definitely better out there :)");
         return "error";
     }
-
-    @ExceptionHandler(NoSuchFolderException.class)
-    public String handleNoSuchFolder(NoSuchFolderException e, Model model){
-        log.warn(e.getMessage());
-        model.addAttribute("errorMessage", e.getMessage());
-        return "error";
-    }
-
-
-
 
     @ExceptionHandler(Exception.class)
     public String handleOtherExceptions(Exception e, Model model, HttpServletRequest request){

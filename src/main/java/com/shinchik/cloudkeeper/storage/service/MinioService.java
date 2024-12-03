@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.storage.service;
 
 import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
+import com.shinchik.cloudkeeper.storage.exception.SuchFolderExistsException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
@@ -67,38 +68,17 @@ public class MinioService {
             createIntermediateFolders(files, uploadDto.getUser(), uploadDto.getPath());
 
         } catch (IOException | MinioServiceException e) {
-            log.error("Error during uploading files: %s".formatted(e.getMessage()));
+            log.error("During uploading files an exception occurred: {}", e.getMessage());
             throw new MinioServiceException("Failed to upload files");
         }
-
-
-
     }
 
-
-    /**
-     * Makes from intermediate path parts explicit folders
-     *
-     * @param files - uploading files
-     * @param user - user who uploads
-     * @param path - current path (folder)
-     */
-    private void createIntermediateFolders(List<MultipartFile> files, User user, String path){
-        files.stream()
-                .map(f -> BreadcrumbMapper.INSTANCE.mapToModel(f.getOriginalFilename()).getPathItems().values())
-                .flatMap(Collection::stream)
-                .filter(x -> !x.isEmpty())
-                .map(s -> s.replaceFirst("^/", ""))
-                .distinct()
-                .map(p -> new BaseReqDto(user, path, p))
-                .forEach(this::createFolder);
-    }
 
 
     public InputStreamResource download(BaseReqDto downloadDto) {
         String fullObjPath = formFullPath(downloadDto) + downloadDto.getObjName();
         if (minioRepository.isObjectDir(fullObjPath)) {
-            return new InputStreamResource(getZippedFolder(fullObjPath + "/", downloadDto.getObjName()));
+            return new InputStreamResource(getZippedFolder(fullObjPath + "/"));
         } else {
             return new InputStreamResource(minioRepository.get(fullObjPath));
         }
@@ -197,11 +177,33 @@ public class MinioService {
 
     public void createFolder(BaseReqDto reqDto) {
         String fullObjPath = formFullPath(reqDto) + reqDto.getObjName() + "/";
+        if (minioRepository.isObjectExist(fullObjPath)){
+            log.error("Attempt to create folder '{}' which already exists", fullObjPath);
+            throw new SuchFolderExistsException("Folder %s already exists".formatted(reqDto.getObjName()));
+        }
         minioRepository.upload(fullObjPath, InputStream.nullInputStream(), 0);
     }
 
+    /**
+     * Makes explicit folders from intermediate path parts
+     *
+     * @param files - uploading files
+     * @param user - user who uploads
+     * @param path - current path (folder)
+     */
+    private void createIntermediateFolders(List<MultipartFile> files, User user, String path){
+        files.stream()
+                .map(f -> BreadcrumbMapper.INSTANCE.mapToModel(f.getOriginalFilename()).getPathItems().values())
+                .flatMap(Collection::stream)
+                .filter(x -> !x.isEmpty())
+                .map(s -> s.replaceFirst("^/", ""))
+                .distinct()
+                .map(p -> new BaseReqDto(user, path, p))
+                .forEach(this::createFolder);
+    }
 
-    private ByteArrayInputStream getZippedFolder(String fullPath, String folderName) {
+
+    private ByteArrayInputStream getZippedFolder(String fullPath) {
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutStream = new ZipOutputStream(byteOutStream)) {
@@ -218,7 +220,7 @@ public class MinioService {
             }
 
         } catch (IOException e) {
-            log.error("Error occurred while zipping folder: %s".formatted(e.getMessage()));
+            log.error("Error occurred while zipping folder '{}': {}", fullPath, e.getMessage());
             throw new MinioServiceException("Failed to download folder.");
         }
 

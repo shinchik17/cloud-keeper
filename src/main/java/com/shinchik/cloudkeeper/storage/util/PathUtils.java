@@ -23,7 +23,7 @@ public class PathUtils {
         try {
             return URI.create(path).normalize().toString();
         } catch (IllegalArgumentException | NullPointerException e) {
-            log.info("Caught exception when trying to normalize path '%s' as uri. Caught: %s".formatted(path, e.getMessage()));
+            log.info("Caught exception when trying to normalize path '{}' as uri: {}", path, e.getMessage());
             return path;
         }
 
