@@ -33,8 +33,8 @@ renameModal.addEventListener("hide.bs.modal", clearRenameInput)
 mkdirModal.addEventListener("hide.bs.modal", clearMkdirInput)
 uploadBtn.addEventListener("click", () => fileInput.click())
 fileInput.addEventListener("change", uploadObj)
-uploadDropzoneBtn.addEventListener("click", () => uploadDropzoneFiles())
-clearDropzoneBtn.addEventListener("click", () => clearDropzone())
+uploadDropzoneBtn.addEventListener("click", uploadDropzoneFiles)
+clearDropzoneBtn.addEventListener("click", clearDropzone)
 document.getElementById("rename-form").addEventListener("submit", function (event) {
     event.stopPropagation()
     event.preventDefault()
@@ -296,14 +296,12 @@ function removeObj(rmBtn) {
             if (response.ok) {
 
                 setSuccessMessage(`Files have been deleted successfully`);
+                if (path === "" && objName === "") {
+                    successModal._addEventListeners("hide.bs.modal", reloadPage)
+                } else {
+                    rmBtn.closest(".list-group-item").remove()
+                }
                 successModal.show();
-                successModal._addEventListeners("hide.bs.modal", () => {
-                    if (path !== "") {
-                        rmBtn.closest(".list-group-item").remove()
-                    } else {
-                        reloadPage()
-                    }
-                })
 
 
             } else {
@@ -343,14 +341,19 @@ function showLeftPaneTools() {
     toolsDropzoneDiv.classList.add("d-none")
     uploadBtn.classList.remove("d-none")
     mkDirBtn.classList.remove("d-none")
-    rmAllBtn.classList.remove("d-none")
+    if (getCurPath() === "") {
+        rmAllBtn.classList.remove("d-none")
+    }
+
 }
 
 function showDropzoneTools() {
     toolsDropzoneDiv.classList.remove("d-none")
     uploadBtn.classList.add("d-none")
     mkDirBtn.classList.add("d-none")
-    rmAllBtn.classList.add("d-none")
+    if (getCurPath() === "") {
+        rmAllBtn.classList.add("d-none")
+    }
 }
 
 
