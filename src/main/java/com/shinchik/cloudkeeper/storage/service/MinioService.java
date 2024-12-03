@@ -8,6 +8,7 @@ import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
+import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
 import io.minio.SnowballObject;
 import io.minio.messages.DeleteObject;
@@ -50,7 +51,7 @@ public class MinioService {
 
     public void upload(UploadDto uploadDto) {
         List<MultipartFile> files = uploadDto.getDocuments();
-        String fullPath = formFullPath(uploadDto);
+        String fullPath = PathUtils.formFullPath(uploadDto);
 
         if (isTotalSizeExceededConstraints(files)) {
             throw new MaxUploadSizeExceededException(maxRequestSize);
@@ -76,7 +77,7 @@ public class MinioService {
 
 
     public InputStreamResource download(BaseReqDto downloadDto) {
-        String fullObjPath = formFullPath(downloadDto) + downloadDto.getObjName();
+        String fullObjPath = PathUtils.formFullPath(downloadDto) + downloadDto.getObjName();
         if (minioRepository.isObjectDir(fullObjPath)) {
             return new InputStreamResource(getZippedFolder(fullObjPath + "/"));
         } else {
@@ -87,7 +88,7 @@ public class MinioService {
 
 
     public void rename(RenameDto renameDto) {
-        String fullPath = formFullPath(renameDto);
+        String fullPath = PathUtils.formFullPath(renameDto);
         String objName = renameDto.getObjName();
         String newObjName = renameDto.getNewObjName();
 
@@ -104,7 +105,7 @@ public class MinioService {
 
         } else {
 
-            String newObjPath = fullPath + handleFileExtension(objName, newObjName);
+            String newObjPath = fullPath + PathUtils.handleFileExtension(objName, newObjName);
             minioRepository.rename(fullPath + objName, newObjPath);
         }
 
@@ -112,7 +113,7 @@ public class MinioService {
 
 
     public void delete(BaseReqDto deleteDto) {
-        String fullPath = formFullPath(deleteDto);
+        String fullPath = PathUtils.formFullPath(deleteDto);
         String objName = deleteDto.getObjName();
         String folderSearchPath = (fullPath + objName + "/").replace("//", "/");
 
@@ -129,14 +130,14 @@ public class MinioService {
 
 
     public List<BaseRespDto> list(BaseReqDto reqDto) {
-        String fullPath = formFullPath(reqDto);
+        String fullPath = PathUtils.formFullPath(reqDto);
         List<BaseRespDto> objects = new ArrayList<>();
         for (Item obj : minioRepository.list(fullPath)) {
             if (isDir(obj) && obj.objectName().equals(fullPath)) {
                 continue;
             }
 
-            String objName = extractOrigName(obj.objectName().replaceAll("/$", ""));
+            String objName = PathUtils.extractOrigName(obj.objectName().replaceAll("/$", ""));
             BaseRespDto objInfo = new BaseRespDto(reqDto.getUser(), reqDto.getPath(), objName, obj.isDir());
             objects.add(objInfo);
         }
@@ -146,7 +147,7 @@ public class MinioService {
 
 
     public List<BaseRespDto> search(BaseReqDto searchDto) {
-        String fullPath = formFullPath(searchDto);
+        String fullPath = PathUtils.formFullPath(searchDto);
         String query = searchDto.getObjName().trim().toLowerCase();
         List<BaseRespDto> objects = new ArrayList<>();
         List<Item> userObjects = minioRepository.listRecursively(fullPath);
@@ -160,7 +161,7 @@ public class MinioService {
                 continue;
             }
 
-            String objName = removeUserPrefix(obj.objectName().replaceAll("/$", ""));
+            String objName = PathUtils.removeUserPrefix(obj.objectName().replaceAll("/$", ""));
             BaseRespDto resultDto = new BaseRespDto(searchDto.getUser(), searchDto.getPath(), objName, obj.isDir());
             objects.add(resultDto);
         }
@@ -170,13 +171,13 @@ public class MinioService {
 
 
     public boolean isObjectExist(BaseReqDto checkDto) {
-        String fullObjPath = formFullPath(checkDto) + checkDto.getObjName();
+        String fullObjPath = PathUtils.formFullPath(checkDto) + checkDto.getObjName();
         return minioRepository.isObjectExist(fullObjPath);
     }
 
 
     public void createFolder(BaseReqDto reqDto) {
-        String fullObjPath = formFullPath(reqDto) + reqDto.getObjName() + "/";
+        String fullObjPath = PathUtils.formFullPath(reqDto) + reqDto.getObjName() + "/";
         if (minioRepository.isObjectExist(fullObjPath)){
             log.error("Attempt to create folder '{}' which already exists", fullObjPath);
             throw new SuchFolderExistsException("Folder %s already exists".formatted(reqDto.getObjName()));
@@ -213,7 +214,7 @@ public class MinioService {
             for (Map.Entry<Item, byte[]> entry : objectsMap.entrySet()) {
                 Item metaInfo = entry.getKey();
                 byte[] buffer = entry.getValue();
-                String name = extractNameFromPath(metaInfo.objectName(), fullPath);
+                String name = PathUtils.extractNameFromPath(metaInfo.objectName(), fullPath);
                 zipOutStream.putNextEntry(new ZipEntry(name));
                 zipOutStream.write(buffer);
                 zipOutStream.closeEntry();
@@ -233,21 +234,12 @@ public class MinioService {
     }
 
     public boolean isDir(BaseReqDto checkDto) {
-        String fullObjPath = formFullPath(checkDto) + checkDto.getObjName();
+        String fullObjPath = PathUtils.formFullPath(checkDto) + checkDto.getObjName();
         return minioRepository.isObjectDir(fullObjPath);
     }
 
     private boolean isDir(Item objMeta) {
         return objMeta.isDir() || objMeta.objectName().endsWith("/");
-    }
-
-    private static String handleFileExtension(String oldName, String newName) {
-        int lastDotIndex = oldName.lastIndexOf(".");
-        if (lastDotIndex != -1) {
-            return newName + oldName.substring(lastDotIndex);
-        }
-
-        return newName;
     }
 
     private static List<SnowballObject> multipartToSnowball(List<MultipartFile> files, String fullPath) {
@@ -269,23 +261,6 @@ public class MinioService {
 
     private boolean isTotalSizeExceededConstraints(List<MultipartFile> files) {
         return files.stream().mapToLong(MultipartFile::getSize).sum() > maxRequestSize;
-    }
-
-    private static String formFullPath(BaseReqDto reqDto) {
-        return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");
-    }
-
-    private static String removeUserPrefix(String prefixedPath) {
-        return prefixedPath.replaceFirst("user-[0-9]{1,18}-files/", "");
-    }
-
-    private static String extractOrigName(String fullObjPath) {
-        return fullObjPath.substring(fullObjPath.lastIndexOf("/") + 1);
-    }
-
-    private static String extractNameFromPath(String fullObjPath, String path) {
-        fullObjPath = fullObjPath.substring(fullObjPath.lastIndexOf(path));
-        return removeUserPrefix(fullObjPath);
     }
 
 }

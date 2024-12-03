@@ -38,4 +38,29 @@ public class PathUtils {
     }
 
 
+    public static String formFullPath(BaseReqDto reqDto) {
+        return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");
+    }
+
+    public static String removeUserPrefix(String prefixedPath) {
+        return prefixedPath.replaceFirst("user-[0-9]{1,18}-files/", "");
+    }
+
+    public static String extractOrigName(String fullObjPath) {
+        return fullObjPath.substring(fullObjPath.lastIndexOf("/") + 1);
+    }
+
+    public static String extractNameFromPath(String fullObjPath, String path) {
+        fullObjPath = fullObjPath.substring(fullObjPath.lastIndexOf(path));
+        return removeUserPrefix(fullObjPath);
+    }
+
+    public static String handleFileExtension(String oldName, String newName) {
+        int lastDotIndex = oldName.lastIndexOf(".");
+        if (lastDotIndex != -1) {
+            return newName + oldName.substring(lastDotIndex);
+        }
+
+        return newName;
+    }
 }
