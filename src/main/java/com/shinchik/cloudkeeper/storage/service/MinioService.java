@@ -1,9 +1,9 @@
 package com.shinchik.cloudkeeper.storage.service;
 
-import com.shinchik.cloudkeeper.storage.exception.MinioServiceException;
-import com.shinchik.cloudkeeper.storage.exception.NoSuchFolderException;
-import com.shinchik.cloudkeeper.storage.exception.NoSuchObjectException;
-import com.shinchik.cloudkeeper.storage.exception.SuchFolderExistsException;
+import com.shinchik.cloudkeeper.storage.exception.service.MinioServiceException;
+import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
+import com.shinchik.cloudkeeper.storage.exception.service.NotEnoughFreeSpaceException;
+import com.shinchik.cloudkeeper.storage.exception.service.SuchFolderAlreadyExistsException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
@@ -40,23 +40,29 @@ public class MinioService {
     private final MinioRepository minioRepository;
     private final long maxFileSize;
     private final long maxRequestSize;
+    private final DataSize userSpaceSize;
 
     @Autowired
     public MinioService(MinioRepository minioRepository,
                         @Value("${spring.servlet.multipart.max-file-size}") DataSize maxFileSize,
-                        @Value("${spring.servlet.multipart.max-request-size}") DataSize maxRequestSize) {
+                        @Value("${spring.servlet.multipart.max-request-size}") DataSize maxRequestSize,
+                        @Value("${spring.application.user-space-size}") DataSize userSpaceSize) {
         this.minioRepository = minioRepository;
         this.maxFileSize = maxFileSize.toBytes();
         this.maxRequestSize = maxRequestSize.toBytes();
+        this.userSpaceSize = userSpaceSize;
     }
 
 
     public void upload(UploadDto uploadDto) {
         List<MultipartFile> files = uploadDto.getDocuments();
         String fullPath = PathUtils.formFullPath(uploadDto);
-
-        if (isTotalSizeExceededConstraints(files)) {
+        long totalSize = calcTotalSize(files);
+        if (isTotalSizeExceeded(totalSize)) {
             throw new MaxUploadSizeExceededException(maxRequestSize);
+        }
+        if (isUserSpaceExceeded(uploadDto)) {
+            throw new NotEnoughFreeSpaceException(userSpaceSize.toMegabytes());
         }
 
         try {
@@ -75,7 +81,6 @@ public class MinioService {
             throw new MinioServiceException("Failed to upload files");
         }
     }
-
 
 
     public InputStreamResource download(BaseReqDto downloadDto) {
@@ -136,7 +141,7 @@ public class MinioService {
 
         } else {
 
-            if (!minioRepository.isObjectExist(fullPath + objName)){
+            if (!minioRepository.isObjectExist(fullPath + objName)) {
                 log.warn("Attempted to delete object '{}' but it does not exist", fullPath + objName);
                 throw new NoSuchObjectException(fullPath + objName);
             }
@@ -195,9 +200,9 @@ public class MinioService {
 
     public void createFolder(BaseReqDto reqDto) {
         String fullObjPath = PathUtils.formFullPath(reqDto) + reqDto.getObjName() + "/";
-        if (minioRepository.isObjectExist(fullObjPath)){
+        if (minioRepository.isObjectExist(fullObjPath)) {
             log.error("Attempt to create folder '{}' which already exists", fullObjPath);
-            throw new SuchFolderExistsException("Folder %s already exists".formatted(reqDto.getObjName()));
+            throw new SuchFolderAlreadyExistsException("Folder '%s' already exists".formatted(reqDto.getObjName()));
         }
         minioRepository.upload(fullObjPath, InputStream.nullInputStream(), 0);
     }
@@ -206,10 +211,10 @@ public class MinioService {
      * Makes explicit folders from intermediate path parts
      *
      * @param files - uploading files
-     * @param user - user who uploads
-     * @param path - current path (folder)
+     * @param user  - user who uploads
+     * @param path  - current path (folder)
      */
-    private void createIntermediateFolders(List<MultipartFile> files, User user, String path){
+    private void createIntermediateFolders(List<MultipartFile> files, User user, String path) {
         files.stream()
                 .map(f -> BreadcrumbMapper.INSTANCE.mapToModel(f.getOriginalFilename()).getPathItems().values())
                 .flatMap(Collection::stream)
@@ -276,8 +281,22 @@ public class MinioService {
 
     }
 
-    private boolean isTotalSizeExceededConstraints(List<MultipartFile> files) {
-        return files.stream().mapToLong(MultipartFile::getSize).sum() > maxRequestSize;
+
+    private boolean isTotalSizeExceeded(long size) {
+        return size > maxRequestSize;
     }
 
+    private boolean isUserSpaceExceeded(UploadDto uploadDto) {
+        String userFolder = PathUtils.formFullPath(uploadDto);
+        long uploadSize = calcTotalSize(uploadDto.getDocuments());
+        long totalStoredSize = minioRepository.list(userFolder).stream()
+                .mapToLong(Item::size)
+                .sum();
+
+        return totalStoredSize + uploadSize > userSpaceSize.toBytes();
+    }
+
+    private static long calcTotalSize(List<MultipartFile> files) {
+        return files.stream().mapToLong(MultipartFile::getSize).sum();
+    }
 }

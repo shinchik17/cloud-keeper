@@ -37,14 +37,13 @@ public class SearchController {
                 .map(obj -> BreadcrumbMapper.INSTANCE.mapToModel(obj.getObjName()))
                 .toList();
         List<BaseRespDto> objRefs = breadcrumbs.stream()
-                .map(brcr -> new BaseRespDto(brcr.getLastPath(), brcr.getLastPart())
-                )
+                .map(brcr -> new BaseRespDto(brcr.getLastPath(), brcr.getLastPart()))
                 .toList();
 
-        model.addAttribute("objRefs", objRefs);
-        model.addAttribute("breadcrumbs", breadcrumbs);
-        model.addAttribute("user", user);
         model.addAttribute("query", query);
+        model.addAttribute("user", user);
+        model.addAttribute("breadcrumbs", breadcrumbs);
+        model.addAttribute("objRefs", objRefs);
 
         return "storage/search";
 

@@ -162,11 +162,11 @@
                 </form>
             </div>
         </div>
-
     </div>
-
 </div>
 
+
+<div th:if="${errorMessage != null}" id="error-modal-trigger" class="d-none" th:data-error-message="${errorMessage}"></div>
 
 <!-- Modal create folder -->
 <div class="modal fade" id="mkdir-modal" tabindex="-1" aria-labelledby="mkdir-modal-label" aria-hidden="true">

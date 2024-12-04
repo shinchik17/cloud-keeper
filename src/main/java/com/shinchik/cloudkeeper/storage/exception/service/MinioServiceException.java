@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage.exception;
+package com.shinchik.cloudkeeper.storage.exception.service;
 
 public class MinioServiceException extends RuntimeException{
     public MinioServiceException(String message) {

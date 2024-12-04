@@ -45,9 +45,16 @@ document.getElementById("mkdir-form").addEventListener("submit", function (event
     event.stopPropagation()
     mkdirModal.querySelector(".modal-footer .btn-primary").click()
 })
+errorDiv = document.getElementById("error-modal-trigger");
+
+if (errorDiv != null){
+    errorMessage = errorDiv.getAttribute("data-error-message")
+    setErrorMessage(errorMessage)
+    errorModal._addEventListeners("hide.bs.modal", reloadPage)
+    errorModal.show()
+}
+
 /* Dropzone options, events and additional functions */
-
-
 Dropzone.options.myDropzone = {
     url: baseUrl + "files",
     renameFile: function (file) {
@@ -72,7 +79,8 @@ Dropzone.options.myDropzone = {
         this.on("successmultiple", function () {
             setSuccessMessage("Files uploaded successfully");
             successModal.show();
-            this.reset();
+            this.removeAllFiles(true);
+            // this.reset();
             showLeftPaneTools();
         });
 
@@ -88,8 +96,10 @@ Dropzone.options.myDropzone = {
         });
 
         this.on("error", function (file, message, xhr) {
-            if (message !== this.options.dictMaxFilesExceeded) {
-                setErrorMessage(xhr && xhr.response ? JSON.parse(xhr.response).message : message);
+            // && message.startsWith("Invalid JSON")
+            if (message !== this.options.dictMaxFilesExceeded && message !== this.options.dictUploadCanceled) {
+                message = xhr && xhr.response ? JSON.parse(xhr.response).message : message
+                setErrorMessage(message);
                 errorModal.show()
                 this.removeAllFiles(true);
             }
@@ -128,8 +138,8 @@ function uploadDropzoneFiles() {
 
 function clearDropzone() {
     let dropzoneElement = document.getElementById("my-dropzone")
-    dropzoneElement.dropzone.removeAllFiles();
-    dropzoneElement.dropzone.reset();
+    dropzoneElement.dropzone.removeAllFiles(true);
+    // dropzoneElement.dropzone.reset();
     showLeftPaneTools()
 }
 
@@ -166,9 +176,12 @@ function mkDir(mkBtn) {
                 // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
                 location.reload()
             } else {
-                // TODO: exception handling
-                setErrorMessage("Failed to create folder")
-                errorModal.show()
+                response.text().then(text => {
+                    text = JSON.parse(text).error
+                    setErrorMessage(text);
+                    errorModal.show();
+                    console.error(text);
+                })
             }
         })
 
@@ -212,9 +225,12 @@ function renameObj(renameBtn) {
                 // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
                 location.reload()
             } else {
-                // TODO: exception handling
-                setErrorMessage("Failed to rename")
-                errorModal.show()
+                response.text().then(text => {
+                    text = JSON.parse(text).error
+                    setErrorMessage(text);
+                    errorModal.show();
+                    console.error(text);
+                })
             }
         })
 
@@ -262,9 +278,13 @@ function uploadObj() {
                 setSuccessMessage(`Files have been uploaded successfully`);
                 successModal.show();
             } else {
-                // TODO: exception handling
-                setErrorMessage("Failed to upload");
-                errorModal.show();
+                response.text().then(text => {
+                    text = JSON.parse(text).error
+                    setErrorMessage(text);
+                    errorModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModal.show();
+                    console.error(text);
+                })
             }
         })
 
@@ -303,11 +323,15 @@ function deleteObj(rmBtn) {
                 }
                 successModal.show();
 
-
             } else {
                 // TODO: exception handling
-                setErrorMessage("Failed to remove");
-                errorModal.show();
+                response.text().then(text => {
+                    text = JSON.parse(text).error
+                    setErrorMessage(text);
+                    errorModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModal.show();
+                    console.error(text);
+                })
             }
         })
 
@@ -329,14 +353,7 @@ function downloadObj(downloadBtn) {
         method: "GET",
     })
         .then(response => {
-            if (!response.ok) {
-                response.text().then(text => {
-                    setErrorMessage(text);
-                    successModal._addEventListeners("hide.bs.modal", reloadPage);
-                    errorModal.show();
-                    console.error(text);
-                })
-            } else {
+            if (response.ok) {
                 let disposition = response.headers.get("Content-Disposition");
                 let filename = disposition.split("; ")[1].replaceAll("filename=", "").replaceAll("\"", "");
 
@@ -345,16 +362,21 @@ function downloadObj(downloadBtn) {
                     const link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
                     link.download = filename; // Set the filename
-
                     // Append to the body (required for Firefox)
                     document.body.appendChild(link);
-
                     // Programmatically click the link to trigger the download
                     link.click();
-
                     // Clean up and remove the link
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(link.href); // Free up memory
+                })
+            } else {
+                response.text().then(text => {
+                    text = JSON.parse(text).error
+                    setErrorMessage(text);
+                    successModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModal.show();
+                    console.error(text);
                 })
             }
         })
@@ -380,7 +402,14 @@ function setSuccessMessage(message) {
 }
 
 function setErrorMessage(message) {
-    errorModalElement.querySelector(".alert-text").textContent = message;
+    if (message.startsWith("You have run out of free space")) {
+        message = message.replaceAll("subscription", "<a href='https://telegra.ph/Mentorstvo-po-trudoustrojstvu-06-08' target=\"_blank\" rel=\"noopener noreferrer\">subscription</a>")
+        errorModalElement.querySelector(".alert-text").innerHTML = message;
+    } else {
+        errorModalElement.querySelector(".alert-text").textContent = message;
+    }
+
+
 }
 
 function showLeftPaneTools() {

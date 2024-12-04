@@ -1,51 +1,58 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
-import com.shinchik.cloudkeeper.storage.exception.NoSuchFolderException;
-import com.shinchik.cloudkeeper.storage.exception.NoSuchObjectException;
+import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationException;
 import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
-import jakarta.servlet.http.HttpServletRequest;
+import com.shinchik.cloudkeeper.storage.exception.service.MinioServiceException;
+import com.shinchik.cloudkeeper.storage.exception.service.NoSuchFolderException;
+import com.shinchik.cloudkeeper.user.model.User;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Request;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Slf4j
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ControllerExceptionHandler {
 
-//    @ExceptionHandler(NoSuchFolderException.class)
-//    public String handleNoSuchFolder(NoSuchFolderException e, Model model){
-//        log.debug(e.getMessage());
-//        model.addAttribute("errorMessage", e.getMessage());
-//        return "storage/home";
-//    }
-
-    @ExceptionHandler(NoSuchObjectException.class)
-    public ResponseEntity<?> handleNoSuchObject(NoSuchObjectException e){
+    // TODO: check other exceptions
+    @ExceptionHandler(NoSuchFolderException.class)
+    public RedirectView handleNoSuchFolderException(NoSuchFolderException e, RedirectAttributes redirectAttributes) {
         log.debug(e.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        return new RedirectView("/", true);
+    }
 
-        return new ResponseEntity<>(e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-//        return ResponseEntity.badRequest()
-//                .contentType(MediaType.TEXT_HTML)
-//                .body(e.getMessage());
-
+    @ExceptionHandler(DtoValidationException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleDtoValidationException(DtoValidationException e) {
+        log.debug(e.getMessage());
+        return ResponseEntity.badRequest().body(exToJsonString(e));
     }
 
 
+    @ExceptionHandler(MinioServiceException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleMinioServiceException(MinioServiceException e) {
+        log.debug(e.getMessage());
+        return ResponseEntity.badRequest().body(exToJsonString(e));
+    }
 
     @ExceptionHandler(MinioRepositoryException.class)
-    public String handleMinioRepositoryException(NoSuchFolderException e, Model model){
+    @ResponseBody
+    public ResponseEntity<String> handleMinioRepositoryException(MinioRepositoryException e) {
         log.debug(e.getMessage());
-        model.addAttribute("errorMessage", e.getMessage());
-        return "storage/home";
+        return ResponseEntity.badRequest().body(exToJsonString(e));
     }
 
+
+    private static String exToJsonString(Exception e) {
+        return "{ \"error\": \"%s\" }".formatted(e.getMessage());
+    }
 
 
 }

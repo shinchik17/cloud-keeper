@@ -1,5 +1,6 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
+import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationException;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
@@ -45,6 +46,7 @@ public class ObjectController {
 
         if (bindingResult.hasErrors()){
             ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            throw new DtoValidationException("Invalid upload request");
         }
 
         minioService.upload(uploadDto);
@@ -62,6 +64,7 @@ public class ObjectController {
 
         if (bindingResult.hasErrors()){
             ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            throw new DtoValidationException("Invalid download request");
         }
 
         BaseReqDto reqDto = new BaseReqDto(downloadDto.getUser(), downloadDto.getPath(), downloadDto.getObjName());
@@ -86,6 +89,7 @@ public class ObjectController {
 
         if (bindingResult.hasErrors()){
             ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            throw new DtoValidationException("Invalid rename request");
         }
 
         minioService.rename(renameDto);
@@ -101,6 +105,7 @@ public class ObjectController {
 
         if (bindingResult.hasErrors()){
             ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            throw new DtoValidationException("Invalid delete request");
         }
 
         minioService.delete(deleteDto);

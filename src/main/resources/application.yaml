@@ -1,6 +1,7 @@
 spring:
   application:
     name: cloud-keeper
+    user-space-size: 500MB
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres

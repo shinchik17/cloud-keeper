@@ -36,6 +36,9 @@ public class SessionConfig implements BeanClassLoaderAware {
         mapper.addMixIn(SecurityUserDetails.class, SecurityUserDetails.class);
         mapper.addMixIn(User.class, User.class);
         mapper.addMixIn(Role.class, Role.class);
+        // crutches for serializing flash attributes which are stored in session which is stored in Redis
+        mapper.addMixIn(java.util.concurrent.CopyOnWriteArrayList.class, java.util.concurrent.CopyOnWriteArrayList.class);
+        mapper.addMixIn(org.springframework.web.servlet.FlashMap.class, org.springframework.web.servlet.FlashMap.class);
         return mapper;
     }
 
