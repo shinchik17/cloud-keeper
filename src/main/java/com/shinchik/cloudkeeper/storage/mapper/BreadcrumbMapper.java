@@ -63,8 +63,6 @@ public interface BreadcrumbMapper {
             path = "/" + path;
         }
 
-        // TODO: check if Minio would fix multiple slashes and I don't need to do it (depends on business logic)
-
         return path;
     }
 

@@ -24,7 +24,6 @@ public class AuthService {
     public void register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.USER);
-        // TODO: create exception handler
         repository.save(user);
     }
 

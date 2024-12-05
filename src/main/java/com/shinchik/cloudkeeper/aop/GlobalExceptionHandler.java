@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
-    // TODO: check other exceptions
     @ExceptionHandler(NoSuchFolderException.class)
     public RedirectView handleNoSuchFolderException(NoSuchFolderException e, RedirectAttributes redirectAttributes) {
         log.debug(e.getMessage());
@@ -60,11 +59,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleOtherExceptions(Exception e, HttpServletRequest request){
+    public String handleOtherExceptions(Exception e, HttpServletRequest request, Model model){
         String errorStatusCode = (String) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         String uri = request.getRequestURI();
         String errorMessage = e.getMessage();
         log.error("Attempted to access '{}', status code '{}', message '{}'", errorStatusCode, uri, errorMessage);
+        model.addAttribute("errorMessage", "Service is unavailable. Please try again later");
         return "redirect:error";
     }
 

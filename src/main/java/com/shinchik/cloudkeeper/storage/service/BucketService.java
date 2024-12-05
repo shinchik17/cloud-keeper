@@ -14,9 +14,8 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-// TODO: move all to MinioService?
-@Service
 @Slf4j
+@Service
 public class BucketService {
 
     private final MinioClient minioClient;
