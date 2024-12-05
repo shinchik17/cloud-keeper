@@ -182,7 +182,7 @@
                     <input type="text" id="mk-dir-name" required th:pattern="${namePattern}">
                     <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
                     <div class="invalid-feedback p-0" id="mkdir-feedback">
-                        Allowed characters except for dot and slashes. Max length is 40 (at least 1 non-whitespace
+                        Allowed alphanumeric characters and symbols: !-_*'(). Max length is 40 (at least 1 non-whitespace
                         character).
                     </div>
                 </form>
@@ -215,7 +215,7 @@
                     <input type="text" id="new-obj-name" required th:pattern="${namePattern}">
                     <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
                     <div class="invalid-feedback p-0" id="rename-feedback">
-                        Allowed characters except for dot and slashes. Max length is 40 (at least 1 non-whitespace
+                        Allowed alphanumeric characters and symbols: !-_*'(). Max length is 40 (at least 1 non-whitespace
                         character).
                     </div>
                 </form>

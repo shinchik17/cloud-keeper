@@ -365,7 +365,6 @@ function clearRenameInput() {
     document.getElementById("rename-feedback").style.display = "none";
 }
 
-// TODO: check if it would be more convenient to call "show" inside these functions
 function showSuccessMessage(message) {
     successModalElement.querySelector(".alert-text").textContent = message;
     successModal.show()
