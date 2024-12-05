@@ -171,13 +171,10 @@ function mkDir(mkBtn) {
         .then(response => {
             if (response.ok) {
                 console.info(`Folder ${dirname} has been created successfully`)
-
-                // setSuccessMessage(`Folder ${dirname} has been created successfully`)
-                // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
                 location.reload()
             } else {
                 response.text().then(text => {
-                    text = JSON.parse(text).error
+                    text = JSON.parse(text).message
                     setErrorMessage(text);
                     errorModal.show();
                     console.error(text);
@@ -186,9 +183,7 @@ function mkDir(mkBtn) {
         })
 
         .catch(error => {
-            console.error(`While creating new folder following error occurred: ${error}`)
-            // setErrorMessage("Failed to create folder")
-            // errorModal.show()
+            console.error(`While creating new folder an error occurred: ${error}`)
         })
 
 }
@@ -221,12 +216,10 @@ function renameObj(renameBtn) {
         .then(response => {
             if (response.ok) {
                 console.info(`Renamed "${objName}" to "${newObjName}" successfully`)
-                // setSuccessMessage(`Renamed "${objName}" to "${newObjName}" successfully`)
-                // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
                 location.reload()
             } else {
                 response.text().then(text => {
-                    text = JSON.parse(text).error
+                    text = JSON.parse(text).message
                     setErrorMessage(text);
                     errorModal.show();
                     console.error(text);
@@ -235,9 +228,7 @@ function renameObj(renameBtn) {
         })
 
         .catch(error => {
-            console.error(`While renaming the error occurred: ${error}`)
-            // setErrorMessage("Failed to rename")
-            // errorModal.show()
+            console.error(`While renaming an error occurred: ${error}`)
         })
 
 }
@@ -264,7 +255,6 @@ function uploadObj() {
             errorModal.show()
             return;
         }
-
     }
 
     fetch(url, {
@@ -274,14 +264,13 @@ function uploadObj() {
     })
         .then(response => {
             if (response.ok) {
-                // let href = getCurPath() === "" ? baseUrl : baseUrl + `?path=${getCurPath()}`
                 setSuccessMessage(`Files have been uploaded successfully`);
                 successModal.show();
             } else {
                 response.text().then(text => {
-                    text = JSON.parse(text).error
+                    text = JSON.parse(text).message
                     setErrorMessage(text);
-                    errorModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModalElement.addEventListener("hide.bs.modal", reloadPage)
                     errorModal.show();
                     console.error(text);
                 })
@@ -289,9 +278,7 @@ function uploadObj() {
         })
 
         .catch(error => {
-            console.error(`While uploading the error occurred: ${error}`)
-            // setErrorMessage("Failed to rename")
-            // errorModal.show()
+            console.error(`While uploading an error occurred: ${error}`)
         })
 }
 
@@ -315,20 +302,19 @@ function deleteObj(rmBtn) {
         .then(response => {
             if (response.ok) {
 
-                setSuccessMessage(`Files have been deleted successfully`);
+                setSuccessMessage("Successfully deleted");
                 if (path === "" && objName === "") {
-                    successModal._addEventListeners("hide.bs.modal", reloadPage)
+                    successModalElement.addEventListener("hide.bs.modal", reloadPage)
                 } else {
                     rmBtn.closest(".list-group-item").remove()
                 }
                 successModal.show();
 
             } else {
-                // TODO: exception handling
                 response.text().then(text => {
-                    text = JSON.parse(text).error
+                    text = JSON.parse(text).message
                     setErrorMessage(text);
-                    errorModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModalElement.addEventListener("hide.bs.modal", reloadPage)
                     errorModal.show();
                     console.error(text);
                 })
@@ -336,9 +322,7 @@ function deleteObj(rmBtn) {
         })
 
         .catch(error => {
-            console.error(`While uploading the error occurred: ${error}`)
-            // setErrorMessage("Failed to rename")
-            // errorModal.show()
+            console.error(`While deleting an error occurred: ${error}`)
         })
 }
 
@@ -358,10 +342,9 @@ function downloadObj(downloadBtn) {
                 let filename = disposition.split("; ")[1].replaceAll("filename=", "").replaceAll("\"", "");
 
                 response.blob().then(blob => {
-                    // Create a link element
                     const link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.download = filename; // Set the filename
+                    link.download = filename;
                     // Append to the body (required for Firefox)
                     document.body.appendChild(link);
                     // Programmatically click the link to trigger the download
@@ -372,9 +355,9 @@ function downloadObj(downloadBtn) {
                 })
             } else {
                 response.text().then(text => {
-                    text = JSON.parse(text).error
+                    text = JSON.parse(text).message
                     setErrorMessage(text);
-                    successModal._addEventListeners("hide.bs.modal", reloadPage);
+                    errorModalElement.addEventListener("hide.bs.modal", reloadPage);
                     errorModal.show();
                     console.error(text);
                 })
@@ -382,7 +365,7 @@ function downloadObj(downloadBtn) {
         })
 
         .catch(error => {
-            console.error(`While uploading the error occurred: ${error}`)
+            console.error(`While downloading an error occurred: ${error}`)
         })
 }
 
@@ -503,8 +486,4 @@ function reloadPage() {
     location.reload();
 }
 
-
-// myDropzone.on("uploadprogress", function (file, progress, bytesSent) {
-//     file.previewElement.querySelector('.dz-progress .dz-upload').style.width = progress + "%";
-// });
 

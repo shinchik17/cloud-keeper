@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
 
     private static String exToJsonString(Exception e) {
-        return "{ \"error\": \"%s\" }".formatted(e.getMessage());
+        return "{ \"message\": \"%s\" }".formatted(e.getMessage());
     }
 
 }
