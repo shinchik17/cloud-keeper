@@ -49,9 +49,8 @@ errorDiv = document.getElementById("error-modal-trigger");
 
 if (errorDiv != null){
     errorMessage = errorDiv.getAttribute("data-error-message")
-    setErrorMessage(errorMessage)
-    errorModal._addEventListeners("hide.bs.modal", reloadPage)
-    errorModal.show()
+    errorModalElement.addEventListener("hide.bs.modal", reloadPage)
+    showErrorMessage(errorMessage)
 }
 
 /* Dropzone options, events and additional functions */
@@ -74,19 +73,15 @@ Dropzone.options.myDropzone = {
     // Note: using "function()" here to bind `this` to
     // the Dropzone instance.
     init: function () {
-        // TODO: implement backend handling filenames violations
-
         this.on("successmultiple", function () {
-            setSuccessMessage("Files uploaded successfully");
-            successModal.show();
+            showSuccessMessage("Files uploaded successfully");
+            // successModal.show();
             this.removeAllFiles(true);
-            // this.reset();
             showLeftPaneTools();
         });
 
         this.on("maxfilesexceeded", function () {
-            setErrorMessage(this.options.dictMaxFilesExceeded);
-            errorModal.show()
+            showErrorMessage(this.options.dictMaxFilesExceeded);
 
             for (let file of this.files.slice()) {
                 if ((file.status !== Dropzone.QUEUED)) {
@@ -99,8 +94,7 @@ Dropzone.options.myDropzone = {
             // && message.startsWith("Invalid JSON")
             if (message !== this.options.dictMaxFilesExceeded && message !== this.options.dictUploadCanceled) {
                 message = xhr && xhr.response ? JSON.parse(xhr.response).message : message
-                setErrorMessage(message);
-                errorModal.show()
+                showErrorMessage(message);
                 this.removeAllFiles(true);
             }
         });
@@ -127,8 +121,7 @@ function uploadDropzoneFiles() {
         totalSize += files[i].size
 
         if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
-            setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
-            errorModal.show()
+            showErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
             return;
         }
     }
@@ -175,8 +168,7 @@ function mkDir(mkBtn) {
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
-                    setErrorMessage(text);
-                    errorModal.show();
+                    showErrorMessage(text);
                     console.error(text);
                 })
             }
@@ -220,8 +212,7 @@ function renameObj(renameBtn) {
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
-                    setErrorMessage(text);
-                    errorModal.show();
+                    showErrorMessage(text);
                     console.error(text);
                 })
             }
@@ -241,8 +232,7 @@ function uploadObj() {
 
     let files = fileInput.files;
     if (files.length > MAX_FILES) {
-        setErrorMessage(Dropzone.options.myDropzone.dictMaxFilesExceeded)
-        errorModal.show()
+        showErrorMessage(Dropzone.options.myDropzone.dictMaxFilesExceeded)
     }
 
     let totalSize = 0;
@@ -251,8 +241,7 @@ function uploadObj() {
         totalSize += files[i].size
 
         if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
-            setErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
-            errorModal.show()
+            showErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
             return;
         }
     }
@@ -264,14 +253,13 @@ function uploadObj() {
     })
         .then(response => {
             if (response.ok) {
-                setSuccessMessage(`Files have been uploaded successfully`);
-                successModal.show();
+                showSuccessMessage(`Files have been uploaded successfully`);
+                // successModal.show();
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
-                    setErrorMessage(text);
                     errorModalElement.addEventListener("hide.bs.modal", reloadPage)
-                    errorModal.show();
+                    showErrorMessage(text);
                     console.error(text);
                 })
             }
@@ -302,20 +290,19 @@ function deleteObj(rmBtn) {
         .then(response => {
             if (response.ok) {
 
-                setSuccessMessage("Successfully deleted");
                 if (path === "" && objName === "") {
                     successModalElement.addEventListener("hide.bs.modal", reloadPage)
                 } else {
                     rmBtn.closest(".list-group-item").remove()
                 }
-                successModal.show();
+                showSuccessMessage("Successfully deleted");
+                // successModal.show();
 
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
-                    setErrorMessage(text);
                     errorModalElement.addEventListener("hide.bs.modal", reloadPage)
-                    errorModal.show();
+                    showErrorMessage(text);
                     console.error(text);
                 })
             }
@@ -356,9 +343,8 @@ function downloadObj(downloadBtn) {
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
-                    setErrorMessage(text);
                     errorModalElement.addEventListener("hide.bs.modal", reloadPage);
-                    errorModal.show();
+                    showErrorMessage(text);
                     console.error(text);
                 })
             }
@@ -380,19 +366,19 @@ function clearRenameInput() {
 }
 
 // TODO: check if it would be more convenient to call "show" inside these functions
-function setSuccessMessage(message) {
+function showSuccessMessage(message) {
     successModalElement.querySelector(".alert-text").textContent = message;
+    successModal.show()
 }
 
-function setErrorMessage(message) {
+function showErrorMessage(message) {
     if (message.startsWith("You have run out of free space")) {
         message = message.replaceAll("subscription", "<a href='https://telegra.ph/Mentorstvo-po-trudoustrojstvu-06-08' target=\"_blank\" rel=\"noopener noreferrer\">subscription</a>")
         errorModalElement.querySelector(".alert-text").innerHTML = message;
     } else {
         errorModalElement.querySelector(".alert-text").textContent = message;
     }
-
-
+    errorModal.show()
 }
 
 function showLeftPaneTools() {
