@@ -38,6 +38,8 @@ server:
     session:
       cookie:
         secure: true
+  tomcat:
+    max-swallow-size: 200MB
 
 frontend:
   validation:
