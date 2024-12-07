@@ -21,20 +21,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @PropertySource("classpath:application.yaml")
 public class SecurityConfig {
 
-    //    private final String registerUrl = "/auth/register";
+    private final String registerUrl = "/auth/register";
     private final String loginUrl = "/auth/login";
     private final String logoutUrl = "/auth/logout";
-    private final String welcomeUrl = "/welcome";
+    private final String welcomeUrl = "/welcome"; // TODO: remove welcome url if decide not to do welcome page
     private final String defaultUrl = "/";
     private final String[] unsecuredUrls = new String[]{
             welcomeUrl,
             "/error",
-            "/auth/register",
-            loginUrl,
             "/css/**",
             "/js/**",
             "/common/**",
-            "/icons/**"
+            "/icons/**",
+            "/cloud-data.ico"
     };
 
     private final UserDetailsService userDetailsService;
@@ -49,12 +48,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(registerUrl, loginUrl).anonymous()
                         .requestMatchers(unsecuredUrls).permitAll()
                         .requestMatchers("/**").authenticated())
                 .formLogin(formLogin -> {
                     formLogin.loginPage(loginUrl);
                     formLogin.loginProcessingUrl(loginUrl);
-                    formLogin.defaultSuccessUrl(defaultUrl);
+                    formLogin.defaultSuccessUrl(defaultUrl, true);
                     formLogin.failureUrl(loginUrl + "?error");
                 })
                 .logout(logout -> {
