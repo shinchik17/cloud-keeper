@@ -4,6 +4,7 @@ package com.shinchik.cloudkeeper.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@PropertySource("classpath:application.yaml")
 public class SecurityConfig {
 
     //    private final String registerUrl = "/auth/register";
@@ -29,9 +31,14 @@ public class SecurityConfig {
             "/error",
             "/auth/register",
             loginUrl,
+            "/css/**",
+            "/js/**",
+            "/common/**",
+            "/icons/**"
     };
 
     private final UserDetailsService userDetailsService;
+
 
     @Autowired
     public SecurityConfig(SecurityUserDetailsService userDetailsService) {
@@ -69,6 +76,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 }
