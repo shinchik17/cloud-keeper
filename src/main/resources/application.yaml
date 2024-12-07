@@ -41,11 +41,17 @@ server:
   tomcat:
     max-swallow-size: 200MB
 
-frontend:
-  validation:
-    pattern:
-      obj-name: (?=.*\S)[\w\!\-\*'\(\)\s]{1,40}
-      search: .*\S+.*
+validation:
+  patterns:
+    username: "[a-zA-Z0-9@_.]{4,50}"
+    password: "[a-zA-Z0-9@_.!#$%^&*]{4,50}"
+    objname: (?=.*\S)[\w\!\-\*'\(\)\s]{1,40}
+    search: .*\S+.*
+  messages:
+    username: "Allowed letters, numbers and symbols @_., minimum 4 characters"
+    password: "Allowed latin letters, numbers and symbols @_.!#$%^&*, minimum 4 characters."
+    objname: "Allowed alphanumeric characters and symbols: !-_*'(). Max length is 40 (at least 1 non-whitespace character)."
+    search: "Search query must contain at least 1 non-whitespace character"
 
 
 minio:

@@ -35,8 +35,8 @@
                            placeholder="Search for files"
                            aria-label="Search"
                            th:pattern="${searchPattern}"
-                           title="">
-                    <!--pattern=".*\S+.*"-->
+                           title=""
+                           th:data-error-message="${searchMessage}">
                     <button class="btn btn-outline-primary" type="submit">Search</button>
                 </form>
             </div>
@@ -44,10 +44,15 @@
                 <a class="dropdown-toggle nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                    aria-expanded="false">
                     <i class="fas fa-user-circle"></i> <span th:text="${user.username}"></span></a>
-                <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" th:href="@{/auth/logout}">
-                        <i class="fas fa-sign-out-alt"></i>Log out</a>
+                <ul class="dropdown-menu dropdown-menu-lg-end ps-1" aria-labelledby="navbarDropdown">
+                    <li>
+                        <form class="dropdown-item" th:action="@{/auth/logout}" method="POST">
+                            <button type="submit" class="btn btn-link" role="link">
+                                <i class="fas fa-sign-out-alt me-1"></i>Log out
+                            </button>
+                        </form>
                     </li>
+
                 </ul>
             </div>
 
@@ -117,12 +122,6 @@
                                 <span th:text=" ${obj.objName}">Object name</span>
                             </div>
                             <div class="file-act-btn">
-<!--                                <form th:action="@{/files}" th:object="${downloadDto}" th:method="get">-->
-<!--                                    <input type="hidden" name="path" th:value="${path}"/>-->
-<!--                                    <input type="hidden" name="objName" th:value="${obj.objName}"/>-->
-<!--                                    <input type="hidden" name="dir" th:value="${obj.dir}"/>-->
-<!--                                    <button type="submit" class="btn btn-light"><i class="bi bi-download"></i></button>-->
-<!--                                </form>-->
                                 <button type="submit" class="btn btn-light" th:data-path="${path}" data-req-path="files"
                                         th:data-obj-name="${obj.objName}" onclick="downloadObj(this)">
                                     <i class="bi bi-download"></i>
@@ -166,7 +165,8 @@
 </div>
 
 
-<div th:if="${errorMessage != null}" id="error-modal-trigger" class="d-none" th:data-error-message="${errorMessage}"></div>
+<div th:if="${errorMessage != null}" id="error-modal-trigger" class="d-none"
+     th:data-error-message="${errorMessage}"></div>
 
 <!-- Modal create folder -->
 <div class="modal fade" id="mkdir-modal" tabindex="-1" aria-labelledby="mkdir-modal-label" aria-hidden="true">
@@ -179,12 +179,9 @@
             <div class="modal-body">
                 <form action="#" id="mkdir-form" class="needs-validation" novalidate>
                     <label for="mk-dir-name">Enter name</label>
-                    <input type="text" id="mk-dir-name" required th:pattern="${namePattern}">
+                    <input type="text" id="mk-dir-name" required th:pattern="${objnamePattern}">
                     <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
-                    <div class="invalid-feedback p-0" id="mkdir-feedback">
-                        Allowed alphanumeric characters and symbols: !-_*'(). Max length is 40 (at least 1 non-whitespace
-                        character).
-                    </div>
+                    <div class="invalid-feedback p-0" id="mkdir-feedback" th:text="${objnameMessage}"></div>
                 </form>
 
             </div>
@@ -212,12 +209,9 @@
             <div class="modal-body">
                 <form action="#" id="rename-form" class="needs-validation" novalidate>
                     <label for="new-obj-name">New name</label>
-                    <input type="text" id="new-obj-name" required th:pattern="${namePattern}">
+                    <input type="text" id="new-obj-name" required th:pattern="${objnamePattern}">
                     <button type="reset" class="btn btn-light btn-clear"><i class="bi bi-backspace"></i></button>
-                    <div class="invalid-feedback p-0" id="rename-feedback">
-                        Allowed alphanumeric characters and symbols: !-_*'(). Max length is 40 (at least 1 non-whitespace
-                        character).
-                    </div>
+                    <div class="invalid-feedback p-0" id="rename-feedback" th:text="${objnameMessage}"></div>
                 </form>
 
             </div>
@@ -296,5 +290,6 @@
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/dropzone.min.js}"></script>
 <script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/check-form-validity.js}"></script>
 </body>
 </html>

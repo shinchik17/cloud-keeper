@@ -45,7 +45,7 @@ public class ObjectController {
         uploadDto.setUser(user);
 
         if (bindingResult.hasErrors()){
-            ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid upload request");
         }
 
@@ -63,7 +63,7 @@ public class ObjectController {
         downloadDto.setUser(user);
 
         if (bindingResult.hasErrors()){
-            ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid download request");
         }
 
@@ -88,7 +88,7 @@ public class ObjectController {
         renameDto.setUser(user);
 
         if (bindingResult.hasErrors()){
-            ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid rename request");
         }
 
@@ -104,7 +104,7 @@ public class ObjectController {
         deleteDto.setUser(user);
 
         if (bindingResult.hasErrors()){
-            ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid delete request");
         }
 
@@ -121,7 +121,7 @@ public class ObjectController {
         mkDirDto.setUser(user);
 
         if (bindingResult.hasErrors()){
-            ValidationUtil.extractErrorMessages(bindingResult).forEach(log::warn);
+            ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
         }
 
         minioService.createFolder(mkDirDto);

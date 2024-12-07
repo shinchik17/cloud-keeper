@@ -3,12 +3,18 @@ package com.shinchik.cloudkeeper.user.controller;
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.service.AuthService;
 import com.shinchik.cloudkeeper.user.util.UserValidator;
+import com.shinchik.cloudkeeper.util.ValidationUtil;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
+@Slf4j
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -24,22 +30,27 @@ public class AuthController {
 
 
     @GetMapping("/login")
-    public String logIn(){
+    public String logIn(@ModelAttribute("user") User user) {
         return "auth/login";
     }
 
     @GetMapping("/register")
-    public String register(@ModelAttribute("user") User user){
+    public String register(@ModelAttribute("user") User user) {
         return "auth/registration";
     }
 
     @PostMapping("/register")
     public String performRegistration(@ModelAttribute("user") @Valid User user,
-                                      BindingResult bindingResult) {
+                                            BindingResult bindingResult,
+                                            @RequestParam(value = "pass-repeat") String passConfirmation,
+                                            Model model) {
 
         userValidator.validate(user, bindingResult);
+        userValidator.validatePasswordsMatch(user, bindingResult, passConfirmation);
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
+            ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
+            model.addAttribute("errorMessage", ValidationUtil.chooseMainErrorMessage(bindingResult));
             return "/auth/registration";
         }
 

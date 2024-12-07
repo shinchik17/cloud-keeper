@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration</title>
-</head>
+<head th:replace="~{/common/head :: head ('Registration')}"></head>
+
 <body>
 
-<form th:method="POST" th:action="@{/auth/register}" th:object="${user}">
-    <label for="username">Введите имя пользователя: </label>
-    <input type="text" th:field="*{username}" id="username"/>
-    <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error</div>
-    <br/>
-    <label for="password">Введите пароль: </label>
-    <input type="password" th:field="*{password}" id="password"/>
-    <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>
-    <br/>
-    <input type="submit" value="Sign up!"/>
-</form>
+<div class="container">
+    <div class="row">
+        <h1 class="text-center display-3">Registration</h1>
+    </div>
+    <div th:if="${errorMessage != null}" class="row mb-2">
+        <h6 class="text-center text-danger" th:text="${errorMessage}">Message text</h6>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-8 col-sm-7 col-md-6 col-lg-6 col-xl-5 col-xxl-4">
+            <div th:replace="~{/common/auth-form :: auth-form (true, 'register')}"></div>
+        </div>
+    </div>
+    <div class="row text-center">
+        <span>Already have an account? <a th:href="@{/login}">Log in</a></span>
+    </div>
+</div>
 
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

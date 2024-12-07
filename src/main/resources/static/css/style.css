@@ -36,6 +36,10 @@
     border-radius: 2rem;
 }
 
+/*.form-group {*/
+/*    padding-top: 0 !important;*/
+/*}*/
+
 input[type="text"] {
     border-radius: 0.5rem;
 }
@@ -64,6 +68,13 @@ input[type="search"] {
     border-radius: 1rem;
     padding: 0 0.5rem;
     font-size: 1.5rem;
+}
+
+
+.btn-link, .btn-link:hover, .btn-link:active {
+    padding: 0;
+    color: black;
+    text-decoration: none;
 }
 
 .row div{

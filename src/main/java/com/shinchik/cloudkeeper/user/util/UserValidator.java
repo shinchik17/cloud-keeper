@@ -31,7 +31,17 @@ public class UserValidator implements Validator {
         Optional<User> optUser = service.findByUsername(user.getUsername());
 
         if (optUser.isPresent()) {
-            errors.rejectValue("username", "", "User with such username already exists.");
+            errors.rejectValue("username",
+                    "NORMAL", "User with username '%s' already exists".formatted(user.getUsername()));
+        }
+
+    }
+
+    public void validatePasswordsMatch(Object target, Errors errors, String passConfirmation){
+        User user = (User)target;
+
+        if (!user.passwordsMatch(passConfirmation)){
+            errors.rejectValue("password", "NORMAL", "Passwords do not match");
         }
 
     }

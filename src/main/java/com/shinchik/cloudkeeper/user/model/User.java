@@ -1,6 +1,8 @@
 package com.shinchik.cloudkeeper.user.model;
 
 
+import com.shinchik.cloudkeeper.user.util.PasswordConstraint;
+import com.shinchik.cloudkeeper.user.util.UsernameConstraint;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,16 +24,20 @@ public class User implements Serializable {
     private Long id;
 
     @NotNull
-    @Size(min = 4, max = 30, message = "Username length should be between {min} and {max} characters")
+    @UsernameConstraint
     private String username;
 
     @NotNull
-    @Size(min = 3, message = "Password length should be at least {min} characters")
+    @PasswordConstraint
     private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     Role role = Role.USER;
+
+    public boolean passwordsMatch(String passConfirmation){
+        return password.equals(passConfirmation);
+    }
 
 
 }
