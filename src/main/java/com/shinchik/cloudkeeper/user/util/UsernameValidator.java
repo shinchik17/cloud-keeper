@@ -4,9 +4,11 @@ import com.shinchik.cloudkeeper.validation.ValidationProperties;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("auth")
 public class UsernameValidator implements ConstraintValidator<UsernameConstraint, String> {
 
     private final ValidationProperties validationProperties;

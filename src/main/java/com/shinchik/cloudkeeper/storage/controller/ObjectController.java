@@ -8,10 +8,11 @@ import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
-import com.shinchik.cloudkeeper.util.ValidationUtil;
+import com.shinchik.cloudkeeper.validation.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Controller
 @RequestMapping("/files")
+@Profile("web")
 public class ObjectController {
 
     private final MinioService minioService;

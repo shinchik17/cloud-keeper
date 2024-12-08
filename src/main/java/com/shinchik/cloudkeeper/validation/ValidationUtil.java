@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.util;
+package com.shinchik.cloudkeeper.validation;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

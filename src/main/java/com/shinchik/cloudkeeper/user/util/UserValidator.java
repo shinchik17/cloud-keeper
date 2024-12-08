@@ -3,6 +3,7 @@ package com.shinchik.cloudkeeper.user.util;
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -10,6 +11,7 @@ import org.springframework.validation.Validator;
 import java.util.Optional;
 
 @Component
+@Profile("auth")
 public class UserValidator implements Validator {
 
     private final UserService service;

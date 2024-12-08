@@ -6,6 +6,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import java.net.http.HttpResponse;
 @Slf4j
 @Controller
 @RequestMapping("/error")
+@Profile({"dev", "prod"})
 public class CustomErrorController implements ErrorController {
 
     @RequestMapping
