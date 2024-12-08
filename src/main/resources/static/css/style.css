@@ -36,9 +36,9 @@
     border-radius: 2rem;
 }
 
-/*.form-group {*/
-/*    padding-top: 0 !important;*/
-/*}*/
+.form-group {
+    padding-top: 0 !important;
+}
 
 input[type="text"] {
     border-radius: 0.5rem;
