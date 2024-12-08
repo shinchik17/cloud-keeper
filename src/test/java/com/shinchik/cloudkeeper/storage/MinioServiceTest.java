@@ -40,13 +40,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles({"test", "minio"})
 class MinioServiceTest {
 
-    private static final String MINIO_IMAGE_NAME = "quay.io/minio/minio:latest";
-
-    private final GenericContainer<?> minioContainer = new FixedHostPortGenericContainer<>(MINIO_IMAGE_NAME)
+    private final GenericContainer<?> minioContainer = new FixedHostPortGenericContainer<>("minio/minio:latest")
             .withFixedExposedPort(9000, 9000)
             .withFixedExposedPort(9001, 9001)
             .withCommand("server", "/data", "--console-address", ":9001");
-
 
     @Autowired
     private MinioClientProperties minioClientProperties;

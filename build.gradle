@@ -48,6 +48,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
+    testImplementation "org.testcontainers:minio:${testContainersVersion}"
     testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
 }
 
