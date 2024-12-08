@@ -11,12 +11,11 @@ import lombok.*;
 @NoArgsConstructor
 public class BaseReqDto {
 
-//    @NotNull(message = "User must be authorized to use service")
     private User user;
     @NotNull(message = "Path should not be null")
     private String path;
     @NotNull(message = "Object name must not be null")
-    private String objName;
+    private String objName = "";
 
     public BaseReqDto(User user, String path) {
         this.user = user;

@@ -1,13 +1,13 @@
 package com.shinchik.cloudkeeper.storage;
 
+import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
+import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.RenameDto;
+import com.shinchik.cloudkeeper.storage.model.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.BucketService;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.user.model.Role;
 import com.shinchik.cloudkeeper.user.model.User;
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.model.RenameDto;
-import com.shinchik.cloudkeeper.storage.model.UploadDto;
-import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -130,7 +130,7 @@ class MinioServiceTest {
     @Test
     @DisplayName("Download nonexistent object")
     public void downloadNonExistentObj_thenThrow() {
-        assertThrows(MinioRepositoryException.class, () -> minioService.download(singleFileUploadDto),
+        assertThrows(NoSuchObjectException.class, () -> minioService.download(singleFileUploadDto),
                 "Downloaded nonexistent file");
     }
 

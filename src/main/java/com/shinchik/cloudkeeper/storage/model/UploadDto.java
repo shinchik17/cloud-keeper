@@ -13,9 +13,9 @@ import java.util.List;
 public class UploadDto extends BaseReqDto {
     @NotEmpty(message = "You should select one or more files to upload")
     private List<MultipartFile> documents;
-    // TODO: remove exrending from BaseReqDto so that remove "objName" redundunt field
+
     public UploadDto(User user, String path, List<MultipartFile> documents) {
-        super(user, path);
+        super(user, path, "");
         this.documents = documents;
     }
 
