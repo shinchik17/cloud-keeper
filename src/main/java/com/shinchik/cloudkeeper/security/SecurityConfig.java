@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@PropertySource("classpath:application.yaml")
+//@PropertySource("classpath:application.yaml")
 public class SecurityConfig {
 
     private final String registerUrl = "/auth/register";

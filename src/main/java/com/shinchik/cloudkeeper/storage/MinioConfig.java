@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 
 @Configuration
-@PropertySource("classpath:application.yaml")
+//@PropertySource("classpath:application.yaml")
 public class MinioConfig {
 
 
