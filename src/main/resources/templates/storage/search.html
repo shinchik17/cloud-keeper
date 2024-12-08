@@ -29,7 +29,7 @@
             </ul>
             <div class="container-fluid">
                 <form th:action="@{/search}" th:method="get" class="d-flex justify-content-center">
-                    <input class="form-control me-2" type="search" name="query" required
+                    <input class="form-control me-2" type="search" name="query" id="query" required
                            th:value="${query}"
                            placeholder="Search for files"
                            aria-label="Search"
@@ -70,7 +70,7 @@
 <div class="container-fluid">
     <div class="row m-sm-3">
         <div class="col-8 main-box pt-0 pb-0">
-            <div th:if="${userObjects.isEmpty()}" class="alert alert-info d-flex align-items-center">
+            <div th:if="${breadcrumbs.isEmpty()}" class="alert alert-info d-flex align-items-center">
                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
                     <use xlink:href="#info-fill"/>
                 </svg>

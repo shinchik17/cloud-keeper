@@ -4,8 +4,7 @@
 <body>
 
 <form th:fragment="auth-form (repeatPass, link)" th:action="@{${link}}" th:object="${user}" method="POST"
-      class="needs-validation"
-      novalidate>
+      class="needs-validation" novalidate>
     <div class="form-group">
         <label for="username">Username</label>
         <input class="form-control" type="text" id="username" th:field="*{username}" required

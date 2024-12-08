@@ -1,7 +1,7 @@
 /* Custom validity settings */
 function setSearchInputCustomValidity() {
-    let input = document.getElementsByName("query")[0];
-    if (input === null || input === undefined){
+    let input = document.getElementById("query");
+    if (input === null || input === undefined) {
         return;
     }
     let errorMessage = input.getAttribute("data-error-message")
@@ -10,17 +10,13 @@ function setSearchInputCustomValidity() {
             event.target.setCustomValidity(errorMessage);
         }
     })
+
     input.addEventListener("change", event => {
         event.target.setCustomValidity("");
     })
-}
 
-function addAutoClearValidityErrors() {
-    let inputs = document.querySelectorAll(".needs-validation input[type='text']");
-    Array.from(inputs).forEach(input => {
-        input.addEventListener("change", event => {
-            input.closest("form").classList.add("was-validated");
-        })
+    input.addEventListener("change", event => {
+        input.closest("form").classList.add("was-validated");
     })
 }
 
@@ -42,4 +38,3 @@ function clearDefaultValidity() {
 
 clearDefaultValidity();
 setSearchInputCustomValidity();
-addAutoClearValidityErrors();

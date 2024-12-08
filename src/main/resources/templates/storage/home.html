@@ -31,7 +31,7 @@
             </ul>
             <div class="container-fluid">
                 <form th:action="@{/search}" th:method="get" class="d-flex justify-content-center">
-                    <input class="form-control me-2" type="search" name="query" required
+                    <input class="form-control me-2" type="search" name="query" id="query" required
                            placeholder="Search for files"
                            aria-label="Search"
                            th:pattern="${searchPattern}"
