@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile({"dev", "prod"})
+@Profile({"!test"})
 public class ApplicationStartupListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private final BucketService bucketService;

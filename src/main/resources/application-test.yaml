@@ -1,19 +1,15 @@
+
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: test
-    password: testpass
-  data:
-    redis:
-      password: testpass
-      port: 6379
+  session:
+    timeout: 10
+
 
 ---
 # Configuration for clean MinioServiceTest
 spring:
   config:
     activate:
-      on-profile: "test & minio"
+      on-profile: "test & minio & !dev"
   liquibase:
     enabled: false
   data:

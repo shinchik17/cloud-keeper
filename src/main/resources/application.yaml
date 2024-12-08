@@ -3,7 +3,16 @@ spring:
     name: cloud-keeper
     user-space-size: 500MB
   config:
-    import: optional:file:.env[.properties]
+    import:
+      - optional:file:dev.env[.properties]
+      - optional:file:.env[.properties]
+  profiles:
+    active: dev
+    group:
+      dev:
+        - "auth"
+        - "minio"
+        - "web"
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
@@ -14,13 +23,16 @@ spring:
     redis:
       password: ${REDIS_PASSWORD}
       port: ${REDIS_PORT}
+  session:
+    redis:
+      repository-type: default
+    timeout: 1800
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
       ddl-auto: validate
-
   servlet:
     multipart:
       max-file-size: 100MB
@@ -29,10 +41,7 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-  session:
-    redis:
-      repository-type: default
-    timeout: 1800
+
 
 server:
   servlet:
@@ -42,6 +51,7 @@ server:
         secure: true
   tomcat:
     max-swallow-size: 200MB
+
 
 validation:
   patterns:
