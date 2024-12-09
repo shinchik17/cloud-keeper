@@ -27,6 +27,7 @@ ext {
     minioVersion = "8.5.13"
     testContainersVersion = "1.20.3"
     mapstructVersion = "1.5.5.Final"
+    mockitoVersion = "5.12.0"
 }
 
 dependencies {
@@ -50,6 +51,8 @@ dependencies {
     testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
     testImplementation "org.testcontainers:minio:${testContainersVersion}"
     testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+
 }
 
 tasks.named('test') {
