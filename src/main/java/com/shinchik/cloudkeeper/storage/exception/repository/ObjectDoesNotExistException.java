@@ -5,7 +5,4 @@ public class ObjectDoesNotExistException extends MinioRepositoryException{
         super(message);
     }
 
-    public ObjectDoesNotExistException(Throwable cause) {
-        super(cause);
-    }
 }

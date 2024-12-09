@@ -4,7 +4,7 @@ import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
 import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.RenameDto;
 import com.shinchik.cloudkeeper.storage.model.UploadDto;
-import com.shinchik.cloudkeeper.storage.service.BucketService;
+import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.user.model.Role;
 import com.shinchik.cloudkeeper.user.model.User;
@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @SpringBootTest
-@Import(MinioServiceTestConfig.class)
 @ActiveProfiles({"test", "minio"})
 class MinioServiceTest {
 
@@ -49,7 +48,7 @@ class MinioServiceTest {
     private MinioClientProperties minioClientProperties;
 
     @Autowired
-    private BucketService bucketService;
+    private MinioRepository minioRepository;
 
     @Autowired
     private MinioService minioService;
@@ -69,7 +68,7 @@ class MinioServiceTest {
                 .withEnv("MINIO_ROOT_PASSWORD", minioClientProperties.getPassword());
         minioContainer.start();
         Thread.sleep(2000); // needs for container to really get ready
-        bucketService.createDefaultBucket();
+        minioRepository.createDefaultBucket();
     }
 
     @AfterEach

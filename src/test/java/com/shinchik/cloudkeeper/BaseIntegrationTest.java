@@ -1,12 +1,10 @@
 package com.shinchik.cloudkeeper;
 
-import com.shinchik.cloudkeeper.storage.MinioClientProperties;
-import com.shinchik.cloudkeeper.storage.MinioConfig;
+import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -16,16 +14,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @Testcontainers
 @SpringBootTest
 @ActiveProfiles({"dev", "test"})
 public class BaseIntegrationTest {
-
-    @Autowired
-    private Environment env;
 
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
@@ -36,7 +31,6 @@ public class BaseIntegrationTest {
     private static final MinIOContainer minio = new MinIOContainer("minio/minio:latest")
             .withUserName("test")
             .withPassword("testpass")
-//            .withPassword("testpass")
             .withExposedPorts(9000, 9001);
 
     @Container
@@ -49,16 +43,17 @@ public class BaseIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private MinioClientProperties minioClientProperties;
-
-    @Autowired
-    private MinioConfig minioConfig;
+    private MinioRepository minioRepository;
 
 
     @Test
-    public void testContainerPostgres() {
+    public void defaultBucketWasCreated() {
+        assertTrue(minioRepository.isDefaultBucketExist());
+    }
 
-        assertDoesNotThrow(() -> userRepository.findByUsername(""));
+    @Test
+    public void testUserDataWasLoaded() {
+        assertTrue(userRepository.findByUsername("user").isPresent());
     }
 
 
@@ -82,6 +77,4 @@ public class BaseIntegrationTest {
         registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
         registry.add("spring.datasource.password", () -> "testpass");
     }
-
-
 }

@@ -209,6 +209,7 @@ public class MinioService {
         minioRepository.upload(fullObjPath, InputStream.nullInputStream(), 0);
     }
 
+
     /**
      * Makes explicit folders from intermediate path parts
      *
@@ -226,7 +227,6 @@ public class MinioService {
                 .map(p -> new BaseReqDto(user, path, p))
                 .forEach(this::createFolder);
     }
-
 
     private ByteArrayInputStream getZippedFolder(String fullPath) {
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
@@ -251,7 +251,6 @@ public class MinioService {
 
         return new ByteArrayInputStream(byteOutStream.toByteArray());
     }
-
 
     public boolean isDir(String fullObjPath) {
         return minioRepository.isObjectDir(fullObjPath);
@@ -301,4 +300,7 @@ public class MinioService {
     private static long calcTotalSize(List<MultipartFile> files) {
         return files.stream().mapToLong(MultipartFile::getSize).sum();
     }
+
+
+
 }

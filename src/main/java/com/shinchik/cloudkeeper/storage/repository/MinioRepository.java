@@ -10,8 +10,8 @@ import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository
+@Profile("minio")
 public class MinioRepository {
 
     private final String bucketName;
@@ -253,7 +254,47 @@ public class MinioRepository {
                  XmlParserException e) {
             log.error("During checking existence of '{}' an exception occurred: {}", objPath, e.getMessage());
             return false;
-//            throw new MinioRepositoryException(e.getMessage());
+        }
+
+    }
+
+    public void createDefaultBucket(){
+        createBucket(bucketName);
+    }
+
+    public void createBucket(String bucketName) {
+        try {
+            if (!isBucketExist(bucketName)) {
+                minioClient.makeBucket(
+                        MakeBucketArgs.builder()
+                                .bucket(bucketName)
+                                .build());
+                log.info("Default bucket '{}' has been created successfully", bucketName);
+            } else {
+                log.info("Default bucket '{}' exists", bucketName);
+            }
+
+        } catch (Exception e) {
+            log.error("During creating default bucket '{}' an exception occurred: {}", bucketName, e.getMessage());
+            throw new MinioRepositoryException(e.getMessage());
+        }
+    }
+
+    public boolean isDefaultBucketExist(){
+        return isBucketExist(bucketName);
+    }
+
+    public boolean isBucketExist(String bucketName) {
+        try {
+            return minioClient.bucketExists(
+                    BucketExistsArgs.builder()
+                            .bucket(bucketName)
+                            .build());
+        } catch (InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException |
+                 IOException | NoSuchAlgorithmException | ServerException | XmlParserException |
+                 ErrorResponseException e) {
+            log.error("During checking existence of bucket '{}' an exception occurred: {}", bucketName, e.getMessage());
+            return false;
         }
 
     }
