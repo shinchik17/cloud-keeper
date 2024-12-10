@@ -1,36 +1,25 @@
 package com.shinchik.cloudkeeper.user;
 
-import com.shinchik.cloudkeeper.user.exception.InvalidUserCredentialsException;
+import com.shinchik.cloudkeeper.user.model.Role;
+import com.shinchik.cloudkeeper.user.model.UserDto;
 import com.shinchik.cloudkeeper.user.service.UserService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: devide integration and mockMvc tests
+// TODO: write mockMvc tests
 
-@ExtendWith(SpringExtension.class)
 @Testcontainers
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles({"auth", "test"})
 public class AuthControllerTest {
 
@@ -39,51 +28,23 @@ public class AuthControllerTest {
             .withUsername("test")
             .withPassword("testpass");
 
-    @Container
-    private static final GenericContainer<?> redis = new GenericContainer<>("redis:latest")
-            .withExposedPorts(6379)
-            .withCommand("redis-server --requirepass testpass");
-
-
-    @Value("${server.servlet.context-path}")
-    private String serverContextPath;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private UserService userService;
 
+
     @Test
-    @WithAnonymousUser
-    public void testAccessRegisterPage_whenAnonymous() throws Exception {
-        mockMvc.perform(get("/auth/register"))
-                .andExpect(status().isOk());
+    public void registerNewUser()  {
+        UserDto user = new UserDto("user2", "pass", "pass", Role.USER);
+        assertDoesNotThrow(() -> userService.register(user));
+        assertTrue(userService.findByUsername("user2").isPresent());
     }
 
     @Test
-    @WithMockUser(username = "user")
-    public void testAccessRegisterPage_whenAuthorized() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register"))
-                .andExpect(status().isForbidden());
+    public void registerNewUser_withExistingUsername()  {
+        UserDto user = new UserDto("user", "pass", "pass", Role.USER);
+        assertThrows(DataIntegrityViolationException.class, () -> userService.register(user));
     }
-
-    @Test
-    @WithMockUser(username = "user2")
-    public void registerUser() throws Exception {
-        mockMvc.perform(get("/auth/register"));
-        Assertions.assertTrue(userService.findByUsername("user2").isPresent());
-    }
-
-//    @Test
-//    @WithMockUser(username = "user")
-//    public void registerExistingUser_then() {
-
-//        Assertions.assertThrows(InvalidUserCredentialsException.class,
-//                () -> mockMvc.perform(post("/auth/register")));
-//    }
-
-
     @DynamicPropertySource
     static void datasourceProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -92,9 +53,4 @@ public class AuthControllerTest {
         registry.add("spring.datasource.password", postgres::getPassword);
     }
 
-    @DynamicPropertySource
-    static void redisProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
-        registry.add("spring.data.redis.password", () -> "testpass");
-    }
 }

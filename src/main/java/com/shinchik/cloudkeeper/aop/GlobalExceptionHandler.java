@@ -5,10 +5,8 @@ import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationExcept
 import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import com.shinchik.cloudkeeper.storage.exception.service.MinioServiceException;
 import com.shinchik.cloudkeeper.storage.exception.service.NoSuchFolderException;
-import com.shinchik.cloudkeeper.user.exception.InvalidUserCredentialsException;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,10 +29,10 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
-    @ExceptionHandler(InvalidUserCredentialsException.class)
-    public String handleInvalidUserCredentialsException(InvalidUserCredentialsException e, Model model) {
-        log.warn("InvalidUserCredentials, chosen message: {}", e.getMessage());
-        model.addAttribute("errorMessage", e.getMessage());
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException e, Model model) {
+        log.warn("DataIntegrityViolationException: {}", e.getMessage());
+        model.addAttribute("errorMessage", "Unexpected service error. Please try again later");
         return "/auth/registration";
     }
 
