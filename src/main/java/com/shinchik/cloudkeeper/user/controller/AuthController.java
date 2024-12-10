@@ -1,7 +1,7 @@
 package com.shinchik.cloudkeeper.user.controller;
 
 import com.shinchik.cloudkeeper.user.model.UserDto;
-import com.shinchik.cloudkeeper.user.service.AuthService;
+import com.shinchik.cloudkeeper.user.service.UserService;
 import com.shinchik.cloudkeeper.validation.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 @Profile({"web"})
 public class AuthController {
 
-    private final AuthService authService;
+    private final UserService userService;
 
     @Autowired
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/login")
@@ -46,7 +46,7 @@ public class AuthController {
             return "/auth/registration";
         }
 
-        authService.register(user);
+        userService.register(user);
         return "redirect:/auth/login";
     }
 
