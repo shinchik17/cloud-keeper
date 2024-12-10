@@ -25,8 +25,14 @@ public class CustomErrorController implements ErrorController {
     public String handleErrors(HttpServletRequest request, Model model) {
         String requestUri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
         int statusCode = (int) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        User user = ((SecurityUserDetails) ((UsernamePasswordAuthenticationToken) request.getUserPrincipal()).getPrincipal()).getUser();
-        log.warn("Attempted to access '{}', status code '{}', username '{}'", requestUri, statusCode, user.getUsername());
+        // TODO: try-catch
+        if (request.getUserPrincipal() != null){
+            User user = ((SecurityUserDetails) ((UsernamePasswordAuthenticationToken) request.getUserPrincipal()).getPrincipal()).getUser();
+            log.warn("Attempted to access '{}', status code '{}', username '{}'", requestUri, statusCode, user.getUsername());
+        } else {
+            log.warn("Attempted to access '{}', status code '{}', user is anonymous", requestUri, statusCode);
+        }
+
 
         if (requestUri.contains("login") || requestUri.contains("register") && statusCode == HttpStatus.FORBIDDEN.value()){
             return "redirect:/";
