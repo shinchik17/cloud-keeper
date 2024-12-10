@@ -1,9 +1,7 @@
 package com.shinchik.cloudkeeper.user.controller;
 
-import com.shinchik.cloudkeeper.user.exception.InvalidUserCredentialsException;
-import com.shinchik.cloudkeeper.user.model.User;
+import com.shinchik.cloudkeeper.user.model.UserDto;
 import com.shinchik.cloudkeeper.user.service.AuthService;
-import com.shinchik.cloudkeeper.user.util.UserValidator;
 import com.shinchik.cloudkeeper.validation.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -21,33 +19,26 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserValidator userValidator;
 
     @Autowired
-    public AuthController(AuthService authService, UserValidator userValidator) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.userValidator = userValidator;
     }
 
-
     @GetMapping("/login")
-    public String logIn(@ModelAttribute("user") User user) {
+    public String logIn(@ModelAttribute("user") UserDto user) {
         return "auth/login";
     }
 
     @GetMapping("/register")
-    public String register(@ModelAttribute("user") User user) {
+    public String register(@ModelAttribute("user") UserDto user) {
         return "auth/registration";
     }
 
     @PostMapping("/register")
-    public String performRegistration(@ModelAttribute("user") @Valid User user,
+    public String performRegistration(@ModelAttribute("user") @Valid UserDto user,
                                             BindingResult bindingResult,
-                                            @RequestParam(value = "pass-repeat") String passConfirmation,
                                             Model model) {
-
-        userValidator.validate(user, bindingResult);
-        userValidator.validatePasswordsMatch(user, bindingResult, passConfirmation);
 
         if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);

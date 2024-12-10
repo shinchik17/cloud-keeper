@@ -24,6 +24,7 @@
         <label for="pass-repeat">Repeat password</label>
         <input class="form-control" type="password" name="pass-repeat" id="pass-repeat" required
                placeholder="Repeat password"
+               th:field="*{passwordConfirmation}"
                th:pattern="${passwordPattern}">
         <div class="invalid-feedback p-0" th:text="${passwordMessage}"></div>
     </div>

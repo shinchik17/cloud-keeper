@@ -24,20 +24,15 @@ public class User implements Serializable {
     private Long id;
 
     @NotNull
-    @UsernameConstraint
+    @Size(min = 4, max = 50, message = "Username length should be between {min} and {max}")
     private String username;
 
     @NotNull
-    @PasswordConstraint
+    @Size(min = 4, max = 100, message = "Password length should be between {min} and {max}")
     private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    Role role = Role.USER;
-
-    public boolean passwordsMatch(String passConfirmation){
-        return password.equals(passConfirmation);
-    }
-
+    private Role role = Role.USER;
 
 }

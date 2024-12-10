@@ -52,7 +52,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exToJsonString(e));
     }
 
-
     @ExceptionHandler(MinioServiceException.class)
     @ResponseBody
     public ResponseEntity<String> handleMinioServiceException(MinioServiceException e) {
@@ -67,15 +66,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exToJsonString(e));
     }
 
-    @ExceptionHandler(Exception.class)
-    public String handleOtherExceptions(Exception e, HttpServletRequest request, Model model) {
-        String errorStatusCode = (String) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        String uri = request.getRequestURI();
-        String errorMessage = e.getMessage();
-        log.error("Attempted to access '{}', status code '{}', message '{}'", errorStatusCode, uri, errorMessage);
-        model.addAttribute("errorMessage", "Service is unavailable. Please try again later");
-        return "redirect:error";
-    }
+//    @ExceptionHandler(Exception.class)
+//    public String handleOtherExceptions(Exception e, HttpServletRequest request, Model model) {
+//        String errorStatusCode = (String) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+//        String uri = request.getRequestURI();
+//        String errorMessage = e.getMessage();
+//        log.error("Attempted to access '{}', status code '{}', message '{}'", uri, errorStatusCode,errorMessage);
+//        model.addAttribute("errorMessage", "Service is unavailable. Please try again later");
+//        return "redirect:error";
+//    }
 
 
     private static String exToJsonString(Exception e) {
