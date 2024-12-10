@@ -1,0 +1,56 @@
+package com.shinchik.cloudkeeper.user;
+
+import com.shinchik.cloudkeeper.user.model.Role;
+import com.shinchik.cloudkeeper.user.model.UserDto;
+import com.shinchik.cloudkeeper.user.service.UserService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+// TODO: write mockMvc tests
+
+@Testcontainers
+@SpringBootTest
+@ActiveProfiles({"auth", "test"})
+public class UserServiceTest {
+
+    @Container
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+            .withUsername("test")
+            .withPassword("testpass");
+
+    @Autowired
+    private UserService userService;
+
+
+    @Test
+    public void registerNewUser()  {
+        UserDto user = new UserDto("user2", "pass", "pass", Role.USER);
+        assertDoesNotThrow(() -> userService.register(user));
+        assertTrue(userService.findByUsername("user2").isPresent());
+    }
+
+    @Test
+    public void registerNewUser_withExistingUsername()  {
+        UserDto user = new UserDto("user", "pass", "pass", Role.USER);
+        assertThrows(DataIntegrityViolationException.class, () -> userService.register(user));
+    }
+
+    @DynamicPropertySource
+    static void datasourceProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.name", postgres::getDatabaseName);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
+}
