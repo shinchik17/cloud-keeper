@@ -5,6 +5,9 @@ import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationExcept
 import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import com.shinchik.cloudkeeper.storage.exception.service.MinioServiceException;
 import com.shinchik.cloudkeeper.storage.exception.service.NoSuchFolderException;
+import com.shinchik.cloudkeeper.storage.exception.service.SuchFolderAlreadyExistsException;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +46,13 @@ public class GlobalExceptionHandler {
         return new RedirectView("/", true);
     }
 
+    @ExceptionHandler(SuchFolderAlreadyExistsException.class)
+    public ResponseEntity<String> handleSuchFolderAlreadyExistsException(SuchFolderAlreadyExistsException e, RedirectAttributes redirectAttributes) {
+        log.debug(e.getMessage());
+        return ResponseEntity.badRequest().body(exToJsonString(e));
+    }
+
+
     @ExceptionHandler(DtoValidationException.class)
     @ResponseBody
     public ResponseEntity<String> handleDtoValidationException(DtoValidationException e) {
@@ -64,15 +74,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exToJsonString(e));
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public String handleOtherExceptions(Exception e, HttpServletRequest request, Model model) {
-//        String errorStatusCode = (String) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-//        String uri = request.getRequestURI();
-//        String errorMessage = e.getMessage();
-//        log.error("Attempted to access '{}', status code '{}', message '{}'", uri, errorStatusCode,errorMessage);
-//        model.addAttribute("errorMessage", "Service is unavailable. Please try again later");
-//        return "redirect:error";
-//    }
+    @ExceptionHandler(Exception.class)
+    public String handleOtherExceptions(Exception e, HttpServletRequest request, Model model) {
+        String errorStatusCode = (String) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        String uri = request.getRequestURI();
+        String errorMessage = e.getMessage();
+        log.error("Attempted to access '{}', status code '{}', message '{}'", uri, errorStatusCode,errorMessage);
+        model.addAttribute("errorMessage", "Service is unavailable. Please try again later");
+        return "redirect:error";
+    }
 
 
     private static String exToJsonString(Exception e) {

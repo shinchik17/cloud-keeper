@@ -73,9 +73,11 @@ public class MinioService {
                 minioRepository.upload(multipartToSnowball(files, fullPath));
             }
 
-            // TODO: escape creating already existing folders
             createIntermediateFolders(files, uploadDto.getUser(), uploadDto.getPath());
 
+        } catch (SuchFolderAlreadyExistsException e) {
+            log.error("During uploading files an exception occurred: {}", e.getMessage());
+            throw e;
         } catch (IOException | MinioServiceException e) {
             log.error("During uploading files an exception occurred: {}", e.getMessage());
             throw new MinioServiceException("Failed to upload files");
@@ -223,6 +225,7 @@ public class MinioService {
                 .map(s -> s.replaceFirst("^/", ""))
                 .distinct()
                 .map(p -> new MkDirDto(user, path, p))
+                .filter(dto -> !isObjectExist(dto))
                 .forEach(this::createFolder);
     }
 
