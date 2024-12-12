@@ -71,14 +71,16 @@ public class ObjectController {
 
         BaseReqDto reqDto = new BaseReqDto(downloadDto.getUser(), downloadDto.getPath(), downloadDto.getObjName());
         InputStreamResource resource = minioService.download(reqDto);
-        String extension = "";
-        if (minioService.isDir(reqDto)){
-            extension = ".zip";
-        }
-        String filename = URLEncoder.encode(downloadDto.getObjName() + extension, StandardCharsets.UTF_8);
+
+        String filename = minioService.isDir(reqDto)
+                ? String.format("%s.zip", reqDto.getObjName())
+                : reqDto.getObjName();
+
+        String filenameEncoded = URLEncoder.encode(filename, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20");
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"%s\"".formatted(filename))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''\"%s\"".formatted(filenameEncoded))
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }

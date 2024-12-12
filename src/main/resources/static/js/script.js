@@ -328,7 +328,10 @@ function downloadObj(downloadBtn) {
         .then(response => {
             if (response.ok) {
                 let disposition = response.headers.get("Content-Disposition");
-                let filename = disposition.split("; ")[1].replaceAll("filename=", "").replaceAll("\"", "");
+                let encodedFilename = disposition.split("; ")[1]
+                    .replaceAll("filename*=UTF-8''", "")
+                    .replaceAll("\"", "");
+                let filename = decodeURIComponent(encodedFilename);
 
                 response.blob().then(blob => {
                     const link = document.createElement('a');
