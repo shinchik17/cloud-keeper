@@ -12,11 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 public class UploadDto extends BaseReqDto {
     @NotEmpty(message = "You should select one or more files to upload")
-    private List<MultipartFile> documents;
+    private List<MultipartFile> files;
 
-    public UploadDto(User user, String path, List<MultipartFile> documents) {
+    public UploadDto(User user, String path, List<MultipartFile> files) {
         super(user, path, "");
-        this.documents = documents;
+        this.files = files;
     }
 
 }

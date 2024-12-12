@@ -59,7 +59,9 @@ Dropzone.options.myDropzone = {
     renameFile: function (file) {
         return file.fullPath;
     },
-    paramName: "documents",
+    paramName: function (){
+        return "files";
+    },
     uploadMultiple: true,
     addRemoveLinks: true,
     autoProcessQueue: false,
@@ -237,7 +239,7 @@ function uploadObj() {
 
     let totalSize = 0;
     for (let i = 0; i < Math.min(files.length, MAX_FILES); i++) {
-        formData.append(`documents[${i}]`, files[i], files[i].name);
+        formData.append(`files`, files[i], files[i].name);
         totalSize += files[i].size
 
         if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {

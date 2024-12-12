@@ -57,7 +57,7 @@ public class MinioService {
 
 
     public void upload(UploadDto uploadDto) {
-        List<MultipartFile> files = uploadDto.getDocuments();
+        List<MultipartFile> files = uploadDto.getFiles();
         String fullPath = PathUtils.formFullPath(uploadDto);
         long totalSize = calcTotalSize(files);
         if (isTotalSizeExceeded(totalSize)) {
@@ -289,7 +289,7 @@ public class MinioService {
 
     private boolean isUserSpaceExceeded(UploadDto uploadDto) {
         String userFolder = PathUtils.formFullPath(uploadDto);
-        long uploadSize = calcTotalSize(uploadDto.getDocuments());
+        long uploadSize = calcTotalSize(uploadDto.getFiles());
         long totalStoredSize = minioRepository.list(userFolder).stream()
                 .mapToLong(Item::size)
                 .sum();

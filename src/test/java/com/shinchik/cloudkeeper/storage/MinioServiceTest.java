@@ -16,7 +16,6 @@ import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -81,7 +80,7 @@ class MinioServiceTest {
     @DisplayName("Upload file")
     public void uploadSingleFile_objCreated() {
         minioService.upload(singleFileUploadDto);
-        String filename = singleFileUploadDto.getDocuments().get(0).getOriginalFilename();
+        String filename = singleFileUploadDto.getFiles().get(0).getOriginalFilename();
         BaseReqDto checkDto = new BaseReqDto(user, genericPath, filename);
         assertTrue(minioService.isObjectExist(checkDto), "File have not been uploaded");
     }
@@ -174,7 +173,7 @@ class MinioServiceTest {
     public void deleteFile() {
         minioService.upload(singleFileUploadDto);
 
-        String filename = singleFileUploadDto.getDocuments().get(0).getOriginalFilename();
+        String filename = singleFileUploadDto.getFiles().get(0).getOriginalFilename();
         BaseReqDto deleteDto = new BaseReqDto(user, genericPath, filename);
         minioService.delete(deleteDto);
 
