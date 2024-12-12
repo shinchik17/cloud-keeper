@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage.mapper;
+package com.shinchik.cloudkeeper.user.mapper;
 
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.model.UserDto;

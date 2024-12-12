@@ -1,9 +1,7 @@
 package com.shinchik.cloudkeeper.storage;
 
 import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.model.RenameDto;
-import com.shinchik.cloudkeeper.storage.model.UploadDto;
+import com.shinchik.cloudkeeper.storage.model.dto.*;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.user.model.Role;
@@ -127,7 +125,8 @@ class MinioServiceTest {
     @Test
     @DisplayName("Download nonexistent object")
     public void downloadNonExistentObj_thenThrow() {
-        assertThrows(NoSuchObjectException.class, () -> minioService.download(singleFileUploadDto),
+       BaseReqDto reqDto = new BaseReqDto(user, "", "None");
+        assertThrows(NoSuchObjectException.class, () -> minioService.download(reqDto),
                 "Downloaded nonexistent file");
     }
 
@@ -212,8 +211,8 @@ class MinioServiceTest {
     public void listRecursively() {
         minioService.upload(filesAndFolderUploadDto);
 
-        BaseReqDto createFolderDto = new BaseReqDto(user, "", genericPath);
-        minioService.createFolder(createFolderDto);
+        MkDirDto mkDirDto = new MkDirDto(user, "", genericPath);
+        minioService.createFolder(mkDirDto);
 
         BaseReqDto checkDto = new BaseReqDto(user, "");
         assertEquals(NUM_OBJ_TO_UPLOAD + 1, minioService.search(checkDto).size(),
@@ -223,10 +222,10 @@ class MinioServiceTest {
     @Test
     @DisplayName("Create folder and ensure that files can be loaded inwards")
     public void createFolder() {
-        BaseReqDto createFolderDto = new BaseReqDto(user, "", genericPath);
-        minioService.createFolder(createFolderDto);
+        MkDirDto mkDirDto = new MkDirDto(user, "", genericPath);
+        minioService.createFolder(mkDirDto);
 
-        assertTrue(minioService.isDir(createFolderDto),
+        assertTrue(minioService.isDir(new BaseReqDto(user, "", genericPath)),
                 "Folder have not been created or been created incorrectly");
 
         minioService.upload(filesAndFolderUploadDto);

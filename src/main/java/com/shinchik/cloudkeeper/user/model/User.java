@@ -1,8 +1,6 @@
 package com.shinchik.cloudkeeper.user.model;
 
 
-import com.shinchik.cloudkeeper.user.util.PasswordConstraint;
-import com.shinchik.cloudkeeper.user.util.UsernameConstraint;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

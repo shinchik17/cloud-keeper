@@ -1,7 +1,7 @@
 package com.shinchik.cloudkeeper.user.service;
 
 
-import com.shinchik.cloudkeeper.storage.mapper.UserMapper;
+import com.shinchik.cloudkeeper.user.mapper.UserMapper;
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.model.UserDto;
 import com.shinchik.cloudkeeper.user.repository.UserRepository;

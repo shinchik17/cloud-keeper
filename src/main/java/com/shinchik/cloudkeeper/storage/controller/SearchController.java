@@ -1,8 +1,8 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
+import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.dto.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.Breadcrumb;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.user.model.User;
@@ -38,14 +38,10 @@ public class SearchController {
         List<Breadcrumb> breadcrumbs = foundObjects.stream()
                 .map(obj -> BreadcrumbMapper.INSTANCE.mapToModel(obj.getObjName()))
                 .toList();
-        List<BaseRespDto> objRefs = breadcrumbs.stream()
-                .map(brcr -> new BaseRespDto(brcr.getLastPath(), brcr.getLastPart()))
-                .toList();
 
         model.addAttribute("query", query);
         model.addAttribute("user", user);
         model.addAttribute("breadcrumbs", breadcrumbs);
-        model.addAttribute("objRefs", objRefs);
 
         return "storage/search";
 

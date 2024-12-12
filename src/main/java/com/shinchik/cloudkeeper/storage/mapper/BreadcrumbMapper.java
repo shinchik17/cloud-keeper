@@ -1,18 +1,12 @@
 package com.shinchik.cloudkeeper.storage.mapper;
 
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.Breadcrumb;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface BreadcrumbMapper {

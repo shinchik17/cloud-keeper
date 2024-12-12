@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.user.util;
+package com.shinchik.cloudkeeper.user.validation;
 
 import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.user.model.UserDto;

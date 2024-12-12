@@ -1,27 +1,23 @@
-package com.shinchik.cloudkeeper.storage.model;
+package com.shinchik.cloudkeeper.storage.model.dto;
 
 import com.shinchik.cloudkeeper.user.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseRespDto {
+public class BaseRespDto implements ExtendedStorageDto {
 
+    @NotNull(message = "User must be authenticated")
     private User user;
-    @NotNull(message = "Path should not be null")
+    @NotNull(message = "Path must not be null")
     private String path;
     @NotBlank(message = "Object name must be specified")
     private String objName;
-    @NotNull()
+    @NotNull(message = "Dir attribute must not be null")
     @Setter(AccessLevel.NONE)
     private boolean dir;
 
-    public BaseRespDto(String path, String objName) {
-        this.path = path;
-        this.objName = objName;
-    }
 }

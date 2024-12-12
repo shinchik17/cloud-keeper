@@ -5,10 +5,7 @@ import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
 import com.shinchik.cloudkeeper.storage.exception.service.NotEnoughFreeSpaceException;
 import com.shinchik.cloudkeeper.storage.exception.service.SuchFolderAlreadyExistsException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
-import com.shinchik.cloudkeeper.storage.model.RenameDto;
-import com.shinchik.cloudkeeper.storage.model.UploadDto;
+import com.shinchik.cloudkeeper.storage.model.dto.*;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
@@ -76,6 +73,7 @@ public class MinioService {
                 minioRepository.upload(multipartToSnowball(files, fullPath));
             }
 
+            // TODO: escape creating already existing folders
             createIntermediateFolders(files, uploadDto.getUser(), uploadDto.getPath());
 
         } catch (IOException | MinioServiceException e) {
@@ -194,13 +192,13 @@ public class MinioService {
     }
 
 
-    public boolean isObjectExist(BaseReqDto checkDto) {
+    public boolean isObjectExist(ExtendedStorageDto checkDto) {
         String fullObjPath = PathUtils.formFullPath(checkDto) + checkDto.getObjName();
         return minioRepository.isObjectExist(fullObjPath);
     }
 
 
-    public void createFolder(BaseReqDto reqDto) {
+    public void createFolder(MkDirDto reqDto) {
         String fullObjPath = PathUtils.formFullPath(reqDto) + reqDto.getObjName() + "/";
         if (minioRepository.isObjectExist(fullObjPath)) {
             log.error("Attempt to create folder '{}' which already exists", fullObjPath);
@@ -224,7 +222,7 @@ public class MinioService {
                 .filter(x -> !x.isEmpty())
                 .map(s -> s.replaceFirst("^/", ""))
                 .distinct()
-                .map(p -> new BaseReqDto(user, path, p))
+                .map(p -> new MkDirDto(user, path, p))
                 .forEach(this::createFolder);
     }
 
@@ -256,7 +254,7 @@ public class MinioService {
         return minioRepository.isObjectDir(fullObjPath);
     }
 
-    public boolean isDir(BaseReqDto checkDto) {
+    public boolean isDir(ExtendedStorageDto checkDto) {
         String fullObjPath = PathUtils.formFullPath(checkDto) + checkDto.getObjName();
         return minioRepository.isObjectDir(fullObjPath);
     }
@@ -284,7 +282,7 @@ public class MinioService {
 
 
     private boolean isTotalSizeExceeded(long size) {
-        return size > maxRequestSize;
+        return size > maxRequestSize || size > maxFileSize;
     }
 
     private boolean isUserSpaceExceeded(UploadDto uploadDto) {

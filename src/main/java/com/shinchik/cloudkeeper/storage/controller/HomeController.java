@@ -4,6 +4,10 @@ import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryExce
 import com.shinchik.cloudkeeper.storage.exception.service.NoSuchFolderException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
 import com.shinchik.cloudkeeper.storage.model.*;
+import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.dto.BaseRespDto;
+import com.shinchik.cloudkeeper.storage.model.dto.RenameDto;
+import com.shinchik.cloudkeeper.storage.model.dto.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
@@ -55,7 +59,6 @@ public class HomeController {
             throw new NoSuchFolderException(path);
         }
 
-
         Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
         List<BaseRespDto> userObjects = minioService.list(new BaseReqDto(user, path));
 
@@ -63,11 +66,7 @@ public class HomeController {
         model.addAttribute("breadcrumb", breadcrumb);
         model.addAttribute("userObjects", userObjects);
         model.addAttribute("user", user);
-        model.addAttribute("uploadDto", new UploadDto());
-        model.addAttribute("downloadDto", new BaseRespDto());
-        model.addAttribute("renameDto", new RenameDto());
-        model.addAttribute("deleteDto", new BaseReqDto());
-        model.addAttribute("mkDirDto", new BaseReqDto());
+
 
         return "storage/home";
     }

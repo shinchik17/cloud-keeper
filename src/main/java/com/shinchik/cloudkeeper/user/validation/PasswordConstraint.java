@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.user.util;
+package com.shinchik.cloudkeeper.user.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

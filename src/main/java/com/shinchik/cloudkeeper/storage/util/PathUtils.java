@@ -1,6 +1,6 @@
 package com.shinchik.cloudkeeper.storage.util;
 
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.dto.StorageDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +33,12 @@ public class PathUtils {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
-    public static String getEncodedPath(BaseReqDto reqDto) {
+    public static String getEncodedPath(StorageDto reqDto) {
         return URLEncoder.encode(reqDto.getPath(), StandardCharsets.UTF_8);
     }
 
 
-    public static String formFullPath(BaseReqDto reqDto) {
+    public static String formFullPath(StorageDto reqDto) {
         return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");
     }
 

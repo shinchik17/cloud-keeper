@@ -1,13 +1,16 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
+import com.shinchik.cloudkeeper.storage.config.handlers.BaseRequest;
+import com.shinchik.cloudkeeper.storage.config.handlers.MkDirRequest;
+import com.shinchik.cloudkeeper.storage.config.handlers.RenameRequest;
+import com.shinchik.cloudkeeper.storage.config.handlers.UploadRequest;
 import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationException;
-import com.shinchik.cloudkeeper.storage.model.BaseReqDto;
-import com.shinchik.cloudkeeper.storage.model.BaseRespDto;
-import com.shinchik.cloudkeeper.storage.model.RenameDto;
-import com.shinchik.cloudkeeper.storage.model.UploadDto;
+import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.dto.MkDirDto;
+import com.shinchik.cloudkeeper.storage.model.dto.RenameDto;
+import com.shinchik.cloudkeeper.storage.model.dto.UploadDto;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
-import com.shinchik.cloudkeeper.user.model.User;
 import com.shinchik.cloudkeeper.validation.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +21,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-
+// TODO: get rid of annotations @XRequest and match on types?
+// TODO: add more info while throwing InvalidDtoException?
 @Slf4j
 @Controller
 @RequestMapping("/files")
@@ -42,11 +45,10 @@ public class ObjectController {
 
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String uploadFiles(@ModelAttribute("uploadDto") UploadDto uploadDto, BindingResult bindingResult,
-                              @AuthenticationPrincipal(expression = "getUser") User user) {
-        uploadDto.setUser(user);
+    public String uploadFiles(@UploadRequest @Valid UploadDto uploadDto,
+                              BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid upload request");
         }
@@ -56,25 +58,20 @@ public class ObjectController {
         return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(uploadDto));
     }
 
-
     @GetMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> downloadFiles(
-            @ModelAttribute("downloadDto") @Valid BaseRespDto downloadDto, BindingResult bindingResult,
-            @AuthenticationPrincipal(expression = "getUser") User user) {
+    public ResponseEntity<Resource> downloadFiles(@BaseRequest @Valid BaseReqDto downloadDto,
+                                                  BindingResult bindingResult) {
 
-        downloadDto.setUser(user);
-
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid download request");
         }
 
-        BaseReqDto reqDto = new BaseReqDto(downloadDto.getUser(), downloadDto.getPath(), downloadDto.getObjName());
-        InputStreamResource resource = minioService.download(reqDto);
+        InputStreamResource resource = minioService.download(downloadDto);
 
-        String filename = minioService.isDir(reqDto)
-                ? String.format("%s.zip", reqDto.getObjName())
-                : reqDto.getObjName();
+        String filename = minioService.isDir(downloadDto)
+                ? String.format("%s.zip", downloadDto.getObjName())
+                : downloadDto.getObjName();
 
         String filenameEncoded = URLEncoder.encode(filename, StandardCharsets.UTF_8)
                 .replaceAll("\\+", "%20");
@@ -86,12 +83,10 @@ public class ObjectController {
     }
 
     @PatchMapping
-    public String renameFile(@ModelAttribute("renameDto") @Valid RenameDto renameDto, BindingResult bindingResult,
-                             @AuthenticationPrincipal(expression = "getUser") User user) {
+    public String renameFile(@RenameRequest @Valid RenameDto renameDto,
+                             BindingResult bindingResult) {
 
-        renameDto.setUser(user);
-
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid rename request");
         }
@@ -102,12 +97,11 @@ public class ObjectController {
     }
 
     @DeleteMapping
-    public String deleteFile(@ModelAttribute("deleteDto") @Valid BaseReqDto deleteDto, BindingResult bindingResult,
-                             @AuthenticationPrincipal(expression = "getUser") User user) {
+    public String deleteFile(@BaseRequest @Valid BaseReqDto deleteDto,
+                             BindingResult bindingResult) {
 
-        deleteDto.setUser(user);
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             throw new DtoValidationException("Invalid delete request");
         }
@@ -119,13 +113,13 @@ public class ObjectController {
 
 
     @PostMapping("/create")
-    public String createFolder(@ModelAttribute("mkDirDto") @Valid BaseReqDto mkDirDto, BindingResult bindingResult,
-                               @AuthenticationPrincipal(expression = "getUser") User user){
+    public String createFolder(@MkDirRequest @Valid MkDirDto mkDirDto,
+                               BindingResult bindingResult) {
 
-        mkDirDto.setUser(user);
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
+            throw new DtoValidationException("Invalid create folder request");
         }
 
         minioService.createFolder(mkDirDto);
@@ -133,8 +127,5 @@ public class ObjectController {
         return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(mkDirDto));
 
     }
-
-
-
 
 }

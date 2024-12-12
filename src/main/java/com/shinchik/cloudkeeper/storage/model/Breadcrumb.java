@@ -16,14 +16,8 @@ public class Breadcrumb {
     private LinkedHashMap<String, String> pathItems;
     private String lastPart;
 
-//    public Breadcrumb(LinkedHashMap<String, String> pathItems, String lastPart) {
-//        this.pathItems = pathItems;
-//        this.lastPart = lastPart;
-//    }
-
     public String getLastPath(){
         return pathItems.values().stream().max(Comparator.comparingInt(String::length)).orElse("");
     }
-
 
 }
