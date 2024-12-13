@@ -14,7 +14,7 @@ import java.util.List;
 public class UploadDto implements StorageDto {
 
     @NotNull(message = "User must be authenticated")
-    private User user;
+    private long userId;
     @NotNull(message = "Path must not be null")
     private String path;
     @NotEmpty(message = "List of uploading files must not be empty")

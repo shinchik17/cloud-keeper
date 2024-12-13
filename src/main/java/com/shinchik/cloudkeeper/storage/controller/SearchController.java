@@ -33,7 +33,7 @@ public class SearchController {
                          Model model) {
 
         query = query.trim().replaceAll("\\s+", " ");
-        BaseReqDto searchReq = new BaseReqDto(user, "", query);
+        BaseReqDto searchReq = new BaseReqDto(user.getId(), "", query);
         List<BaseRespDto> foundObjects = minioService.search(searchReq);
         List<Breadcrumb> breadcrumbs = foundObjects.stream()
                 .map(obj -> BreadcrumbMapper.INSTANCE.mapToModel(obj.getObjName()))

@@ -50,13 +50,14 @@ class MinioServiceTest {
     @Autowired
     private MinioService minioService;
 
-    private final User user = new User(1L, "user1", "pass1", Role.USER);
+    private final long userId = 1L;
+//    private final User user = new User(userId, "user1", "pass1", Role.USER);
     private final String genericPath = "folder";
     private static final int NUM_OBJ_TO_UPLOAD = 3;
     private final List<MultipartFile> mockFilesAndFolder = generateMockMultipartFilesAndFolder();
     private final List<MultipartFile> mockSingleFile = generateMockMultipartFiles(1);
-    private final UploadDto filesAndFolderUploadDto = new UploadDto(user, genericPath, mockFilesAndFolder);
-    private final UploadDto singleFileUploadDto = new UploadDto(user, genericPath, mockSingleFile);
+    private final UploadDto filesAndFolderUploadDto = new UploadDto(userId, genericPath, mockFilesAndFolder);
+    private final UploadDto singleFileUploadDto = new UploadDto(userId, genericPath, mockSingleFile);
 
 
     @BeforeEach
@@ -79,7 +80,7 @@ class MinioServiceTest {
     public void uploadSingleFile_objCreated() {
         minioService.upload(singleFileUploadDto);
         String filename = singleFileUploadDto.getFiles().get(0).getOriginalFilename();
-        BaseReqDto checkDto = new BaseReqDto(user, genericPath, filename);
+        BaseReqDto checkDto = new BaseReqDto(userId, genericPath, filename);
         assertTrue(minioService.isObjectExist(checkDto), "File have not been uploaded");
     }
 
@@ -88,7 +89,7 @@ class MinioServiceTest {
     public void uploadMultipleFiles_objectsCreated() {
         minioService.upload(filesAndFolderUploadDto);
 
-        BaseReqDto checkDto = new BaseReqDto(user, genericPath, "");
+        BaseReqDto checkDto = new BaseReqDto(userId, genericPath, "");
         assertEquals(NUM_OBJ_TO_UPLOAD, minioService.list(checkDto).size(), "Files have not been uploaded");
     }
 
@@ -96,10 +97,10 @@ class MinioServiceTest {
     @DisplayName("Download existent file")
     public void downloadExistentFile() {
         List<MultipartFile> files = generateMockMultipartFiles(1);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
+        UploadDto uploadDto = new UploadDto(userId, genericPath, files);
         minioService.upload(uploadDto);
 
-        BaseReqDto downloadDto = new BaseReqDto(user, genericPath, files.get(0).getOriginalFilename());
+        BaseReqDto downloadDto = new BaseReqDto(userId, genericPath, files.get(0).getOriginalFilename());
         InputStreamResource downloadedFile = minioService.download(downloadDto);
         assertDoesNotThrow(() -> downloadedFile.getInputStream().available(), "Downloaded file is invalid");
     }
@@ -109,7 +110,7 @@ class MinioServiceTest {
     public void downloadExistentFolder_zipArchiveSaved(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path tempDir) {
         minioService.upload(filesAndFolderUploadDto);
 
-        BaseReqDto downloadDto = new BaseReqDto(user, "", "folder");
+        BaseReqDto downloadDto = new BaseReqDto(userId, "", "folder");
         InputStreamResource downloadedZip = minioService.download(downloadDto);
 
         File zipFile = new File(tempDir.toFile(), "test.zip");
@@ -125,7 +126,7 @@ class MinioServiceTest {
     @Test
     @DisplayName("Download nonexistent object")
     public void downloadNonExistentObj_thenThrow() {
-       BaseReqDto reqDto = new BaseReqDto(user, "", "None");
+       BaseReqDto reqDto = new BaseReqDto(userId, "", "None");
         assertThrows(NoSuchObjectException.class, () -> minioService.download(reqDto),
                 "Downloaded nonexistent file");
     }
@@ -134,16 +135,16 @@ class MinioServiceTest {
     @DisplayName("Rename file")
     public void renameFile() {
         List<MultipartFile> files = generateMockMultipartFiles(1);
-        UploadDto uploadDto = new UploadDto(user, genericPath, files);
+        UploadDto uploadDto = new UploadDto(userId, genericPath, files);
         minioService.upload(uploadDto);
 
         String oldName = files.get(0).getOriginalFilename();
         String newName = "RenamedFile";
-        RenameDto renameDto = new RenameDto(user, genericPath, oldName, newName);
+        RenameDto renameDto = new RenameDto(userId, genericPath, oldName, newName);
         minioService.rename(renameDto);
 
-        BaseReqDto oldFileDto = new BaseReqDto(user, genericPath, oldName);
-        BaseReqDto newFileDto = new BaseReqDto(user, genericPath, newName + ".txt");
+        BaseReqDto oldFileDto = new BaseReqDto(userId, genericPath, oldName);
+        BaseReqDto newFileDto = new BaseReqDto(userId, genericPath, newName + ".txt");
         assertFalse(minioService.isObjectExist(oldFileDto), "Object with old name still exists");
         assertTrue(minioService.isObjectExist(newFileDto), "Object with new name does not exist");
     }
@@ -152,16 +153,16 @@ class MinioServiceTest {
     @DisplayName("Rename folder with file inside")
     public void renameFolder() {
         String oldFolderName = "folder2";
-        UploadDto uploadDto = new UploadDto(user, genericPath + "/" + oldFolderName, mockSingleFile);
+        UploadDto uploadDto = new UploadDto(userId, genericPath + "/" + oldFolderName, mockSingleFile);
         minioService.upload(uploadDto);
 
         String fileName = mockSingleFile.get(0).getOriginalFilename();
         String newFolderName = "renamedFolder";
-        RenameDto renameDto = new RenameDto(user, genericPath, oldFolderName, newFolderName);
+        RenameDto renameDto = new RenameDto(userId, genericPath, oldFolderName, newFolderName);
         minioService.rename(renameDto);
 
-        BaseReqDto oldFolderDto = new BaseReqDto(user, genericPath, oldFolderName);
-        BaseReqDto newFileDto = new BaseReqDto(user, genericPath, newFolderName + "/" + fileName);
+        BaseReqDto oldFolderDto = new BaseReqDto(userId, genericPath, oldFolderName);
+        BaseReqDto newFileDto = new BaseReqDto(userId, genericPath, newFolderName + "/" + fileName);
         assertFalse(minioService.isObjectExist(oldFolderDto), "Folder with old name still exists");
         assertTrue(minioService.isObjectExist(newFileDto), "File inside renamed folder does not exist");
     }
@@ -173,7 +174,7 @@ class MinioServiceTest {
         minioService.upload(singleFileUploadDto);
 
         String filename = singleFileUploadDto.getFiles().get(0).getOriginalFilename();
-        BaseReqDto deleteDto = new BaseReqDto(user, genericPath, filename);
+        BaseReqDto deleteDto = new BaseReqDto(userId, genericPath, filename);
         minioService.delete(deleteDto);
 
         assertFalse(minioService.isObjectExist(deleteDto), "File have not been deleted");
@@ -185,10 +186,10 @@ class MinioServiceTest {
     public void deleteFolder() {
         minioService.upload(filesAndFolderUploadDto);
 
-        BaseReqDto deleteDto = new BaseReqDto(user, "", genericPath);
+        BaseReqDto deleteDto = new BaseReqDto(userId, "", genericPath);
         minioService.delete(deleteDto);
 
-        BaseReqDto checkDto = new BaseReqDto(user, genericPath);
+        BaseReqDto checkDto = new BaseReqDto(userId, genericPath);
         assertEquals(0, minioService.list(checkDto).size(), "Objects have not been deleted");
     }
 
@@ -198,10 +199,10 @@ class MinioServiceTest {
     public void listDir() {
         minioService.upload(filesAndFolderUploadDto);
 
-        UploadDto folderUploadDto = new UploadDto(user, "", List.of(createMockMultipartFolder()));
+        UploadDto folderUploadDto = new UploadDto(userId, "", List.of(createMockMultipartFolder()));
         minioService.upload(folderUploadDto);
 
-        BaseReqDto checkDto = new BaseReqDto(user, "");
+        BaseReqDto checkDto = new BaseReqDto(userId, "");
         assertEquals(2, minioService.list(checkDto).size(),
                 "Not all objects have been found or extra objects been found inside directory");
     }
@@ -211,10 +212,10 @@ class MinioServiceTest {
     public void listRecursively() {
         minioService.upload(filesAndFolderUploadDto);
 
-        MkDirDto mkDirDto = new MkDirDto(user, "", genericPath);
+        MkDirDto mkDirDto = new MkDirDto(userId, "", genericPath);
         minioService.createFolder(mkDirDto);
 
-        BaseReqDto checkDto = new BaseReqDto(user, "");
+        BaseReqDto checkDto = new BaseReqDto(userId, "");
         assertEquals(NUM_OBJ_TO_UPLOAD + 1, minioService.search(checkDto).size(),
                 "Amount of listed objects does not equal to amount of upload");
     }
@@ -222,14 +223,14 @@ class MinioServiceTest {
     @Test
     @DisplayName("Create folder and ensure that files can be loaded inwards")
     public void createFolder() {
-        MkDirDto mkDirDto = new MkDirDto(user, "", genericPath);
+        MkDirDto mkDirDto = new MkDirDto(userId, "", genericPath);
         minioService.createFolder(mkDirDto);
 
-        assertTrue(minioService.isDir(new BaseReqDto(user, "", genericPath)),
+        assertTrue(minioService.isDir(new BaseReqDto(userId, "", genericPath)),
                 "Folder have not been created or been created incorrectly");
 
         minioService.upload(filesAndFolderUploadDto);
-        BaseReqDto listDto = new BaseReqDto(user, genericPath);
+        BaseReqDto listDto = new BaseReqDto(userId, genericPath);
         assertEquals(NUM_OBJ_TO_UPLOAD, minioService.list(listDto).size(),
                 "Expected amount of loaded into folder files does not equal to amount of preceded");
     }

@@ -9,14 +9,14 @@ import lombok.*;
 @NoArgsConstructor
 public class BaseReqDto implements ExtendedStorageDto {
     @NotNull(message = "User must be authenticated")
-    private User user;
+    private long userId;
     @NotNull(message = "Path must not be null")
     private String path;
     @NotNull(message = "Object name must not be null")
     private String objName = "";
 
-    public BaseReqDto(User user, String path) {
-        this.user = user;
+    public BaseReqDto(long userId, String path) {
+        this.userId = userId;
         this.path = path;
     }
 }

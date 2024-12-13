@@ -21,7 +21,7 @@ public class MkDirRequestArgumentResolver extends BaseRequestArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         MkDirDto reqDto = new MkDirDto(
-                getUser(),
+                getUserId(),
                 getPath(webRequest),
                 getObjName(webRequest)
         );

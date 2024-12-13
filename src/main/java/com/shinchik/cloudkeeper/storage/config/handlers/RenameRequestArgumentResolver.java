@@ -21,7 +21,7 @@ public class RenameRequestArgumentResolver extends BaseRequestArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         RenameDto reqDto = new RenameDto(
-                getUser(),
+                getUserId(),
                 getPath(webRequest),
                 getObjName(webRequest),
                 getNewObjName(webRequest)

@@ -12,7 +12,7 @@ import lombok.*;
 public class RenameDto implements ExtendedStorageDto {
 
     @NotNull(message = "User must be authenticated")
-    private User user;
+    private long userId;
     @NotNull(message = "Path must not be null")
     private String path;
     @NotBlank(message = "Object to rename must not be null")

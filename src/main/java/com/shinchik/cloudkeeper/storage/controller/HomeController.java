@@ -49,7 +49,7 @@ public class HomeController {
 
         boolean isDir;
         try {
-            isDir = minioService.isDir(new BaseReqDto(user, "", path));
+            isDir = minioService.isDir(new BaseReqDto(user.getId(), "", path));
             if (!isDir && !path.isEmpty()) {
                 log.info("Requested path '{}' does not exist", path);
                 throw new NoSuchFolderException(path);
@@ -60,7 +60,7 @@ public class HomeController {
         }
 
         Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
-        List<BaseRespDto> userObjects = minioService.list(new BaseReqDto(user, path));
+        List<BaseRespDto> userObjects = minioService.list(new BaseReqDto(user.getId(), path));
 
         model.addAttribute("path", path);
         model.addAttribute("breadcrumb", breadcrumb);

@@ -5,7 +5,7 @@ import com.shinchik.cloudkeeper.user.model.User;
 
 public interface StorageDto {
 
-    User getUser();
+    long getUserId();
     String getPath();
 
 }

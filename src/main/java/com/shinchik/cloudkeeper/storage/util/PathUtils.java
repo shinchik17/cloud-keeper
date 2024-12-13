@@ -39,7 +39,7 @@ public class PathUtils {
 
 
     public static String formFullPath(StorageDto reqDto) {
-        return "user-%d-files/%s/".formatted(reqDto.getUser().getId(), reqDto.getPath()).replace("//", "/");
+        return "user-%d-files/%s/".formatted(reqDto.getUserId(), reqDto.getPath()).replace("//", "/");
     }
 
     public static String removeUserPrefix(String prefixedPath) {

@@ -34,7 +34,7 @@ public class UploadRequestArgumentResolver extends BaseRequestArgumentResolver {
                                      WebDataBinderFactory binderFactory) throws Exception {
 
         UploadDto reqDto = new UploadDto(
-                getUser(),
+                getUserId(),
                 getPath(webRequest),
                 getFiles(webRequest)
         );

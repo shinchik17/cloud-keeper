@@ -28,7 +28,7 @@ public class BaseRequestArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         BaseReqDto reqDto = new BaseReqDto(
-                getUser(),
+                getUserId(),
                 getPath(webRequest),
                 getObjName(webRequest)
         );
@@ -49,7 +49,7 @@ public class BaseRequestArgumentResolver implements HandlerMethodArgumentResolve
         return webRequest.getParameter("objName");
     }
 
-    protected static User getUser() {
+    protected static long getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user;
         if (authentication != null) {
@@ -58,7 +58,7 @@ public class BaseRequestArgumentResolver implements HandlerMethodArgumentResolve
             throw new RuntimeException("Failed to recognize user from request");
         }
 
-        return user;
+        return user.getId();
     }
 
     protected static void addBindingResult(Object target, String objectName, NativeWebRequest webRequest, WebDataBinderFactory binderFactory, ModelAndViewContainer mavContainer) throws Exception {

@@ -73,7 +73,7 @@ public class MinioService {
                 minioRepository.upload(multipartToSnowball(files, fullPath));
             }
 
-            createIntermediateFolders(files, uploadDto.getUser(), uploadDto.getPath());
+            createIntermediateFolders(files, uploadDto.getUserId(), uploadDto.getPath());
 
         } catch (SuchFolderAlreadyExistsException e) {
             log.error("During uploading files an exception occurred: {}", e.getMessage());
@@ -162,7 +162,7 @@ public class MinioService {
             }
 
             String objName = PathUtils.extractOrigName(obj.objectName().replaceAll("/$", ""));
-            BaseRespDto objInfo = new BaseRespDto(reqDto.getUser(), reqDto.getPath(), objName, obj.isDir());
+            BaseRespDto objInfo = new BaseRespDto(reqDto.getUserId(), reqDto.getPath(), objName, obj.isDir());
             objects.add(objInfo);
         }
 
@@ -186,7 +186,7 @@ public class MinioService {
             }
 
             String objName = PathUtils.removeUserPrefix(obj.objectName().replaceAll("/$", ""));
-            BaseRespDto resultDto = new BaseRespDto(searchDto.getUser(), searchDto.getPath(), objName, obj.isDir());
+            BaseRespDto resultDto = new BaseRespDto(searchDto.getUserId(), searchDto.getPath(), objName, obj.isDir());
             objects.add(resultDto);
         }
 
@@ -214,17 +214,17 @@ public class MinioService {
      * Makes explicit folders from intermediate path parts
      *
      * @param files - uploading files
-     * @param user  - user who uploads
-     * @param path  - current path (folder)
+     * @param userId - uploading user's id
+     * @param path - current path (folder)
      */
-    private void createIntermediateFolders(List<MultipartFile> files, User user, String path) {
+    private void createIntermediateFolders(List<MultipartFile> files, long userId, String path) {
         files.stream()
                 .map(f -> BreadcrumbMapper.INSTANCE.mapToModel(f.getOriginalFilename()).getPathItems().values())
                 .flatMap(Collection::stream)
                 .filter(x -> !x.isEmpty())
                 .map(s -> s.replaceFirst("^/", ""))
                 .distinct()
-                .map(p -> new MkDirDto(user, path, p))
+                .map(p -> new MkDirDto(userId, path, p))
                 .filter(dto -> !isObjectExist(dto))
                 .forEach(this::createFolder);
     }

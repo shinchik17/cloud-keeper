@@ -11,7 +11,7 @@ import lombok.*;
 public class BaseRespDto implements ExtendedStorageDto {
 
     @NotNull(message = "User must be authenticated")
-    private User user;
+    private long userId;
     @NotNull(message = "Path must not be null")
     private String path;
     @NotBlank(message = "Object name must be specified")
