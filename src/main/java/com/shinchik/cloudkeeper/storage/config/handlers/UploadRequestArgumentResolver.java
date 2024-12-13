@@ -1,12 +1,16 @@
 package com.shinchik.cloudkeeper.storage.config.handlers;
 
 import com.shinchik.cloudkeeper.storage.model.dto.UploadDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.support.MultipartResolutionDelegate;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.util.List;
@@ -44,8 +48,11 @@ public class UploadRequestArgumentResolver extends BaseRequestArgumentResolver {
     }
 
     private static List<MultipartFile> getFiles(NativeWebRequest webRequest) {
-        StandardMultipartHttpServletRequest request = (StandardMultipartHttpServletRequest) webRequest.getNativeRequest();
-        return request.getFiles(MULTIPART_PARAM_NAME);
+        MultipartHttpServletRequest multipartRequest = webRequest.getNativeRequest(MultipartHttpServletRequest.class);
+        if (multipartRequest == null){
+            throw new RuntimeException("Failed to extract multipart data from request");
+        }
+        return multipartRequest.getFiles(MULTIPART_PARAM_NAME);
     }
 
 
