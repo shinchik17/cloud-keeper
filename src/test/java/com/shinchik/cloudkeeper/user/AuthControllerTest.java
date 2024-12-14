@@ -13,6 +13,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.logout;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -145,10 +147,9 @@ public class AuthControllerTest extends BaseIntegrationTest {
         @WithAnonymousUser
         @DisplayName("Login existing user -> 200 ok")
         public void loginUser() throws Exception {
-            mockMvc.perform(post(securityConfig.getLoginUrl())
-                            .param("username", "user")
-                            .param("password", "1234")
-                            .with(csrf()))
+            mockMvc.perform(formLogin(securityConfig.getLoginUrl())
+                            .user("user")
+                            .password("1234"))
                     .andDo(print())
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrl("/"));
@@ -159,10 +160,9 @@ public class AuthControllerTest extends BaseIntegrationTest {
         @WithAnonymousUser
         @DisplayName("Login non-existing user -> 302 redirect login page with error param")
         public void loginNonExistentUser() throws Exception {
-            mockMvc.perform(post(securityConfig.getLoginUrl())
-                            .param("username", "user1")
-                            .param("password", "test")
-                            .with(csrf()))
+            mockMvc.perform(formLogin(securityConfig.getLoginUrl())
+                            .user("user1")
+                            .password("test"))
                     .andDo(print())
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrlPattern("/**/%s?error".formatted(securityConfig.getLoginUrl())));
@@ -173,10 +173,9 @@ public class AuthControllerTest extends BaseIntegrationTest {
         @WithAnonymousUser
         @DisplayName("Login existing user with wrong password -> 302 redirect login page with error param")
         public void loginUser_withInvalidCredentials() throws Exception {
-            mockMvc.perform(post(securityConfig.getLoginUrl())
-                            .param("username", "user")
-                            .param("password", "test")
-                            .with(csrf()))
+            mockMvc.perform(formLogin(securityConfig.getLoginUrl())
+                            .user("user")
+                            .password("test"))
                     .andDo(print())
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrlPattern("/**/%s?error".formatted(securityConfig.getLoginUrl())));
@@ -185,5 +184,54 @@ public class AuthControllerTest extends BaseIntegrationTest {
 
     }
 
+
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @DisplayName("Testing logout requests")
+    class LogoutTest {
+        @Test
+        @Order(1)
+        @WithAnonymousUser
+        @DisplayName("GET logout for anonymous user -> 302 redirect to login page")
+        public void getLogout_withAnonymousUser() throws Exception {
+            mockMvc.perform(get(securityConfig.getLogoutUrl()))
+                    .andDo(print())
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrlPattern("**%s".formatted(securityConfig.getLoginUrl())));
+        }
+
+        @Test
+        @Order(2)
+        @WithUserDetails("user")
+        @DisplayName("GET logout for authenticated user -> 302 redirect to error (no such resource found)")
+        public void getLogout_withAuthenticatedUser() throws Exception {
+            mockMvc.perform(get(securityConfig.getLogoutUrl()))
+                    .andDo(print())
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrl("/error"));
+        }
+
+        @Test
+        @Order(3)
+        @WithUserDetails("user")
+        @DisplayName("Logout existing user -> 302 redirect to login page")
+        public void logoutUser() throws Exception {
+            mockMvc.perform(logout(securityConfig.getLogoutUrl()))
+                    .andDo(print())
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrlPattern("/**%s".formatted(securityConfig.getLoginUrl())));
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("Logout anonymous user -> 302 redirect to login page")
+        public void logoutAnonymousUser() throws Exception {
+            mockMvc.perform(post(securityConfig.getLogoutUrl()))
+                    .andDo(print())
+                    .andExpect(status().isForbidden());
+        }
+
+
+    }
 
 }
