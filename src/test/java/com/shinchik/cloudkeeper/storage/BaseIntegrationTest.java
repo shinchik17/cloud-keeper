@@ -5,6 +5,7 @@ import com.shinchik.cloudkeeper.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,23 +23,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles({"dev", "test"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Basic integration test")
+@DirtiesContext
 public class BaseIntegrationTest {
 
     @Container
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
             .withUsername("test")
             .withPassword("testpass");
+//            .withReuse(true);
 
     @Container
     protected static final MinIOContainer minio = new MinIOContainer("minio/minio:latest")
             .withUserName("test")
             .withPassword("testpass")
             .withExposedPorts(9000, 9001);
+//            .withReuse(true);
 
     @Container
     protected static final GenericContainer<?> redis = new GenericContainer<>("redis:latest")
             .withExposedPorts(6379)
             .withCommand("redis-server --requirepass testpass");
+//            .withReuse(true);
 
 
     @Autowired
@@ -56,7 +61,7 @@ public class BaseIntegrationTest {
     }
 
     @Test
-    @Order(2)
+    @Order(1)
     @DisplayName("Test data was loaded into relative database")
     public void testUserDataWasLoaded() {
         assertTrue(userRepository.findByUsername("user").isPresent());

@@ -25,7 +25,7 @@ repositories {
 
 ext {
     minioVersion = "8.5.13"
-    testContainersVersion = "1.20.3"
+    testcontainersVersion = "1.20.3"
     mapstructVersion = "1.5.5.Final"
     mockitoVersion = "5.12.0"
 }
@@ -41,6 +41,7 @@ dependencies {
     implementation("org.springframework.session:spring-session-data-redis")
     implementation "io.minio:minio:${minioVersion}"
     implementation 'org.liquibase:liquibase-core'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
@@ -48,9 +49,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
-    testImplementation "org.testcontainers:minio:${testContainersVersion}"
-    testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
+    testImplementation "org.testcontainers:postgresql:${testcontainersVersion}"
+    testImplementation "org.testcontainers:minio:${testcontainersVersion}"
+    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
 
 }

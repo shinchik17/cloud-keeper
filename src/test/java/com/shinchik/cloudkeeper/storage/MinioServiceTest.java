@@ -2,10 +2,16 @@ package com.shinchik.cloudkeeper.storage;
 
 import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
 import com.shinchik.cloudkeeper.storage.exception.service.SuchFolderAlreadyExistsException;
-import com.shinchik.cloudkeeper.storage.model.dto.*;
+import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.model.dto.MkDirDto;
+import com.shinchik.cloudkeeper.storage.model.dto.RenameDto;
+import com.shinchik.cloudkeeper.storage.model.dto.UploadDto;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +129,7 @@ class MinioServiceTest extends MultipartFilesUtil {
     @Test
     @DisplayName("Download nonexistent object")
     public void downloadNonExistentObj_thenThrow() {
-       BaseReqDto reqDto = new BaseReqDto(USER_ID, "", "None");
+        BaseReqDto reqDto = new BaseReqDto(USER_ID, "", "None");
         assertThrows(NoSuchObjectException.class, () -> minioService.download(reqDto),
                 "Downloaded nonexistent file");
     }

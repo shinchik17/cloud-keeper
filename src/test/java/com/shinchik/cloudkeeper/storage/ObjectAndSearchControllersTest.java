@@ -159,66 +159,66 @@ public class ObjectAndSearchControllersTest extends BaseIntegrationTest {
     @Order(2)
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     @DisplayName("Testing unacceptable requests performing")
-    class UnacceptableRequestsTest{
+    class UnacceptableRequestsTest {
         @Test
         @Order(1)
         @WithUserDetails("user")
         @DisplayName("Downloading non-existent file -> 400 bad request")
-        public void downloadNonExistentFile () throws Exception {
+        public void downloadNonExistentFile() throws Exception {
 
-        mockMvc.perform(get("/files")
-                        .param("path", "")
-                        .param("objName", "nonExistentFileName")
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
+            mockMvc.perform(get("/files")
+                            .param("path", "")
+                            .param("objName", "nonExistentFileName")
+                            .with(csrf()))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
+        }
 
         @Test
         @Order(2)
         @WithUserDetails("user")
         @DisplayName("Renaming with invalid params non-existent file -> 400 bad request")
-        public void renameFile_withInvalidParams () throws Exception {
+        public void renameFile_withInvalidParams() throws Exception {
 
-        // request is missing objName parameter
-        mockMvc.perform(patch("/files")
-                        .param("path", "")
-                        .param("newObjName", NEW_OBJECT_NAME)
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+            // request is missing objName parameter
+            mockMvc.perform(patch("/files")
+                            .param("path", "")
+                            .param("newObjName", NEW_OBJECT_NAME)
+                            .with(csrf()))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
 
-    }
+        }
 
 
         @Test
         @Order(3)
         @DisplayName("Trying to upload when user is anonymous -> 302 redirect to login")
-        public void uploadFile_whenAnonymousUSer () throws Exception {
+        public void uploadFile_whenAnonymousUSer() throws Exception {
 
-        mockMvc.perform(multipart("/files")
-                        .file(mockSingleFile)
-                        .param("path", "")
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/auth/login"));
+            mockMvc.perform(multipart("/files")
+                            .file(mockSingleFile)
+                            .param("path", "")
+                            .with(csrf()))
+                    .andDo(print())
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrlPattern("**/auth/login"));
 
-    }
+        }
 
         @Test
         @Order(4)
         @WithUserDetails("user")
         @DisplayName("Duplicating folder -> 409 conflict")
-        public void createFolder_withNameOfExistingFolder () throws Exception {
+        public void createFolder_withNameOfExistingFolder() throws Exception {
 
-        mockMvc.perform(post("/files/create")
-                        .param("path", "")
-                        .param("objName", FOLDER_NAME)
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isConflict());
-    }
+            mockMvc.perform(post("/files/create")
+                            .param("path", "")
+                            .param("objName", FOLDER_NAME)
+                            .with(csrf()))
+                    .andDo(print())
+                    .andExpect(status().isConflict());
+        }
     }
 
 

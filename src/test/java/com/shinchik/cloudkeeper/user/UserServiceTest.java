@@ -3,6 +3,7 @@ package com.shinchik.cloudkeeper.user;
 import com.shinchik.cloudkeeper.user.model.Role;
 import com.shinchik.cloudkeeper.user.model.UserDto;
 import com.shinchik.cloudkeeper.user.service.UserService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: write mockMvc tests
 
 @Testcontainers
 @SpringBootTest
@@ -33,14 +33,16 @@ public class UserServiceTest {
 
 
     @Test
-    public void registerNewUser()  {
+    @DisplayName("Register new user")
+    public void registerNewUser() {
         UserDto user = new UserDto("user2", "pass", "pass", Role.USER);
         assertDoesNotThrow(() -> userService.register(user));
         assertTrue(userService.findByUsername("user2").isPresent());
     }
 
     @Test
-    public void registerNewUser_withExistingUsername()  {
+    @DisplayName("Register new user with existing username")
+    public void registerNewUser_withExistingUsername() {
         UserDto user = new UserDto("user", "pass", "pass", Role.USER);
         assertThrows(DataIntegrityViolationException.class, () -> userService.register(user));
     }

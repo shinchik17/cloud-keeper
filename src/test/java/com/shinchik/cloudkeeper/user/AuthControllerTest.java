@@ -11,8 +11,6 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -27,8 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles({"auth", "web", "test"})
 @DisplayName("Testing mock authentication requests")
-public class AuthControllerTest extends BaseAuthIntegrationTest {
-    
+public class AuthControllerTest extends BaseIntegrationTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -118,7 +116,7 @@ public class AuthControllerTest extends BaseAuthIntegrationTest {
 
     @Nested
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    @DisplayName("Testing log in requests")
+    @DisplayName("Testing login requests")
     class LoginTest {
         @Test
         @Order(1)
