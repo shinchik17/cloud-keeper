@@ -1,8 +1,8 @@
-package com.shinchik.cloudkeeper;
+package com.shinchik.cloudkeeper.storage;
 
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.user.repository.UserRepository;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,21 +20,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Testcontainers
 @SpringBootTest
 @ActiveProfiles({"dev", "test"})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DisplayName("Basic integration test")
 public class BaseIntegrationTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+    protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
             .withUsername("test")
             .withPassword("testpass");
 
     @Container
-    private static final MinIOContainer minio = new MinIOContainer("minio/minio:latest")
+    protected static final MinIOContainer minio = new MinIOContainer("minio/minio:latest")
             .withUserName("test")
             .withPassword("testpass")
             .withExposedPorts(9000, 9001);
 
     @Container
-    private static final GenericContainer<?> redis = new GenericContainer<>("redis:latest")
+    protected static final GenericContainer<?> redis = new GenericContainer<>("redis:latest")
             .withExposedPorts(6379)
             .withCommand("redis-server --requirepass testpass");
 
@@ -47,18 +49,22 @@ public class BaseIntegrationTest {
 
 
     @Test
+    @Order(1)
+    @DisplayName("Default MinIO bucket was created")
     public void defaultBucketWasCreated() {
         assertTrue(minioRepository.isDefaultBucketExist());
     }
 
     @Test
+    @Order(2)
+    @DisplayName("Test data was loaded into relative database")
     public void testUserDataWasLoaded() {
         assertTrue(userRepository.findByUsername("user").isPresent());
     }
 
 
     @DynamicPropertySource
-    static void datasourceProperties(DynamicPropertyRegistry registry) {
+    protected static void datasourceProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.name", postgres::getDatabaseName);
         registry.add("spring.datasource.username", postgres::getUsername);
@@ -66,14 +72,14 @@ public class BaseIntegrationTest {
     }
 
     @DynamicPropertySource
-    static void minioProperties(DynamicPropertyRegistry registry) {
+    protected static void minioProperties(DynamicPropertyRegistry registry) {
         registry.add("minio.client.endpoint", () -> "http:/localhost:" + minio.getMappedPort(9000));
         registry.add("minio.client.user", () -> "test");
         registry.add("minio.client.password", () -> "testpass");
     }
 
     @DynamicPropertySource
-    static void redisProperties(DynamicPropertyRegistry registry) {
+    protected static void redisProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
         registry.add("spring.data.redis.password", () -> "testpass");
     }
