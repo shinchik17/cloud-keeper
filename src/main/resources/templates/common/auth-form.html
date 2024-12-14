@@ -3,7 +3,7 @@
 
 <body>
 
-<form th:fragment="auth-form (repeatPass, link)" th:action="@{${link}}" th:object="${user}" method="POST"
+<form th:fragment="auth-form (repeatPass, link)" th:action="@{${link}}" th:object="${userDto}" method="POST"
       class="needs-validation" novalidate>
     <div class="form-group">
         <label for="username">Username</label>

@@ -2,6 +2,7 @@ package com.shinchik.cloudkeeper.user.controller;
 
 import com.shinchik.cloudkeeper.user.model.UserDto;
 import com.shinchik.cloudkeeper.user.service.UserService;
+import com.shinchik.cloudkeeper.user.validation.UserDtoValidator;
 import com.shinchik.cloudkeeper.validation.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -20,33 +21,39 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final UserDtoValidator userDtoValidator;
+
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserDtoValidator userDtoValidator) {
         this.userService = userService;
+        this.userDtoValidator = userDtoValidator;
     }
 
     @GetMapping("/login")
-    public String logIn(@ModelAttribute("user") UserDto user) {
+    public String logIn(@ModelAttribute("userDto") UserDto userDto) {
         return "auth/login";
     }
 
     @GetMapping("/register")
-    public String register(@ModelAttribute("user") UserDto user) {
+    public String register(@ModelAttribute("userDto") UserDto userDto) {
         return "auth/registration";
     }
 
     @PostMapping("/register")
-    public String performRegistration(@ModelAttribute("user") @Valid UserDto user,
+    public String performRegistration(@ModelAttribute("userDto") @Valid UserDto userDto,
                                             BindingResult bindingResult,
                                             Model model) {
+
+        userDtoValidator.validate(userDto, bindingResult);
 
         if (bindingResult.hasErrors()) {
             ValidationUtil.extractErrorsInfo(bindingResult).forEach(log::warn);
             model.addAttribute("errorMessage", ValidationUtil.chooseMainErrorMessage(bindingResult));
-            return "/auth/registration";
+            model.addAttribute("userDto", userDto);
+            return "auth/registration";
         }
 
-        userService.register(user);
+        userService.register(userDto);
         return "redirect:/auth/login";
     }
 
