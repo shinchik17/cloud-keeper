@@ -45,6 +45,6 @@ public class UserDtoValidator implements Validator {
     }
 
     private static boolean passwordsMatch(UserDto userDto) {
-        return !userDto.getPassword().matches(userDto.getPasswordConfirmation());
+        return userDto.getPassword().matches(userDto.getPasswordConfirmation());
     }
 }
