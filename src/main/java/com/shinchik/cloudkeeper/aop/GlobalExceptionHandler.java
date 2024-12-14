@@ -10,6 +10,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SuchFolderAlreadyExistsException.class)
     public ResponseEntity<String> handleSuchFolderAlreadyExistsException(SuchFolderAlreadyExistsException e, RedirectAttributes redirectAttributes) {
         log.debug(e.getMessage());
-        return ResponseEntity.badRequest().body(exToJsonString(e));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exToJsonString(e));
     }
 
 
