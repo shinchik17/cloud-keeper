@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @Controller
 @RequestMapping("/error")
-@Profile({"dev", "prod"})
+@Profile({"web", "prod"})
 public class CustomErrorController implements ErrorController {
 
     private final SecurityConfig securityConfig;

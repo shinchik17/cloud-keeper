@@ -24,7 +24,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@Profile("web")
+@Profile({"dev"})
 public class HomeController {
 
     private MinioService minioService;

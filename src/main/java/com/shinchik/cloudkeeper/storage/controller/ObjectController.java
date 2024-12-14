@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-// TODO: get rid of annotations @XRequest and match on types?
+
 // TODO: add more info while throwing InvalidDtoException?
 @Slf4j
 @Controller
 @RequestMapping("/files")
-@Profile("web")
+@Profile("dev")
 public class ObjectController {
 
     private final MinioService minioService;
@@ -55,7 +55,9 @@ public class ObjectController {
 
         minioService.upload(uploadDto);
 
-        return "redirect:/?path=%s".formatted(PathUtils.getEncodedPath(uploadDto));
+        String path = PathUtils.getEncodedPath(uploadDto);
+        String pathParam = path.isBlank() ? "" : "?path=%s".formatted(path);
+        return "redirect:/%s".formatted(pathParam);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
