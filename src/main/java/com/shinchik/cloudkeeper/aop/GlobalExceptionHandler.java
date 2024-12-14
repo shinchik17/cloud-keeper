@@ -22,20 +22,20 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Slf4j
 @ControllerAdvice
-// TODO: think about return status codes
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public String handleNoResourceFound(NoResourceFoundException e, Model model) {
-        log.warn("Resource /{} not found.", e.getResourcePath());
-        model.addAttribute("errorMessage",
+    public RedirectView handleNoResourceFound(NoResourceFoundException e, RedirectAttributes redirectAttributes) {
+        log.warn("Resource '{}' not found. Redirecting to /error", e.getResourcePath());
+        redirectAttributes.addFlashAttribute("errorMessage",
                 "How did you get here? Anyway, go back to home page. It's definitely better out there :)");
-        return "error";
+        redirectAttributes.addFlashAttribute("resourcePath", e.getResourcePath());
+        return new RedirectView("/error", true);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String handleDataIntegrityViolationException(DataIntegrityViolationException e, Model model) {
-        log.warn("DataIntegrityViolationException: {}", e.getMessage());
+        log.debug("DataIntegrityViolationException: {}", e.getMessage());
         model.addAttribute("errorMessage", "Unexpected service error. Please try again later");
         return "/auth/registration";
     }
