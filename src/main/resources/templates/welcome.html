@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome</title>
-</head>
-<body>
-Welcome!
+<head th:replace="~{/common/head :: head ('Welcome')}"></head>
 
+<body>
+
+<div class="container justify-content-center header position-absolute top-50 start-50 translate-middle">
+    <div class="row">
+        <h1 class="text-center display-1">Welcome to the Cloud-Keeper</h1>
+        <h2 class="text-center display-3">the best ever deployed application (on this server)</h2>
+    </div>
+    <div class="row btn-row container justify-content-center">
+        <div class="col d-flex justify-content-center justify-content-md-end">
+            <a th:href="@{/login}" class="btn btn-outline-secondary big" role="button">Log in</a>
+        </div>
+        <div class="col d-flex justify-content-center justify-content-md-start">
+            <a th:href="@{/register}" class="btn btn-primary big" role="button">Register</a>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/resources/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
