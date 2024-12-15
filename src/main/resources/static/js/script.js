@@ -47,7 +47,7 @@ document.getElementById("mkdir-form").addEventListener("submit", function (event
 })
 errorDiv = document.getElementById("error-modal-trigger");
 
-if (errorDiv != null){
+if (errorDiv != null) {
     errorMessage = errorDiv.getAttribute("data-error-message")
     errorModalElement.addEventListener("hide.bs.modal", reloadPage)
     showErrorMessage(errorMessage)
@@ -59,7 +59,7 @@ Dropzone.options.myDropzone = {
     renameFile: function (file) {
         return file.fullPath;
     },
-    paramName: function (){
+    paramName: function () {
         return "files";
     },
     uploadMultiple: true,
@@ -77,7 +77,6 @@ Dropzone.options.myDropzone = {
     init: function () {
         this.on("successmultiple", function () {
             showSuccessMessage("Files uploaded successfully");
-            // successModal.show();
             this.removeAllFiles(true);
             showLeftPaneTools();
         });
@@ -93,7 +92,6 @@ Dropzone.options.myDropzone = {
         });
 
         this.on("error", function (file, message, xhr) {
-            // && message.startsWith("Invalid JSON")
             if (message !== this.options.dictMaxFilesExceeded && message !== this.options.dictUploadCanceled) {
                 message = xhr && xhr.response ? JSON.parse(xhr.response).message : message
                 showErrorMessage(message);
@@ -144,12 +142,9 @@ function mkDir(mkBtn) {
 
     let dirnameInput = document.getElementById("mk-dir-name")
     if (!dirnameInput.checkValidity()) {
-        document.getElementById("rename-feedback").style.display = "block"
+        dirnameInput.closest("form").classList.add("was-validated")
         return
-    } else {
-        document.getElementById("rename-feedback").style.display = "none"
     }
-
 
     let url = baseUrl + mkBtn.getAttribute("data-req-path");
     let dirname = document.getElementById("mk-dir-name").value
@@ -186,11 +181,10 @@ function renameObj(renameBtn) {
 
     let newNameInput = document.getElementById("new-obj-name")
     if (!newNameInput.checkValidity()) {
-        document.getElementById("rename-feedback").style.display = "block"
+        newNameInput.closest("form").classList.add("was-validated")
         return
-    } else {
-        document.getElementById("rename-feedback").style.display = "none"
     }
+
 
     let url = baseUrl + renameBtn.getAttribute("data-req-path");
     let newObjName = document.getElementById("new-obj-name").value;
@@ -256,7 +250,6 @@ function uploadObj() {
         .then(response => {
             if (response.ok) {
                 showSuccessMessage(`Files have been uploaded successfully`);
-                // successModal.show();
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
@@ -363,11 +356,13 @@ function downloadObj(downloadBtn) {
 
 /* Modals, inputs visual effects handling */
 function clearMkdirInput() {
-    document.getElementById("mkdir-feedback").style.display = "none";
+    document.getElementById("mkdir-form").classList.remove("was-validated");
+    document.getElementById("mk-dir-name").value = "";
 }
 
 function clearRenameInput() {
-    document.getElementById("rename-feedback").style.display = "none";
+    document.getElementById("rename-form").classList.remove("was-validated");
+    document.getElementById("new-obj-name").value = "";
 }
 
 function showSuccessMessage(message) {

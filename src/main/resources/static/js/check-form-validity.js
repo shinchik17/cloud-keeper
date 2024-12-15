@@ -36,5 +36,15 @@ function clearDefaultValidity() {
     })
 }
 
+function addAutoClearValidityErrorsOnModalInputs() {
+    let inputs = document.querySelectorAll("#mk-dir-name, #new-obj-name");
+    Array.from(inputs).forEach(input => {
+        input.addEventListener("change", event => {
+            input.closest("form").classList.add("was-validated");
+        })
+    })
+}
+
 clearDefaultValidity();
+addAutoClearValidityErrorsOnModalInputs()
 setSearchInputCustomValidity();
