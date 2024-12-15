@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,10 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles({"dev", "test"})
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @DisplayName("Testing objects manipulations requests")
-public class ObjectAndSearchControllersTest extends BaseIntegrationTest {
+public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

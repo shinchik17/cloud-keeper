@@ -24,26 +24,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Basic integration test")
 @DirtiesContext
-public class BaseIntegrationTest {
+public class CompleteIntegrationTest {
 
     @Container
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
             .withUsername("test")
             .withPassword("testpass");
-//            .withReuse(true);
 
     @Container
     protected static final MinIOContainer minio = new MinIOContainer("minio/minio:latest")
             .withUserName("test")
             .withPassword("testpass")
             .withExposedPorts(9000, 9001);
-//            .withReuse(true);
 
     @Container
     protected static final GenericContainer<?> redis = new GenericContainer<>("redis:latest")
             .withExposedPorts(6379)
             .withCommand("redis-server --requirepass testpass");
-//            .withReuse(true);
 
 
     @Autowired

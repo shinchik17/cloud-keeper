@@ -8,21 +8,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles({"dev", "test"})
 @DisplayName("Testing mock requests on home page url")
-public class HomeControllerTest extends BaseIntegrationTest {
+public class HomeControllerTest extends CompleteIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

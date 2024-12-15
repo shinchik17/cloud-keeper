@@ -1,7 +1,6 @@
 package com.shinchik.cloudkeeper.user;
 
 import com.shinchik.cloudkeeper.security.SecurityConfig;
-import com.shinchik.cloudkeeper.storage.BaseIntegrationTest;
 import com.shinchik.cloudkeeper.user.service.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.logout;
@@ -22,12 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles({"auth", "web", "test"})
 @DisplayName("Testing mock authentication requests")
-public class AuthControllerTest extends BaseIntegrationTest {
+public class AuthControllerTest extends AuthIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,6 +32,11 @@ public class AuthControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private SecurityConfig securityConfig;
+
+    private String registerUrl;
+    private String loginUrl;
+    private String logoutUrl;
+
 
     @Nested
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
