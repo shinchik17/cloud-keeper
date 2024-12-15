@@ -5,21 +5,21 @@
 <body>
 
 <div class="container justify-content-center header position-absolute top-50 start-50 translate-middle">
-    <div class="row">
-        <h1 class="text-center display-1">Welcome to the Cloud-Keeper</h1>
-        <h2 class="text-center display-3">the best ever deployed application (on this server)</h2>
+    <div class="row mb-3">
+        <h1 class="text-center display-1">Cloud-Keeper</h1>
+        <span class="text-center">The best cloud storage ever (maybe)</span>
     </div>
-    <div class="row btn-row container justify-content-center">
-        <div class="col d-flex justify-content-center justify-content-md-end">
-            <a th:href="@{/login}" class="btn btn-outline-secondary big" role="button">Log in</a>
+    <div class="row btn-row container justify-content-center mb-5">
+        <div class="col d-flex justify-content-center justify-content-md-end me-2">
+            <a th:href="@{/auth/login}" class="btn btn-outline-secondary btn-huge" role="button">Log in</a>
         </div>
-        <div class="col d-flex justify-content-center justify-content-md-start">
-            <a th:href="@{/register}" class="btn btn-primary big" role="button">Register</a>
+        <div class="col d-flex justify-content-center justify-content-md-start ms-2">
+            <a th:href="@{/auth/register}" class="btn btn-primary btn-huge" role="button">Register</a>
         </div>
     </div>
 </div>
 
 
-<script th:src="@{/resources/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

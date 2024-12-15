@@ -37,7 +37,6 @@ public class SecurityConfig {
             "/css/**",
             "/js/**",
             "/common/**",
-            "/icons/**",
             "/cloud-data.ico"
     };
 

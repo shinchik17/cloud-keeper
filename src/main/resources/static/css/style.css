@@ -8,6 +8,7 @@
     --left-pane-color: rgb(231, 231, 232);
     /*--bs-list-group-border-radius: 15px;*/
     --bs-border-radius: 15px;
+    --bs-breadcrumb-divider: '>';
 }
 
 .nav {
@@ -41,7 +42,7 @@
 }
 
 input[type="text"] {
-    border-radius: 0.5rem;
+    /*border-radius: 0.5rem;*/
 }
 
 input[type="search"] {
@@ -60,13 +61,21 @@ input[type="search"] {
     font-size: 1rem;
 }
 
+.btn-huge {
+    border-radius: 3rem !important;
+    /*margin: 0 3rem;*/
+    padding: 0.5rem 1.5rem;
+    font-size: 1.5rem;
+}
+
 .btn {
     border-radius: 1rem;
 }
 
 .btn-clear {
-    border-radius: 1rem;
-    padding: 0 0.5rem;
+    border-bottom-right-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+    padding: 0 1rem;
     font-size: 1.5rem;
 }
 
@@ -92,6 +101,10 @@ input[type="search"] {
 }
 
 .list-group {
+    max-height: 300px;
+}
+
+.search-list-group {
     max-height: 500px;
 }
 
@@ -112,6 +125,9 @@ input[type="search"] {
     padding: 0 20px;
     min-height: 300px;
     min-width: 300px;
+}
+.center-pane {
+    max-height: 90%;
 }
 
 .dropzone-div {
