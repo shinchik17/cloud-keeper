@@ -52,7 +52,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
     class ProperRequestsTest {
         @Test
         @Order(1)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Uploading file -> 302 redirect and object exists")
         public void uploadFile() throws Exception {
 
@@ -69,7 +69,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(2)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Downloading  file-> 200 ok and content type == octet stream")
         public void downloadFile() throws Exception {
 
@@ -84,7 +84,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(3)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Renaming file -> 302 redirect, file with new name exists, with old - does not")
         public void renameFile() throws Exception {
 
@@ -102,7 +102,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(4)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Searching for file by part of its name -> 200 ok and previously renamed file is listed")
         public void searchFiles() throws Exception {
             MvcResult mvcResult = mockMvc.perform(get("/search")
@@ -122,7 +122,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(5)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Deleting file -> 302 redirection and file does not exist")
         public void deleteFile() throws Exception {
 
@@ -138,7 +138,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(6)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Creating a folder -> 302 redirection and folder exists")
         public void createFolder() throws Exception {
 
@@ -160,7 +160,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
     class UnacceptableRequestsTest {
         @Test
         @Order(1)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Downloading non-existent file -> 400 bad request")
         public void downloadNonExistentFile() throws Exception {
 
@@ -174,7 +174,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(2)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Renaming with invalid params non-existent file -> 400 bad request")
         public void renameFile_withInvalidParams() throws Exception {
 
@@ -206,7 +206,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
 
         @Test
         @Order(4)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Duplicating folder -> 409 conflict")
         public void createFolder_withNameOfExistingFolder() throws Exception {
 

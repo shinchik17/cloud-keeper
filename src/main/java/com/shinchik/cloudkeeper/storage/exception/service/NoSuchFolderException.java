@@ -5,7 +5,4 @@ public class NoSuchFolderException extends NoSuchObjectException{
         super(message);
     }
 
-    public NoSuchFolderException(Throwable cause) {
-        super(cause);
-    }
 }

@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.aop;
+package com.shinchik.cloudkeeper;
 
 
 import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationException;

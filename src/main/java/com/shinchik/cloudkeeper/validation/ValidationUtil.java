@@ -35,12 +35,6 @@ public class ValidationUtil {
                 .toList();
     }
 
-    public static List<String> extractErrorFields(BindingResult bindingResult) {
-        return bindingResult.getAllErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .toList();
-    }
-
 
     public static String chooseMainErrorMessage(BindingResult bindingResult) {
         List<String> codes = extractErrorCodes(bindingResult);

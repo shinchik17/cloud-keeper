@@ -24,7 +24,7 @@ import java.util.List;
 @Profile({"dev"})
 public class HomeController {
 
-    private MinioService minioService;
+    private final MinioService minioService;
 
     @Autowired
     public HomeController(MinioService minioService) {

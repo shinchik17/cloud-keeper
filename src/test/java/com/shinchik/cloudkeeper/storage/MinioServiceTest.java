@@ -243,7 +243,7 @@ class MinioServiceTest extends MultipartFilesUtil {
     }
 
     @Test
-    @DisplayName("Create folder with name of already existing folder in currrent directory")
+    @DisplayName("Create folder with name of already existing folder in current directory")
     public void createFolderWithExistingFolderName() {
         MkDirDto mkDirDto = new MkDirDto(USER_ID, "", GENERAL_PATH);
         minioService.createFolder(mkDirDto);

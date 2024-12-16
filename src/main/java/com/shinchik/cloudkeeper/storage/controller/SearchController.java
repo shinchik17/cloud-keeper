@@ -20,7 +20,7 @@ import java.util.List;
 @Profile("dev")
 public class SearchController {
 
-    private MinioService minioService;
+    private final MinioService minioService;
 
     @Autowired
     public SearchController(MinioService minioService) {

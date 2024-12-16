@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage.config.handlers;
+package com.shinchik.cloudkeeper.storage.config.handler;
 
 import com.shinchik.cloudkeeper.security.SecurityUserDetails;
 import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;

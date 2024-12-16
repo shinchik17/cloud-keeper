@@ -1,6 +1,6 @@
-package com.shinchik.cloudkeeper.storage.config.handlers;
+package com.shinchik.cloudkeeper.storage.config.handler;
 
-import com.shinchik.cloudkeeper.storage.model.dto.RenameDto;
+import com.shinchik.cloudkeeper.storage.model.dto.MkDirDto;
 import jakarta.validation.Valid;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -8,23 +8,21 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 
-public class RenameRequestArgumentResolver extends BaseRequestArgumentResolver {
+public class MkDirRequestArgumentResolver extends BaseRequestArgumentResolver {
 
 
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
-        return methodParameter.getParameterAnnotation(RenameRequest.class) != null;
+        return methodParameter.getParameterAnnotation(MkDirRequest.class) != null;
     }
-
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-        RenameDto reqDto = new RenameDto(
+        MkDirDto reqDto = new MkDirDto(
                 getUserId(),
                 getPath(webRequest),
-                getObjName(webRequest),
-                getNewObjName(webRequest)
+                getObjName(webRequest)
         );
 
         if (parameter.hasParameterAnnotation(Valid.class)) {
@@ -33,10 +31,6 @@ public class RenameRequestArgumentResolver extends BaseRequestArgumentResolver {
 
         return reqDto;
 
-    }
-
-    private static String getNewObjName(NativeWebRequest webRequest){
-        return webRequest.getParameter("newObjName");
     }
 
 }

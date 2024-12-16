@@ -1,4 +1,4 @@
-package com.shinchik.cloudkeeper.storage.config.handlers;
+package com.shinchik.cloudkeeper.storage.config.handler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

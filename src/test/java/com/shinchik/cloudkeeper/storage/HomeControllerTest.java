@@ -35,7 +35,7 @@ public class HomeControllerTest extends CompleteIntegrationTest {
 
     @Test
     @Order(2)
-    @WithUserDetails("user")
+    @WithUserDetails()
     @DisplayName("GET home page for authenticated user -> 200 ok")
     public void getHomePage_withAuthenticatedUser() throws Exception {
         mockMvc.perform(get("/")).andDo(print())

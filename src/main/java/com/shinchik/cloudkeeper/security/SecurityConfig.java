@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -29,7 +27,7 @@ public class SecurityConfig {
     private final String registerUrl = "/auth/register";
     private final String loginUrl = "/auth/login";
     private final String logoutUrl = "/auth/logout";
-    private final String welcomeUrl = "/welcome"; // TODO: remove welcome url if decide not to do welcome page
+    private final String welcomeUrl = "/welcome";
     private final String defaultUrl = "/";
     private final String[] unsecuredUrls = new String[]{
             welcomeUrl,

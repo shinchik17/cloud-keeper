@@ -5,7 +5,4 @@ public class SuchFolderAlreadyExistsException extends MinioServiceException{
         super(message);
     }
 
-    public SuchFolderAlreadyExistsException(Throwable cause) {
-        super(cause);
-    }
 }

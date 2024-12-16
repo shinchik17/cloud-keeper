@@ -33,10 +33,6 @@ public class AuthControllerTest extends AuthIntegrationTest {
     @Autowired
     private SecurityConfig securityConfig;
 
-    private String registerUrl;
-    private String loginUrl;
-    private String logoutUrl;
-
 
     @Nested
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -56,7 +52,7 @@ public class AuthControllerTest extends AuthIntegrationTest {
 
         @Test
         @Order(2)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("GET registration page for authenticated user -> 302 redirect to home page")
         public void getRegistrationPage_withAuthenticatedUser() throws Exception {
             mockMvc.perform(get(securityConfig.getRegisterUrl()))
@@ -133,7 +129,7 @@ public class AuthControllerTest extends AuthIntegrationTest {
 
         @Test
         @Order(2)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("GET login page for authenticated user -> 302 redirect to home page")
         public void getLoginPage_withAuthenticatedUser() throws Exception {
             mockMvc.perform(get(securityConfig.getLoginUrl()))
@@ -202,7 +198,7 @@ public class AuthControllerTest extends AuthIntegrationTest {
 
         @Test
         @Order(2)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("GET logout for authenticated user -> 302 redirect to error (no such resource found)")
         public void getLogout_withAuthenticatedUser() throws Exception {
             mockMvc.perform(get(securityConfig.getLogoutUrl()))
@@ -213,7 +209,7 @@ public class AuthControllerTest extends AuthIntegrationTest {
 
         @Test
         @Order(3)
-        @WithUserDetails("user")
+        @WithUserDetails()
         @DisplayName("Logout existing user -> 302 redirect to login page")
         public void logoutUser() throws Exception {
             mockMvc.perform(logout(securityConfig.getLogoutUrl()))

@@ -30,7 +30,7 @@ public class UserService {
         return repository.findByUsername(username);
     }
 
-    @Transactional // TODO: research annotation and its usage
+    @Transactional
     public void register(UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(UserMapper.INSTANCE.mapToEntity(user));

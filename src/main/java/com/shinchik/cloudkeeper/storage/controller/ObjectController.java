@@ -1,9 +1,9 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
-import com.shinchik.cloudkeeper.storage.config.handlers.BaseRequest;
-import com.shinchik.cloudkeeper.storage.config.handlers.MkDirRequest;
-import com.shinchik.cloudkeeper.storage.config.handlers.RenameRequest;
-import com.shinchik.cloudkeeper.storage.config.handlers.UploadRequest;
+import com.shinchik.cloudkeeper.storage.config.handler.BaseRequest;
+import com.shinchik.cloudkeeper.storage.config.handler.MkDirRequest;
+import com.shinchik.cloudkeeper.storage.config.handler.RenameRequest;
+import com.shinchik.cloudkeeper.storage.config.handler.UploadRequest;
 import com.shinchik.cloudkeeper.storage.exception.controller.DtoValidationException;
 import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.dto.MkDirDto;
@@ -29,7 +29,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 
-// TODO: add more info while throwing InvalidDtoException?
 @Slf4j
 @Controller
 @RequestMapping("/files")

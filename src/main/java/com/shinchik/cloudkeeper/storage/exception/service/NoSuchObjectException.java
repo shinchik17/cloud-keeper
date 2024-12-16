@@ -6,8 +6,4 @@ public class NoSuchObjectException extends MinioServiceException{
     public NoSuchObjectException(String objPath) {
         super("File or folder '%s' does not exist".formatted(PathUtils.removeUserPrefix(objPath)));
     }
-
-    public NoSuchObjectException(Throwable cause) {
-        super(cause);
-    }
 }
