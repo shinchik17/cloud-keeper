@@ -73,11 +73,20 @@
             <span><i class="bi bi-folder-plus"></i></span> Create folder
         </button>
     </div>
-    <div th:if="${path.isEmpty()}" class="row pb-0">
+    <div th:if="${path.isEmpty() && !userObjects.isEmpty()}" class="row pb-3">
         <button type="button" class="btn btn-danger" id="rm-all-btn" data-req-path="files"
                 data-obj-name="" data-path="" onclick="deleteObj(this)">
             <i class="bi bi-trash"></i> Remove all
         </button>
+    </div>
+    <div class="row pb-0" id="storage-info" th:object="${storageInfo}">
+        <div class="progress p-0" style="height: 10px;">
+            <div th:class="|progress-bar *{colorStyle}|" role="progressbar" th:style="|width: *{usedPercentage}%|"
+                 th:attr="aria-valuenow=*{usedPercentage}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <span class="p-0 mt-1 text-center" th:text="| *{usedMb} MB of *{capacityMb} MB used|"> X MB of Y MB used </span>
+        <a href="https://telegra.ph/Mentorstvo-po-trudoustrojstvu-06-08" target="_blank" rel="noopener noreferrer"
+           class="btn btn-outline-info mt-2" role="button">Get more space</a>
     </div>
 </div>
 

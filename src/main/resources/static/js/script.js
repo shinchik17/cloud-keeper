@@ -9,6 +9,7 @@ const fileInput = document.getElementById("file-upload");
 const uploadBtn = document.getElementById("upload-btn");
 const mkDirBtn = document.getElementById("mkdir-btn");
 const rmAllBtn = document.getElementById("rm-all-btn");
+const storageInfoDiv = document.getElementById("storage-info");
 const successModalElement = document.getElementById("success-modal")
 const errorModalElement = document.getElementById("error-modal")
 const successModal = new bootstrap.Modal(successModalElement)
@@ -384,7 +385,8 @@ function showLeftPaneTools() {
     toolsDropzoneDiv.classList.add("d-none")
     uploadBtn.classList.remove("d-none")
     mkDirBtn.classList.remove("d-none")
-    if (getCurPath() === "") {
+    storageInfoDiv.classList.remove("d-none")
+    if (getCurPath() === "" && rmAllBtn !== null) {
         rmAllBtn.classList.remove("d-none")
     }
 
@@ -394,7 +396,8 @@ function showDropzoneTools() {
     toolsDropzoneDiv.classList.remove("d-none")
     uploadBtn.classList.add("d-none")
     mkDirBtn.classList.add("d-none")
-    if (getCurPath() === "") {
+    storageInfoDiv.classList.add("d-none")
+    if (getCurPath() === "" && rmAllBtn !== null) {
         rmAllBtn.classList.add("d-none")
     }
 }

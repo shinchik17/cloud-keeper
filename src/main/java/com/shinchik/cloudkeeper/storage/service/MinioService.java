@@ -5,10 +5,10 @@ import com.shinchik.cloudkeeper.storage.exception.service.NoSuchObjectException;
 import com.shinchik.cloudkeeper.storage.exception.service.NotEnoughFreeSpaceException;
 import com.shinchik.cloudkeeper.storage.exception.service.SuchFolderAlreadyExistsException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
+import com.shinchik.cloudkeeper.storage.model.StorageInfo;
 import com.shinchik.cloudkeeper.storage.model.dto.*;
 import com.shinchik.cloudkeeper.storage.repository.MinioRepository;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
-import com.shinchik.cloudkeeper.user.model.User;
 import io.minio.SnowballObject;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
@@ -210,12 +210,17 @@ public class MinioService {
     }
 
 
+    public StorageInfo getStorageInfo(StorageDto reqDto) {
+        DataSize usedSpace = DataSize.ofBytes(calcTotalStoredSize(reqDto));
+        return new StorageInfo(usedSpace, userSpaceSize);
+    }
+
     /**
      * Makes explicit folders from intermediate path parts
      *
-     * @param files - uploading files
+     * @param files  - uploading files
      * @param userId - uploading user's id
-     * @param path - current path (folder)
+     * @param path   - current path (folder)
      */
     private void createIntermediateFolders(List<MultipartFile> files, long userId, String path) {
         files.stream()
@@ -289,19 +294,22 @@ public class MinioService {
     }
 
     private boolean isUserSpaceExceeded(UploadDto uploadDto) {
-        String userFolder = PathUtils.formFullPath(uploadDto);
         long uploadSize = calcTotalSize(uploadDto.getFiles());
-        long totalStoredSize = minioRepository.list(userFolder).stream()
-                .mapToLong(Item::size)
-                .sum();
-
+        long totalStoredSize = calcTotalStoredSize(uploadDto);
         return totalStoredSize + uploadSize > userSpaceSize.toBytes();
     }
+
+    private long calcTotalStoredSize(StorageDto reqDto) {
+        String userFolder = PathUtils.formFullPath(reqDto);
+        return minioRepository.list(userFolder).stream()
+                .mapToLong(Item::size)
+                .sum();
+    }
+
 
     private static long calcTotalSize(List<MultipartFile> files) {
         return files.stream().mapToLong(MultipartFile::getSize).sum();
     }
-
 
 
 }
