@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@Profile("dev")
+@Profile({"dev", "prod"})
 public class SearchController {
 
     private final MinioService minioService;

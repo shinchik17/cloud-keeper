@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Controller
 @RequestMapping("/files")
-@Profile("dev")
+@Profile({"dev", "prod"})
 public class ObjectController {
 
     private final MinioService minioService;

@@ -1,15 +1,8 @@
-
-spring:
-  session:
-    timeout: 10
-
-
----
 # Configuration for clean MinioServiceTest
 spring:
   config:
     activate:
-      on-profile: "test & minio & !dev"
+      on-profile: "test & minio & !auth & !web"
   liquibase:
     enabled: false
   data:

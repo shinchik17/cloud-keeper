@@ -10,8 +10,12 @@ spring:
     active: dev
     group:
       dev:
-        - "auth"
         - "minio"
+        - "auth"
+        - "web"
+      prod:
+        - "minio"
+        - "auth"
         - "web"
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
