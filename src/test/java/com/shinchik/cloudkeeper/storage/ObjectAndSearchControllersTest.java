@@ -200,7 +200,7 @@ public class ObjectAndSearchControllersTest extends CompleteIntegrationTest {
                             .with(csrf()))
                     .andDo(print())
                     .andExpect(status().is3xxRedirection())
-                    .andExpect(redirectedUrlPattern("**/auth/login"));
+                    .andExpect(redirectedUrlPattern("**/welcome"));
 
         }
 

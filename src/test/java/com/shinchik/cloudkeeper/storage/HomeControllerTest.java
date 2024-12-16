@@ -30,7 +30,7 @@ public class HomeControllerTest extends CompleteIntegrationTest {
     public void getHomePage_withAnonymousUser() throws Exception {
         mockMvc.perform(get("/")).andDo(print())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/auth/login"));
+                .andExpect(redirectedUrlPattern("**/welcome"));
     }
 
     @Test

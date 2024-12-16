@@ -197,7 +197,7 @@ public class AuthControllerTest extends AuthIntegrationTest {
             mockMvc.perform(get(securityConfig.getLogoutUrl()))
                     .andDo(print())
                     .andExpect(status().is3xxRedirection())
-                    .andExpect(redirectedUrlPattern("**%s".formatted(securityConfig.getLoginUrl())));
+                    .andExpect(redirectedUrlPattern("**%s".formatted(securityConfig.getWelcomeUrl())));
         }
 
         @Test
@@ -219,7 +219,7 @@ public class AuthControllerTest extends AuthIntegrationTest {
             mockMvc.perform(logout(securityConfig.getLogoutUrl()))
                     .andDo(print())
                     .andExpect(status().is3xxRedirection())
-                    .andExpect(redirectedUrlPattern("/**%s".formatted(securityConfig.getLoginUrl())));
+                    .andExpect(redirectedUrlPattern("/**%s".formatted(securityConfig.getWelcomeUrl())));
         }
 
         @Test

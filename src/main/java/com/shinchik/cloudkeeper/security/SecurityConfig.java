@@ -52,18 +52,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(registerUrl, loginUrl).anonymous()
+                        .requestMatchers(registerUrl, loginUrl, welcomeUrl).anonymous()
                         .requestMatchers(unsecuredUrls).permitAll()
                         .requestMatchers("/**").authenticated())
                 .formLogin(formLogin -> {
-                    formLogin.loginPage(loginUrl);
+                    formLogin.loginPage(welcomeUrl);
                     formLogin.loginProcessingUrl(loginUrl);
                     formLogin.defaultSuccessUrl(defaultUrl, true);
                     formLogin.failureUrl(loginUrl + "?error");
                 })
                 .logout(logout -> {
                     logout.logoutUrl(logoutUrl);
-                    logout.logoutSuccessUrl(loginUrl);
+                    logout.logoutSuccessUrl(welcomeUrl);
                 })
                 .build();
     }

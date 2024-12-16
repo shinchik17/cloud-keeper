@@ -33,14 +33,14 @@ public class CustomErrorController implements ErrorController {
         String requestUri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
         Object statusCodeObject = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         int statusCode = -1;
-        if (statusCodeObject instanceof String){
+        if (statusCodeObject instanceof String) {
             statusCode = Integer.parseInt((String) statusCodeObject);
         } else if (statusCodeObject instanceof Integer) {
             statusCode = (Integer) statusCodeObject;
         }
 
         Object resourcePath = model.getAttribute("resourcePath");
-        if (resourcePath instanceof String){
+        if (resourcePath instanceof String) {
             requestUri = (String) resourcePath;
         }
 
@@ -51,10 +51,10 @@ public class CustomErrorController implements ErrorController {
             log.warn("Attempted to access '{}', status code '{}', user is anonymous", requestUri, statusCode);
         }
 
-        if (isAuthUri(requestUri) && statusCode == HttpStatus.FORBIDDEN.value()) {
+        if (isUriForAnonymousOnly(requestUri) && statusCode == HttpStatus.FORBIDDEN.value()) {
             return "redirect:/";
         } else if (isLogoutUri(requestUri) && statusCode == HttpStatus.FORBIDDEN.value()) {
-            return "redirect:/auth/login";
+            return "redirect:%s".formatted(securityConfig.getWelcomeUrl());
         }
 
         String errorMessage = "How did you get here? Anyway, go back to home page it's definitely better out there :)";
@@ -62,12 +62,14 @@ public class CustomErrorController implements ErrorController {
         return "error";
     }
 
-    private boolean isAuthUri(String requestUri) {
+    private boolean isUriForAnonymousOnly(String requestUri) {
         return requestUri != null &&
-                (requestUri.contains(securityConfig.getRegisterUrl()) || requestUri.contains(securityConfig.getLoginUrl()));
+                (requestUri.contains(securityConfig.getRegisterUrl())
+                        || requestUri.contains(securityConfig.getLoginUrl())
+                        || requestUri.contains(securityConfig.getWelcomeUrl()));
     }
 
-    private boolean isLogoutUri(String requestUri){
+    private boolean isLogoutUri(String requestUri) {
         return requestUri != null && requestUri.contains(securityConfig.getLogoutUrl());
     }
 
