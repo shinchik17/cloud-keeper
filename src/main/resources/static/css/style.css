@@ -138,18 +138,18 @@ input[type="search"] {
 
 
 /* Debug borders coloring */
-body {
-    border: dotted 2px black;
-}
+/*body {*/
+/*    border: dotted 2px black;*/
+/*}*/
 
-.container, .container-fluid {
-    border: solid 2px purple;
-}
+/*.container, .container-fluid {*/
+/*    border: solid 2px purple;*/
+/*}*/
 
-.row{
-    /*border: solid 1px red;*/
-}
+/*.row{*/
+/*    !*border: solid 1px red;*!*/
+/*}*/
 
-.files-box, .left-pane, .dropzone-div{
-    border: solid 1px green;
-}
+/*.files-box, .left-pane, .dropzone-div{*/
+/*    border: solid 1px green;*/
+/*}*/
