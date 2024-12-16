@@ -389,6 +389,8 @@ function showLeftPaneTools() {
     if (getCurPath() === "" && rmAllBtn !== null) {
         rmAllBtn.classList.remove("d-none")
     }
+    document.querySelector(".files-box").style.minHeight = "300px";
+    document.querySelector(".list-group").classList.remove("d-none");
 
 }
 
@@ -400,6 +402,9 @@ function showDropzoneTools() {
     if (getCurPath() === "" && rmAllBtn !== null) {
         rmAllBtn.classList.add("d-none")
     }
+    document.querySelector(".files-box").style.minHeight = "0";
+    document.querySelector(".list-group").classList.add("d-none");
+
 }
 
 /* Miscellaneous */
