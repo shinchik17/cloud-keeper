@@ -4,8 +4,8 @@ spring:
     user-space-size: 500MB
   config:
     import:
-      - optional:file:dev.env[.properties]
       - optional:file:.env[.properties]
+      - optional:file:dev.env[.properties]
   profiles:
     active: dev
     group:
