@@ -7,6 +7,10 @@ plugins {
 group = 'com.shinchik'
 version = '0.0.1-SNAPSHOT'
 
+bootJar {
+    archiveFileName = "cloud-keeper.jar"
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
