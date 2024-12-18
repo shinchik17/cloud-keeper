@@ -62,7 +62,7 @@ validation:
   patterns:
     username: "[a-zA-Z0-9@_.]{4,50}"
     password: "[a-zA-Z0-9@_.!#$%^&*]{4,50}"
-    objname: (?=.*\S)[\w\!\-\*'\(\)\s]{1,40}
+    objname: (?=.*\S)[\wа-яА-Я\!\-\*'\(\)\s]{1,40}
     search: .*\S+.*
   messages:
     username: "Allowed letters, numbers and symbols @_., minimum 4 characters"
