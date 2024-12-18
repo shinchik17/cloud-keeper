@@ -2,7 +2,9 @@ package com.shinchik.cloudkeeper.storage.config.handler;
 
 import com.shinchik.cloudkeeper.security.SecurityUserDetails;
 import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
+import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
+import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -42,11 +44,11 @@ public class BaseRequestArgumentResolver implements HandlerMethodArgumentResolve
 
 
     protected static String getPath(NativeWebRequest webRequest) {
-        return webRequest.getParameter("path");
+        return PathUtils.normalize(webRequest.getParameter("path"));
     }
 
     protected static String getObjName(NativeWebRequest webRequest) {
-        return webRequest.getParameter("objName");
+        return PathUtils.normalize(webRequest.getParameter("objName"));
     }
 
     protected static long getUserId() {

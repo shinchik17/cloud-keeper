@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.storage.config.handler;
 
 import com.shinchik.cloudkeeper.storage.model.dto.RenameDto;
+import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import jakarta.validation.Valid;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -36,7 +37,7 @@ public class RenameRequestArgumentResolver extends BaseRequestArgumentResolver {
     }
 
     private static String getNewObjName(NativeWebRequest webRequest){
-        return webRequest.getParameter("newObjName");
+        return PathUtils.normalize(webRequest.getParameter("newObjName"));
     }
 
 }
