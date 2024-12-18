@@ -17,6 +17,7 @@ spring:
         - "minio"
         - "auth"
         - "web"
+    default: dev
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -25,8 +26,9 @@ spring:
     enabled: true
   data:
     redis:
-      password: ${REDIS_PASSWORD}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
   session:
     redis:
       repository-type: default
@@ -56,6 +58,14 @@ server:
         secure: true
   tomcat:
     max-swallow-size: 200MB
+
+
+minio:
+  client:
+    endpoint: ${MINIO_ENDPOINT}
+    user: ${MINIO_ROOT_USER}
+    password: ${MINIO_ROOT_PASSWORD}
+  bucket-name: user-files
 
 
 validation:
