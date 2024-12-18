@@ -110,6 +110,14 @@ public class MinioService {
         String objName = renameDto.getObjName();
         String newObjName = renameDto.getNewObjName();
 
+        if (objName.equals(newObjName)) {
+            return;
+        }
+
+        if (minioRepository.isObjectExist(fullPath + newObjName)
+                || minioRepository.isObjectDir(fullPath + newObjName)){
+            throw new MinioServiceException("Folder or file '%s' already exists".formatted(newObjName));
+        }
 
         if (isDir(fullPath + objName)) {
 
