@@ -1,6 +1,7 @@
 package com.shinchik.cloudkeeper.security;
 
 
+import com.shinchik.cloudkeeper.user.model.Role;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +37,9 @@ public class SecurityConfig {
             "/css/**",
             "/js/**",
             "/common/**",
-            "/cloud-data.ico"
+            "/cloud-data.ico",
+            "/actuator/health",
+            "/actuator/prometheus"
     };
 
     private final UserDetailsService userDetailsService;
@@ -52,6 +56,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(registerUrl, loginUrl, welcomeUrl).anonymous()
                         .requestMatchers(unsecuredUrls).permitAll()
+                        .requestMatchers("/actuator/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/**").authenticated())
                 .formLogin(formLogin -> {
                     formLogin.loginPage(welcomeUrl);

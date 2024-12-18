@@ -42,9 +42,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation("org.springframework.session:spring-session-data-redis")
+    implementation 'org.springframework.session:spring-session-data-redis'
     implementation "io.minio:minio:${minioVersion}"
     implementation 'org.liquibase:liquibase-core'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

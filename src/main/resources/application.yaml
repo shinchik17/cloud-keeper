@@ -71,9 +71,15 @@ validation:
     search: "Search query must contain at least 1 non-whitespace character"
 
 
-minio:
-  client:
-    endpoint: ${MINIO_ENDPOINT}
-    user: ${MINIO_ROOT_USER}
-    password: ${MINIO_ROOT_PASSWORD}
-  bucket-name: user-files
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
