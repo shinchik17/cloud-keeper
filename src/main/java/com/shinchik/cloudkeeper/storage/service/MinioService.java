@@ -90,9 +90,10 @@ public class MinioService {
 
 
     public InputStreamResource download(BaseReqDto downloadDto) {
-        String fullObjPath = PathUtils.formFullPath(downloadDto) + downloadDto.getObjName();
+        String parentFolderPath = PathUtils.formFullPath(downloadDto);
+        String fullObjPath = parentFolderPath + downloadDto.getObjName();
         if (minioRepository.isObjectDir(fullObjPath)) {
-            return new InputStreamResource(getZippedFolder(fullObjPath + "/"));
+            return new InputStreamResource(getZippedFolder(fullObjPath + "/", parentFolderPath));
         } else {
             if (!minioRepository.isObjectExist(fullObjPath)) {
                 log.error("Attempted to download '{}' but it does not exist", fullObjPath);
@@ -238,7 +239,7 @@ public class MinioService {
                 .forEach(this::createFolder);
     }
 
-    private ByteArrayInputStream getZippedFolder(String fullPath) {
+    private ByteArrayInputStream getZippedFolder(String fullPath, String parentFolderPath) {
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutStream = new ZipOutputStream(byteOutStream)) {
@@ -248,7 +249,7 @@ public class MinioService {
             for (Map.Entry<Item, byte[]> entry : objectsMap.entrySet()) {
                 Item metaInfo = entry.getKey();
                 byte[] buffer = entry.getValue();
-                String name = PathUtils.extractNameFromPath(metaInfo.objectName(), fullPath);
+                String name = PathUtils.extractNameFromPath(metaInfo.objectName(), parentFolderPath);
                 zipOutStream.putNextEntry(new ZipEntry(name));
                 zipOutStream.write(buffer);
                 zipOutStream.closeEntry();

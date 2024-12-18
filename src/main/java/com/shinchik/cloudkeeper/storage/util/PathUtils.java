@@ -29,12 +29,6 @@ public class PathUtils {
 
     }
 
-// --Commented out by Inspection START (16.12.2024 13:28):
-//    public static String encode(String path) {
-//        return URLEncoder.encode(path, StandardCharsets.UTF_8);
-//    }
-// --Commented out by Inspection STOP (16.12.2024 13:28)
-
     public static String getEncodedPath(StorageDto reqDto) {
         return URLEncoder.encode(reqDto.getPath(), StandardCharsets.UTF_8);
     }
@@ -53,7 +47,7 @@ public class PathUtils {
     }
 
     public static String extractNameFromPath(String fullObjPath, String path) {
-        fullObjPath = fullObjPath.substring(fullObjPath.lastIndexOf(path));
+        fullObjPath = fullObjPath.substring(path.length());
         return removeUserPrefix(fullObjPath);
     }
 
