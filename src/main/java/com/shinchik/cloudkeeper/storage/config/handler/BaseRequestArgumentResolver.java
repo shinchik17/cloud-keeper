@@ -4,7 +4,6 @@ import com.shinchik.cloudkeeper.security.SecurityUserDetails;
 import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
-import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
