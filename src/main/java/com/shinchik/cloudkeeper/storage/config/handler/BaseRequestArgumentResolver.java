@@ -43,11 +43,19 @@ public class BaseRequestArgumentResolver implements HandlerMethodArgumentResolve
 
 
     protected static String getPath(NativeWebRequest webRequest) {
-        return PathUtils.normalize(webRequest.getParameter("path"));
+        String path = webRequest.getParameter("path");
+        if (path == null){
+            return "";
+        }
+        return PathUtils.normalize(path);
     }
 
     protected static String getObjName(NativeWebRequest webRequest) {
-        return PathUtils.normalize(webRequest.getParameter("objName"));
+        String objName = webRequest.getParameter("objName");
+        if (objName == null){
+            return "";
+        }
+        return PathUtils.normalize(objName);
     }
 
     protected static long getUserId() {

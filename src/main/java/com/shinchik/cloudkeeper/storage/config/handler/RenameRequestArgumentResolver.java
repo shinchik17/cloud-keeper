@@ -37,7 +37,11 @@ public class RenameRequestArgumentResolver extends BaseRequestArgumentResolver {
     }
 
     private static String getNewObjName(NativeWebRequest webRequest){
-        return PathUtils.normalize(webRequest.getParameter("newObjName"));
+        String newObjName = webRequest.getParameter("newObjName");
+        if (newObjName == null){
+            return "";
+        }
+        return PathUtils.normalize(newObjName);
     }
 
 }

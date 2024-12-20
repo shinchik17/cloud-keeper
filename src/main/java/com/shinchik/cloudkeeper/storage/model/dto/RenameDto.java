@@ -14,9 +14,9 @@ public class RenameDto implements ExtendedStorageDto {
     private long userId;
     @NotNull(message = "Path must not be null")
     private String path;
-    @NotBlank(message = "Object to rename must not be null")
+    @NotBlank(message = "Object to rename must not be blank")
     private String objName;
-    @NotBlank(message = "New object name must not be empty")
+    @NotBlank(message = "New object name must not be blank")
     private String newObjName;
 
 }

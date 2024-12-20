@@ -16,7 +16,7 @@ public class MkDirDto implements ExtendedStorageDto {
     private long userId;
     @NotNull(message = "Path must not be null")
     private String path;
-    @NotBlank(message = "Object name must be specified")
+    @NotBlank(message = "Object name must noy be blank")
     private String objName;
 
 }
