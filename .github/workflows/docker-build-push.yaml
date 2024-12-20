@@ -13,16 +13,16 @@ jobs:
     environment:
       name: production
     env:
-      SPRING_DATASOURCE_URL: $ {{ secrets.SPRING_DATASOURCE_URL }}
-      SPRING_DATASOURCE_DB: $ {{ secrets.SPRING_DATASOURCE_DB }}
-      SPRING_DATASOURCE_USERNAME: $ {{ secrets.SPRING_DATASOURCE_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: $ {{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      REDIS_HOST: $ {{ secrets.REDIS_HOST }}
-      REDIS_PORT: $ {{ secrets.REDIS_PORT }}
-      REDIS_PASSWORD: $ {{ secrets.REDIS_PASSWORD }}
-      MINIO_ENDPOINT: $ {{ secrets.MINIO_ENDPOINT }}
-      MINIO_ROOT_USER: $ {{ secrets.MINIO_ROOT_USER }}
-      MINIO_ROOT_PASSWORD: $ {{ secrets.MINIO_ROOT_PASSWORD }}
+      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+      MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
