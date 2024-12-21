@@ -6,6 +6,10 @@ RUN gradle bootJar --build-cache
 
 FROM openjdk:17-jdk-slim
 
+RUN apt-get update  \
+    && apt-get install -y curl  \
+    && rm -rf /var/lib/apt/lists/*  # for healthcheck via curl inside container
+
 WORKDIR /app
 ARG JAR_FILENAME=cloud-keeper.jar
 ENV FILENAME=${JAR_FILENAME}
