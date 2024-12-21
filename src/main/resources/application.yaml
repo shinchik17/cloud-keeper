@@ -53,9 +53,6 @@ spring:
 server:
   servlet:
     context-path: /api/v1/
-    session:
-      cookie:
-        secure: true
   tomcat:
     max-swallow-size: 200MB
 
