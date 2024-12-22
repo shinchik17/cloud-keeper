@@ -1,5 +1,6 @@
 package com.shinchik.cloudkeeper.storage.controller;
 
+import com.shinchik.cloudkeeper.storage.config.handler.BaseRequest;
 import com.shinchik.cloudkeeper.storage.exception.repository.MinioRepositoryException;
 import com.shinchik.cloudkeeper.storage.exception.service.NoSuchFolderException;
 import com.shinchik.cloudkeeper.storage.mapper.BreadcrumbMapper;
@@ -38,15 +39,15 @@ public class HomeController {
 
 
     @GetMapping
-    public String home(@RequestParam(value = "path", required = false, defaultValue = "") String path,
+    public String home(@BaseRequest BaseReqDto reqDto,
                        @AuthenticationPrincipal(expression = "getUser") User user,
                        Model model) {
 
-        path = PathUtils.normalize(path);
+        String path = reqDto.getPath();
 
         boolean isDir;
         try {
-            isDir = minioService.isDir(new BaseReqDto(user.getId(), "", path));
+            isDir = minioService.isDir(reqDto);
             if (!isDir && !path.isEmpty()) {
                 log.info("Requested path '{}' does not exist", path);
                 throw new NoSuchFolderException(path);
@@ -56,10 +57,9 @@ public class HomeController {
             throw new NoSuchFolderException(path);
         }
 
-        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
-        BaseReqDto reqDto = new BaseReqDto(user.getId(), path);
+        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);;
         List<BaseRespDto> userObjects = minioService.list(reqDto);
-        StorageInfo storageInfo = minioService.getStorageInfo(reqDto);
+        StorageInfo storageInfo = minioService.getStorageInfo(new BaseReqDto(reqDto.getUserId(), ""));
 
         model.addAttribute("path", path);
         model.addAttribute("breadcrumb", breadcrumb);
@@ -70,9 +70,5 @@ public class HomeController {
 
         return "storage/home";
     }
-
-
-
-
 
 }

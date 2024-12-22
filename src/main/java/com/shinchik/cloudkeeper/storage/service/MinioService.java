@@ -312,7 +312,7 @@ public class MinioService {
 
     private long calcTotalStoredSize(StorageDto reqDto) {
         String userFolder = PathUtils.formFullPath(reqDto);
-        return minioRepository.list(userFolder).stream()
+        return minioRepository.listRecursively(userFolder).stream()
                 .mapToLong(Item::size)
                 .sum();
     }
