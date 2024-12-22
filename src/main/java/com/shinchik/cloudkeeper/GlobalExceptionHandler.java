@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,11 +26,15 @@ import org.springframework.web.servlet.view.RedirectView;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public RedirectView handleNoResourceFound(NoResourceFoundException e, RedirectAttributes redirectAttributes) {
+    public RedirectView handleNoResourceFound(NoResourceFoundException e) {
         log.warn("Resource '{}' not found. Redirecting to /error", e.getResourcePath());
-        redirectAttributes.addFlashAttribute("errorMessage",
-                "How did you get here? Anyway, go back to home page. It's definitely better out there :)");
-        redirectAttributes.addFlashAttribute("resourcePath", e.getResourcePath());
+        return new RedirectView("/error", true);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public RedirectView handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e,
+                                                                     HttpServletRequest request) {
+        log.warn("Method '{}' for '{}' is not supported. Redirecting to /error", e.getMethod(), request.getRequestURI());
         return new RedirectView("/error", true);
     }
 
@@ -53,7 +58,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exToJsonString(e));
     }
 
-
     @ExceptionHandler(DtoValidationException.class)
     @ResponseBody
     public ResponseEntity<String> handleDtoValidationException(DtoValidationException e) {
@@ -76,13 +80,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleOtherExceptions(Exception e, HttpServletRequest request, Model model) {
+    public RedirectView handleOtherExceptions(Exception e, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String errorStatusCode = (String) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         String uri = request.getRequestURI();
         String errorMessage = e.getMessage();
         log.error("Attempted to access '{}', status code '{}', message '{}'", uri, errorStatusCode,errorMessage);
-        model.addAttribute("errorMessage", "Service is unavailable. Please try again later");
-        return "redirect:error";
+        redirectAttributes.addFlashAttribute("errorMessage", "Service is unavailable. Please try again later");
+        return new RedirectView("/error", true);
     }
 
 
