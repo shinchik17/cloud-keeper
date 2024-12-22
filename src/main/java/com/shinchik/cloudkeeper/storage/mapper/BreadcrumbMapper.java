@@ -29,7 +29,10 @@ public interface BreadcrumbMapper {
         breadcrumb.put(partName, fullPath.toString());
         for (int i = 1; i < parts.length - 1; i++) {
             partName = parts[i];
-            fullPath.append("/").append(partName);
+            if (i != 1){
+                fullPath.append("/");
+            }
+            fullPath.append(partName);
             breadcrumb.put(partName, fullPath.toString());
         }
 

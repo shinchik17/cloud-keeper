@@ -9,10 +9,18 @@
     <ul class="list-group overflow-y-auto">
         <li class="list-group-item file d-flex" th:each="obj : ${userObjects}">
             <div th:if="${obj.dir}" class="flex-grow-1">
-                <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
-                    <svg th:replace="~{common/icons :: folder}"></svg>
-                    <span th:text=" ${obj.objName}">Object name</span>
-                </a>
+                <div class="p-0" th:if="${#strings.isEmpty(path)}">
+                    <a th:href="@{/(path=${obj.objName})}">
+                        <svg th:replace="~{common/icons :: folder}"></svg>
+                        <span th:text=" ${obj.objName}">Object name</span>
+                    </a>
+                </div>
+                <div class="p-0" th:unless="${#strings.isEmpty(path)}">
+                    <a th:href="@{/(path=${path}+'/'+${obj.objName})}">
+                        <svg th:replace="~{common/icons :: folder}"></svg>
+                        <span th:text=" ${obj.objName}">Object name</span>
+                    </a>
+                </div>
             </div>
             <div th:unless="${obj.dir}" class="flex-grow-1">
                 <svg th:replace="~{common/icons :: file}"></svg>
