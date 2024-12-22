@@ -52,18 +52,7 @@
     <div class="row pt-0">
         <ul class="search-list-group overflow-y-auto">
             <li class="list-group-item d-flex" th:each="breadcrumb : ${breadcrumbs}">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-2 mt-2">
-                        <li class="breadcrumb-item" th:unless="${breadcrumb.getLastPart.isBlank()}"
-                            th:each="part : ${breadcrumb.pathItems}">
-                            <a th:href="@{/(path=${part.value})}" th:text="${part.key}">Home</a>
-                        </li>
-                        <li class="breadcrumb-item active " aria-current="page"
-                            th:text="${breadcrumb.getLastPart.isBlank()} ? Home : ${breadcrumb.getLastPart}">
-                            Object
-                        </li>
-                    </ol>
-                </nav>
+                <nav th:replace="~{common/nav :: breadcrumb}"></nav>
             </li>
         </ul>
     </div>

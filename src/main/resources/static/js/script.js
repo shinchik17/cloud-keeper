@@ -12,11 +12,14 @@ const rmAllBtn = document.getElementById("rm-all-btn");
 const storageInfoDiv = document.getElementById("storage-info");
 const successModalElement = document.getElementById("success-modal")
 const errorModalElement = document.getElementById("error-modal")
+const confirmModalElement = document.getElementById("confirm-modal")
+const confirmUploadBtn = document.getElementById("confirm-upload-btn");
 const successModal = new bootstrap.Modal(successModalElement)
 const errorModal = new bootstrap.Modal(errorModalElement)
 const uploadDropzoneBtn = document.getElementById("dz-upload-btn")
 const clearDropzoneBtn = document.getElementById("dz-clear-btn")
 const toolsDropzoneDiv = document.getElementById("dz-tools")
+const confirmModal = new bootstrap.Modal(confirmModalElement)
 
 successModalElement.querySelector("#success-modal .modal-footer button").addEventListener("click", reloadPage)
 successModalElement.addEventListener("hide.bs.modal", reloadPage)
@@ -115,19 +118,48 @@ Dropzone.options.myDropzone = {
 Dropzone.discover()
 
 function uploadDropzoneFiles() {
-    let dropzoneElement = document.getElementById("my-dropzone")
-    let files = dropzoneElement.dropzone.getQueuedFiles()
+    let dropzoneElement = document.getElementById("my-dropzone");
+    let files = dropzoneElement.dropzone.getQueuedFiles();
+    let allowedFiles = [];
+    let prohibitedFiles = [];
+    let input = document.getElementById("new-obj-name");
+    let patternMessage = document.getElementById("rename-feedback").textContent;
+
     let totalSize = 0;
     for (let i = 0; i < files.length; i++) {
+        let nameParts = files[i].name.split(".");
+        input.value = nameParts[0]; // using input for validation because JS RegExp works incorrectly
+        if (!input.checkValidity() || nameParts.length > 2) {
+            prohibitedFiles.push(files[i]);
+            continue;
+        }
         totalSize += files[i].size
-
         if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
-            showErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
+            showErrorMessage(Dropzone.options.myDropzone.dictFileTooBig);
             return;
         }
+        allowedFiles.push(files[i]);
     }
 
-    dropzoneElement.dropzone.processQueue();
+    if (prohibitedFiles.length > 0) {
+        let dropzoneElement = document.getElementById("my-dropzone");
+        let message = `One or more file names violate naming rules. ${patternMessage} Would you like to upload other files anyway?`;
+
+        confirmUploadBtn.addEventListener("click", function () {
+            if (allowedFiles > 0) {
+                confirmModal.hide();
+                dropzoneElement.dropzone.files = allowedFiles;
+                dropzoneElement.dropzone.processQueue();
+            } else {
+                reloadPage();
+            }
+        })
+        showConfirmDialog(message);
+        confirmModal.show();
+    } else {
+        dropzoneElement.dropzone.processQueue();
+    }
+
 }
 
 function clearDropzone() {
@@ -209,7 +241,7 @@ function renameObj(renameBtn) {
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
-                    if (text.includes("does not exist")){
+                    if (text.includes("does not exist")) {
                         errorModalElement.addEventListener("hide.bs.modal", reloadPage)
                     }
                     showErrorMessage(text);
@@ -232,21 +264,47 @@ function uploadObj() {
     formData.append("_csrf", getCsrfToken())
 
     let files = fileInput.files;
+    let prohibitedFiles = [];
+    let input = document.getElementById("new-obj-name");
+    let patternMessage = document.getElementById("rename-feedback").textContent;
     if (files.length > MAX_FILES) {
         showErrorMessage(Dropzone.options.myDropzone.dictMaxFilesExceeded)
     }
 
     let totalSize = 0;
-    for (let i = 0; i < Math.min(files.length, MAX_FILES); i++) {
-        formData.append(`files`, files[i], files[i].name);
+    for (let i = 0; i < files.length; i++) {
+        let nameParts = files[i].name.split(".");
+        input.value = nameParts[0]; // using input for validation because JS RegExp works incorrectly
+        if (!input.checkValidity() || nameParts.length > 2) {
+            prohibitedFiles.push(files[i]);
+            continue;
+        }
         totalSize += files[i].size
-
         if (totalSize > MAX_FILE_SIZE * 1024 * 1024) {
-            showErrorMessage(Dropzone.options.myDropzone.dictFileTooBig)
+            showErrorMessage(Dropzone.options.myDropzone.dictFileTooBig);
             return;
         }
+        formData.append(`files`, files[i], files[i].name);
     }
 
+    if (prohibitedFiles.length > 0) {
+        let message = `One or more file names violate naming rules. ${patternMessage} Would you like to upload other files anyway?`;
+        confirmUploadBtn.addEventListener("click", function () {
+            if (files.length - prohibitedFiles.length > 0) {
+                confirmModal.hide();
+                performUpload(url, formData);
+            } else {
+                reloadPage();
+            }
+        })
+        showConfirmDialog(message);
+        confirmModal.show();
+    } else {
+        performUpload(url, formData);
+    }
+}
+
+function performUpload(url, formData){
     fetch(url, {
         method: "POST", headers: {
             "ContentType": "multipart/form-data;utf-8",
@@ -296,7 +354,6 @@ function deleteObj(rmBtn) {
                     rmBtn.closest(".list-group-item").remove()
                 }
                 showSuccessMessage("Successfully deleted");
-                // successModal.show();
 
             } else {
                 response.text().then(text => {
@@ -383,6 +440,11 @@ function showErrorMessage(message) {
         errorModalElement.querySelector(".alert-text").textContent = message;
     }
     errorModal.show()
+}
+
+function showConfirmDialog(message) {
+    confirmModalElement.querySelector(".alert-text").textContent = message;
+    confirmModal.show()
 }
 
 function showLeftPaneTools() {

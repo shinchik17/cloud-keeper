@@ -57,7 +57,7 @@ public class HomeController {
             throw new NoSuchFolderException(path);
         }
 
-        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);;
+        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
         List<BaseRespDto> userObjects = minioService.list(reqDto);
         StorageInfo storageInfo = minioService.getStorageInfo(new BaseReqDto(reqDto.getUserId(), ""));
 

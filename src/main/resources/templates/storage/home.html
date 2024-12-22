@@ -13,7 +13,7 @@
 
         <div class="col-8 main-box pt-0 pb-0">
             <div class="files-box ps-4 ">
-                <div th:replace="~{common/nav :: breadcrumb}"></div>
+                <div th:insert="~{common/nav :: breadcrumb}" class="row p-0 m-0"></div>
                 <div th:replace="~{common/file-lists :: main}"></div>
             </div>
             <div th:replace="~{common/dropzone :: #dz-tools}"></div>
@@ -29,6 +29,7 @@
 <div th:replace="~{common/modals :: #rename-modal}"></div>
 <div th:replace="~{common/modals :: #success-modal}"></div>
 <div th:replace="~{common/modals :: #error-modal}"></div>
+<div th:replace="~{common/modals :: #confirm-modal}"></div>
 
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>

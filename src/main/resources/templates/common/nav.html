@@ -46,19 +46,18 @@
     </div>
 </nav>
 
-<div th:fragment="breadcrumb" class="row p-0 m-0">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item" th:unless="${breadcrumb.getLastPart.isBlank()}"
-                th:each="part : ${breadcrumb.pathItems}">
-                <a th:href="@{/(path=${part.value})}" th:text="${part.key}">Home</a>
-            </li>
-            <li class="breadcrumb-item active " aria-current="page"
-                th:text="${breadcrumb.getLastPart.isBlank()} ? Home : ${breadcrumb.getLastPart}">Folder
-            </li>
-        </ol>
-    </nav>
-</div>
+<nav th:fragment="breadcrumb" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" th:unless="${breadcrumb.getLastPart.isBlank()}"
+            th:each="part : ${breadcrumb.pathItems}">
+            <a th:if="${part.value.isBlank()}" th:href="@{/}" th:text="${part.key}">Home</a>
+            <a th:unless="${part.value.isBlank()}" th:href="@{/(path=${part.value})}" th:text="${part.key}">Home</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page"
+            th:text="${breadcrumb.getLastPart.isBlank()} ? Home : ${breadcrumb.getLastPart}">Folder
+        </li>
+    </ol>
+</nav>
 
 <div th:fragment="left-pane" class="col-2 left-pane d-none d-sm-block d-flex flex-grow-1 flex-column flex-shrink-2">
     <div class="row pb-0 pt-5">
@@ -89,6 +88,5 @@
            class="btn btn-outline-info mt-2" role="button">Get more space</a>
     </div>
 </div>
-
 
 </html>
