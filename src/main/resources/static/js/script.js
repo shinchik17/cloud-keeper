@@ -146,7 +146,7 @@ function uploadDropzoneFiles() {
         let message = `One or more file names violate naming rules. ${patternMessage} Would you like to upload other files anyway?`;
 
         confirmUploadBtn.addEventListener("click", function () {
-            if (allowedFiles > 0) {
+            if (allowedFiles.length > 0) {
                 confirmModal.hide();
                 dropzoneElement.dropzone.files = allowedFiles;
                 dropzoneElement.dropzone.processQueue();
@@ -375,7 +375,7 @@ function downloadObj(downloadBtn) {
     let path = downloadBtn.getAttribute("data-path")
     path = path !== null ? path : ""
     let objName = downloadBtn.getAttribute("data-obj-name")
-    url = url + `?path=${path}&objName=${objName}`
+    url = url + `?path=${path}&objName=${encodeURIComponent(objName)}`
 
     fetch(url, {
         method: "GET",
