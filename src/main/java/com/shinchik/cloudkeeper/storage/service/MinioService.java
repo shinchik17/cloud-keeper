@@ -89,7 +89,7 @@ public class MinioService {
         String parentFolderPath = PathUtils.formFullPath(downloadDto);
         String fullObjPath = parentFolderPath + downloadDto.getObjName();
 
-        if (!minioRepository.isObjectExist(fullObjPath)){
+        if (!minioRepository.isObjectExist(fullObjPath) && !minioRepository.isObjectDir(fullObjPath)){
             throw new NoSuchObjectException(fullObjPath);
         }
 
@@ -117,11 +117,11 @@ public class MinioService {
             return;
         }
 
-        if (!minioRepository.isObjectExist(fullObjPath)){
+        if (!minioRepository.isObjectExist(fullObjPath) && !minioRepository.isObjectDir(fullObjPath)){
             throw new MinioServiceException("Folder or file '%s' does not exist".formatted(objName));
         }
 
-        if (minioRepository.isObjectExist(fullNewObjPath)){
+        if (minioRepository.isObjectExist(fullNewObjPath) || minioRepository.isObjectDir(fullNewObjPath)){
             throw new MinioServiceException("Folder or file '%s' already exists".formatted(newObjName));
         }
 
