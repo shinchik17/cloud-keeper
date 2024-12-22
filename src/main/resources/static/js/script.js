@@ -162,7 +162,7 @@ function mkDir(mkBtn) {
         .then(response => {
             if (response.ok) {
                 console.info(`Folder ${dirname} has been created successfully`)
-                location.reload()
+                reloadPage()
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
@@ -205,12 +205,16 @@ function renameObj(renameBtn) {
         .then(response => {
             if (response.ok) {
                 console.info(`Renamed "${objName}" to "${newObjName}" successfully`)
-                location.reload()
+                reloadPage()
             } else {
                 response.text().then(text => {
                     text = JSON.parse(text).message
+                    if (text.includes("does not exist")){
+                        errorModalElement.addEventListener("hide.bs.modal", reloadPage)
+                    }
                     showErrorMessage(text);
                     console.error(text);
+
                 })
             }
         })

@@ -105,32 +105,33 @@ public class MinioService {
         String fullPath = PathUtils.formFullPath(renameDto);
         String objName = renameDto.getObjName();
         String newObjName = renameDto.getNewObjName();
+        String fullObjPath = fullPath + objName;
+        String fullNewObjPath = fullPath + newObjName;
 
         if (objName.equals(newObjName)) {
             return;
         }
 
-        if (minioRepository.isObjectExist(fullPath + newObjName)
-                || minioRepository.isObjectDir(fullPath + newObjName)){
+        if (!minioRepository.isObjectExist(fullObjPath)){
+            throw new MinioServiceException("Folder or file '%s' does not exist".formatted(objName));
+        }
+
+        if (minioRepository.isObjectExist(fullNewObjPath)){
             throw new MinioServiceException("Folder or file '%s' already exists".formatted(newObjName));
         }
 
-        if (isDir(fullPath + objName)) {
-
-            List<Item> objectsMeta = minioRepository.listRecursively(fullPath + objName);
-
+        if (isDir(fullObjPath)) {
+            List<Item> objectsMeta = minioRepository.listRecursively(fullObjPath);
             for (Item item : objectsMeta) {
                 String objPath = item.objectName();
-                String newObjPath = objPath.replaceFirst(fullPath + objName, fullPath + newObjName);
+                String newObjPath = objPath.replaceFirst(fullObjPath, fullPath + newObjName);
                 minioRepository.rename(objPath, newObjPath);
             }
 
         } else {
-
             String newObjPath = fullPath + PathUtils.handleFileExtension(objName, newObjName);
-            minioRepository.rename(fullPath + objName, newObjPath);
+            minioRepository.rename(fullObjPath, newObjPath);
         }
-
     }
 
 
