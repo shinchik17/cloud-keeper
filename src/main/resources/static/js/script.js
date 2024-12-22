@@ -1,5 +1,5 @@
 Dropzone.autoDiscover = false;
-const MAX_FILE_SIZE = 100  // MiB
+const MAX_FILE_SIZE = 100  // MB
 const MAX_FILES = 100
 const baseUrl = "http://" + window.location.host + window.location.pathname
 
@@ -70,7 +70,7 @@ Dropzone.options.myDropzone = {
     maxFilesize: MAX_FILE_SIZE,
     maxFiles: MAX_FILES,
     parallelUploads: MAX_FILES,
-    dictFileTooBig: `Total size of uploading files exceeds limit (${MAX_FILE_SIZE} MiB).`,
+    dictFileTooBig: `Total size of uploading files exceeds limit (${MAX_FILE_SIZE} MB).`,
     dictMaxFilesExceeded: `You have reached the maximum uploading files limit (${MAX_FILES}). Not all files would be uploaded.`,
 
     // Note: using "function()" here to bind `this` to
