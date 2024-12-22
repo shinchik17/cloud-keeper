@@ -88,6 +88,11 @@ public class MinioService {
     public InputStreamResource download(BaseReqDto downloadDto) {
         String parentFolderPath = PathUtils.formFullPath(downloadDto);
         String fullObjPath = parentFolderPath + downloadDto.getObjName();
+
+        if (!minioRepository.isObjectExist(fullObjPath)){
+            throw new NoSuchObjectException(fullObjPath);
+        }
+
         if (minioRepository.isObjectDir(fullObjPath)) {
             return new InputStreamResource(getZippedFolder(fullObjPath + "/", parentFolderPath));
         } else {
