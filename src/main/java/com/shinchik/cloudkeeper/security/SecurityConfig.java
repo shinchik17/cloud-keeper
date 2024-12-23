@@ -71,7 +71,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(registerUrl, loginUrl, welcomeUrl).anonymous()
                         .requestMatchers(unsecuredUrls).permitAll()
-                        .requestMatchers("/actuator/prometheus").hasRole(Role.PROMETHEUS.name())
                         .requestMatchers("/actuator/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/**").authenticated())
                 .formLogin(formLogin -> {
