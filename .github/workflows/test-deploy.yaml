@@ -73,20 +73,18 @@ jobs:
       MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
       MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      GRAFANA_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      GRAFANA_PASSWORD: ${{ secrets.GRAFANA_PASSWORD }}
       PROMETHEUS_USER_PASSWORD: ${{ secrets.PROMETHEUS_USER_PASSWORD }}
       PROMETHEUS_USER_PASSWORD_ENCRYPTED: ${{ secrets.PROMETHEUS_USER_PASSWORD_ENCRYPTED }}
-      PROMETHEUS_PASSWORD_FILEPATH: ${{ secrets.PROMETHEUS_USER_PASSWORD_FILEPATH }}
+      PROMETHEUS_USER_PASSWORD_FILEPATH: ${{ secrets.PROMETHEUS_USER_PASSWORD_FILEPATH }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run docker compose
         run: |
-          echo $PROMETHEUS_USER_PASSWORD
-#          && echo $PROMETHEUS_USER_PASSWORD_FILEPATH
-#          echo $PROMETHEUS_USER_PASSWORD > $PROMETHEUS_USER_PASSWORD_FILEPATH &&
-#          git checkout main &&
-#          git pull &&
-#          docker compose -f ./compose-prod.yaml down &&
-#          docker compose -f ./compose-prod.yaml up -d --build &&
-#          docker system prune --all --force
+          echo ${{ env.PROMETHEUS_USER_PASSWORD }} > ${{ env.PROMETHEUS_USER_PASSWORD_FILEPATH }} &&
+          git checkout main &&
+          git pull &&
+          docker compose -f ./compose-prod.yaml down &&
+          docker compose -f ./compose-prod.yaml up -d --build &&
+          docker system prune --all --force
