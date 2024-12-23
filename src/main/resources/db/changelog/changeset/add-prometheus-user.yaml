@@ -8,14 +8,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: 1
+                  value: 2
               - column:
                   name: username
-                  value: user
+                  value: prometheus
               - column:
                   name: password
-                  value: $2a$10$Ioql.k5S/TfggpcPtTpL6O4nDULRVSbptXHPB.rU/PVa46k1kNMBS   # 1234
+                  value: ${prometheus-user-pass-enc}
               - column:
                   name: role
-                  value: 'USER'
+                  value: 'PROMETHEUS'
 

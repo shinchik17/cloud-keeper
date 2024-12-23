@@ -40,6 +40,7 @@ jobs:
       MINIO_ENDPOINT: http://localhost:9000
       MINIO_ROOT_USER: test
       MINIO_ROOT_PASSWORD: testpass
+      PROMETHEUS_USER_PASSWORD_ENCRYPTED: testpass
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -72,13 +73,20 @@ jobs:
       MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
       MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      GRAFANA_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      PROMETHEUS_USER_PASSWORD: ${{ secrets.PROMETHEUS_USER_PASSWORD }}
+      PROMETHEUS_USER_PASSWORD_ENCRYPTED: ${{ secrets.PROMETHEUS_USER_PASSWORD_ENCRYPTED }}
+      PROMETHEUS_PASSWORD_FILEPATH: ${{ secrets.PROMETHEUS_USER_PASSWORD_FILEPATH }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run docker compose
         run: |
-          git checkout main &&
-          git pull &&
-          docker compose -f ./compose-prod.yaml down &&
-          docker compose -f ./compose-prod.yaml up -d --build &&
-          docker system prune --all --force
+          echo $PROMETHEUS_USER_PASSWORD
+#          && echo $PROMETHEUS_USER_PASSWORD_FILEPATH
+#          echo $PROMETHEUS_USER_PASSWORD > $PROMETHEUS_USER_PASSWORD_FILEPATH &&
+#          git checkout main &&
+#          git pull &&
+#          docker compose -f ./compose-prod.yaml down &&
+#          docker compose -f ./compose-prod.yaml up -d --build &&
+#          docker system prune --all --force

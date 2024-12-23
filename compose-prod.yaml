@@ -17,6 +17,7 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      PROMETHEUS_USER_PASSWORD_ENCRYPTED: ${PROMETHEUS_USER_PASSWORD_ENCRYPTED}
       SPRING_PROFILES_ACTIVE: "prod"
     networks:
       - default
@@ -102,6 +103,7 @@ services:
       - monitoring
     volumes:
       - ./monitoring/prometheus:/etc/prometheus
+      - ${PROMETHEUS_USER_PASSWORD_FILEPATH}:/etc/prometheus_password.txt
       - prometheus-data:/prometheus
     restart: unless-stopped
 
@@ -110,7 +112,7 @@ services:
     container_name: grafana
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASS}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
     networks:
       - monitoring
     ports:

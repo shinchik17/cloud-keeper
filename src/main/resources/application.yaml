@@ -24,6 +24,8 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   liquibase:
     enabled: true
+    parameters:
+      prometheus-user-pass-enc: ${PROMETHEUS_USER_PASSWORD_ENCRYPTED}
   data:
     redis:
       host: ${REDIS_HOST}

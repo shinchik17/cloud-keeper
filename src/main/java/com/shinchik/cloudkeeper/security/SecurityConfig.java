@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
@@ -37,9 +41,7 @@ public class SecurityConfig {
             "/css/**",
             "/js/**",
             "/common/**",
-            "/cloud-data.ico",
-            "/actuator/health",
-            "/actuator/prometheus"
+            "/cloud-data.ico"
     };
 
     private final UserDetailsService userDetailsService;
@@ -51,11 +53,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(1)
+    public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/actuator/prometheus")
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().hasRole(Role.PROMETHEUS.name())
+                )
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(registerUrl, loginUrl, welcomeUrl).anonymous()
                         .requestMatchers(unsecuredUrls).permitAll()
+                        .requestMatchers("/actuator/prometheus").hasRole(Role.PROMETHEUS.name())
                         .requestMatchers("/actuator/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/**").authenticated())
                 .formLogin(formLogin -> {
