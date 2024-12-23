@@ -247,7 +247,7 @@ public class MinioService {
                 .map(s -> s.replaceFirst("^/", ""))
                 .distinct()
                 .map(p -> new MkDirDto(userId, path, p))
-                .filter(dto -> !isObjectExist(dto))
+                .filter(dto -> !isDir(dto))
                 .forEach(this::createFolder);
     }
 
