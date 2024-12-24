@@ -36,10 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
-### Dev environment file ###
-/dev.env
+### Environment files ###
 /prod.env
 
-### Minio files ###
+### Locally stored volumes ###
 /data
 
