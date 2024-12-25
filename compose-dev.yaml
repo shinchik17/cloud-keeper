@@ -47,5 +47,5 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus:/etc/prometheus
+      - ./monitoring/prometheus/prometheus-dev.yaml:/etc/prometheus/prometheus.yaml
       - ./monitoring/prometheus/prometheus_password.txt:/etc/prometheus_password.txt
