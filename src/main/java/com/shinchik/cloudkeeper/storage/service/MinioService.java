@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -146,9 +145,10 @@ public class MinioService {
     public void delete(BaseReqDto deleteDto) {
         String fullPath = PathUtils.formFullPath(deleteDto);
         String objName = deleteDto.getObjName();
-        String folderSearchPath = (fullPath + objName + "/").replace("//", "/");
+        String fullObjPath = fullPath + objName;
+        String folderSearchPath = (fullObjPath + "/").replace("//", "/");
 
-        if (isDir(fullPath + objName)) {
+        if (isDir(fullObjPath)) {
             List<DeleteObject> delObjects = new LinkedList<>();
             List<Item> objectsMeta = minioRepository.listRecursively(folderSearchPath);
 
@@ -161,11 +161,11 @@ public class MinioService {
 
         } else {
 
-            if (!minioRepository.isObjectExist(fullPath + objName)) {
-                log.warn("Attempted to delete object '{}' but it does not exist", fullPath + objName);
-                throw new NoSuchObjectException(fullPath + objName);
+            if (!minioRepository.isObjectExist(fullObjPath)) {
+                log.warn("Attempted to delete object '{}' but it does not exist", fullObjPath);
+                throw new NoSuchObjectException(fullObjPath);
             }
-            minioRepository.delete(fullPath + objName);
+            minioRepository.delete(fullObjPath);
         }
 
     }
@@ -304,7 +304,7 @@ public class MinioService {
                         throw new MinioServiceException(e);
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
@@ -327,7 +327,7 @@ public class MinioService {
     }
 
 
-    private static long calcTotalSize(List<MultipartFile> files) {
+    private long calcTotalSize(List<MultipartFile> files) {
         return files.stream().mapToLong(MultipartFile::getSize).sum();
     }
 
