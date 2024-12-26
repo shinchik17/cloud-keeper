@@ -33,13 +33,13 @@ public class HomeController {
     }
 
     @GetMapping("/welcome")
-    public String welcome() {
+    public String getWelcomePage() {
         return "welcome";
     }
 
 
-    @GetMapping
-    public String home(@BaseRequest BaseReqDto reqDto,
+    @GetMapping("/")
+    public String getHomePage(@BaseRequest BaseReqDto reqDto,
                        @AuthenticationPrincipal(expression = "getUser") User user,
                        Model model) {
 
