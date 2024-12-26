@@ -42,14 +42,6 @@ public class SecurityConfig {
             "/cloud-data.ico"
     };
 
-    private final UserDetailsService userDetailsService;
-
-
-    @Autowired
-    public SecurityConfig(SecurityUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
     @Bean
     @Order(1)
     public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception {
@@ -85,7 +77,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() {
+    @Autowired
+    public AuthenticationManager authenticationManager(SecurityUserDetailsService userDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
