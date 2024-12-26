@@ -15,7 +15,7 @@ public class PathUtils {
 
     public static String normalize(@NotNull String path) {
 
-        path = path.trim().replaceAll("\\s+", " ");
+        path = removeSpaces(path);
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -23,10 +23,14 @@ public class PathUtils {
         try {
             return URI.create(path).normalize().toString();
         } catch (IllegalArgumentException | NullPointerException e) {
-            log.info("Caught exception when trying to normalize path '{}' as uri: {}", path, e.getMessage());
+            log.debug("Caught exception when trying to normalize path '{}' as uri: {}", path, e.getMessage());
             return path;
         }
 
+    }
+
+    public static String removeSpaces(String s){
+        return s.trim().replaceAll("\\s+", " ");
     }
 
     public static String getEncodedPath(StorageDto reqDto) {

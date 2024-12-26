@@ -5,6 +5,7 @@ import com.shinchik.cloudkeeper.storage.model.dto.BaseReqDto;
 import com.shinchik.cloudkeeper.storage.model.dto.BaseRespDto;
 import com.shinchik.cloudkeeper.storage.model.Breadcrumb;
 import com.shinchik.cloudkeeper.storage.service.MinioService;
+import com.shinchik.cloudkeeper.storage.util.PathUtils;
 import com.shinchik.cloudkeeper.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -34,7 +35,7 @@ public class SearchController {
                          @AuthenticationPrincipal(expression = "getUser") User user,
                          Model model) {
 
-        query = query.trim().replaceAll("\\s+", " ");
+        query = PathUtils.removeSpaces(query);
         BaseReqDto searchReq = new BaseReqDto(user.getId(), "", query);
         List<BaseRespDto> foundObjects = minioService.search(searchReq);
         List<Breadcrumb> breadcrumbs = foundObjects.stream()
