@@ -1,7 +1,9 @@
 package com.shinchik.cloudkeeper.storage.config.handler;
 
 import com.shinchik.cloudkeeper.storage.model.dto.UploadDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -9,9 +11,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 public class UploadRequestArgumentResolver extends BaseRequestArgumentResolver {
 
     private static final String MULTIPART_PARAM_NAME = "files";
@@ -43,10 +46,19 @@ public class UploadRequestArgumentResolver extends BaseRequestArgumentResolver {
 
     }
 
-    private static List<MultipartFile> getFiles(NativeWebRequest webRequest) {
+    private List<MultipartFile> getFiles(NativeWebRequest webRequest) {
         MultipartHttpServletRequest multipartRequest = webRequest.getNativeRequest(MultipartHttpServletRequest.class);
         if (multipartRequest == null){
-            throw new RuntimeException("Failed to extract multipart data from request");
+            HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+
+            if (request != null){
+                String uri = request.getRequestURI();
+                long userId = getUserId();
+                log.warn("Failed to extract multipart data from request, uri: {}, user id: {}", uri, userId);
+            } else {
+                log.warn("Failed to extract multipart data from request");
+            }
+            return new ArrayList<>();
         }
         return multipartRequest.getFiles(MULTIPART_PARAM_NAME);
     }
