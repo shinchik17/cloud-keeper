@@ -21,10 +21,12 @@ import java.util.List;
 public class SearchController {
 
     private final MinioService minioService;
+    private final BreadcrumbMapper breadcrumbMapper;
 
     @Autowired
-    public SearchController(MinioService minioService) {
+    public SearchController(MinioService minioService, BreadcrumbMapper breadcrumbMapper) {
         this.minioService = minioService;
+        this.breadcrumbMapper = breadcrumbMapper;
     }
 
     @GetMapping("/search")
@@ -36,7 +38,7 @@ public class SearchController {
         BaseReqDto searchReq = new BaseReqDto(user.getId(), "", query);
         List<BaseRespDto> foundObjects = minioService.search(searchReq);
         List<Breadcrumb> breadcrumbs = foundObjects.stream()
-                .map(obj -> BreadcrumbMapper.INSTANCE.mapToModel(obj.getObjName()))
+                .map(obj -> breadcrumbMapper.mapToModel(obj.getObjName()))
                 .toList();
 
         model.addAttribute("query", query);

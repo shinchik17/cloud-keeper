@@ -19,11 +19,13 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     public Optional<User> findByUsername(String username){
@@ -33,7 +35,7 @@ public class UserService {
     @Transactional
     public void register(UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        repository.save(UserMapper.INSTANCE.mapToEntity(user));
+        repository.save(userMapper.mapToEntity(user));
     }
 
 }

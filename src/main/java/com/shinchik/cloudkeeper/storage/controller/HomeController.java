@@ -24,10 +24,12 @@ import java.util.List;
 public class HomeController {
 
     private final MinioService minioService;
+    private final BreadcrumbMapper breadcrumbMapper;
 
     @Autowired
-    public HomeController(MinioService minioService) {
+    public HomeController(MinioService minioService, BreadcrumbMapper breadcrumbMapper) {
         this.minioService = minioService;
+        this.breadcrumbMapper = breadcrumbMapper;
     }
 
     @GetMapping("/welcome")
@@ -55,7 +57,7 @@ public class HomeController {
             throw new NoSuchFolderException(path);
         }
 
-        Breadcrumb breadcrumb = BreadcrumbMapper.INSTANCE.mapToModel(path);
+        Breadcrumb breadcrumb = breadcrumbMapper.mapToModel(path);
         List<BaseRespDto> userObjects = minioService.list(reqDto);
         StorageInfo storageInfo = minioService.getStorageInfo(new BaseReqDto(reqDto.getUserId(), ""));
 

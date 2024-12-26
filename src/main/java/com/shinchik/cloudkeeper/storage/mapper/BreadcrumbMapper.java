@@ -3,15 +3,14 @@ package com.shinchik.cloudkeeper.storage.mapper;
 import com.shinchik.cloudkeeper.storage.model.Breadcrumb;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 import java.util.LinkedHashMap;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BreadcrumbMapper {
-
-    BreadcrumbMapper INSTANCE = Mappers.getMapper(BreadcrumbMapper.class);
 
     @Mapping(target = "pathItems", source = "path", qualifiedByName = "splitPath")
     @Mapping(target = "lastPart", source = "path", qualifiedByName = "getCurDir")

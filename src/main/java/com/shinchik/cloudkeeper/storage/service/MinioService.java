@@ -37,16 +37,19 @@ import java.util.zip.ZipOutputStream;
 public class MinioService {
 
     private final MinioRepository minioRepository;
+    private final BreadcrumbMapper breadcrumbMapper;
     private final long maxFileSize;
     private final long maxRequestSize;
     private final DataSize userSpaceSize;
 
     @Autowired
     public MinioService(MinioRepository minioRepository,
+                        BreadcrumbMapper breadcrumbMapper,
                         @Value("${spring.servlet.multipart.max-file-size}") DataSize maxFileSize,
                         @Value("${spring.servlet.multipart.max-request-size}") DataSize maxRequestSize,
                         @Value("${spring.application.user-space-size}") DataSize userSpaceSize) {
         this.minioRepository = minioRepository;
+        this.breadcrumbMapper = breadcrumbMapper;
         this.maxFileSize = maxFileSize.toBytes();
         this.maxRequestSize = maxRequestSize.toBytes();
         this.userSpaceSize = userSpaceSize;
@@ -197,7 +200,7 @@ public class MinioService {
             if (isDir(obj) && obj.objectName().equals(fullPath)) {
                 continue;
             }
-            String shortObjName = BreadcrumbMapper.INSTANCE.mapToModel(obj.objectName()).getLastPart().toLowerCase();
+            String shortObjName = breadcrumbMapper.mapToModel(obj.objectName()).getLastPart().toLowerCase();
             if (!shortObjName.contains(query)) {
                 continue;
             }
@@ -241,7 +244,7 @@ public class MinioService {
      */
     private void createIntermediateFolders(List<MultipartFile> files, long userId, String path) {
         files.stream()
-                .map(f -> BreadcrumbMapper.INSTANCE.mapToModel(f.getOriginalFilename()).getPathItems().values())
+                .map(f -> breadcrumbMapper.mapToModel(f.getOriginalFilename()).getPathItems().values())
                 .flatMap(Collection::stream)
                 .filter(x -> !x.isEmpty())
                 .map(s -> s.replaceFirst("^/", ""))
