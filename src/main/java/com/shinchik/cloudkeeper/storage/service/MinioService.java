@@ -128,9 +128,9 @@ public class MinioService {
         if (isDir(fullObjPath)) {
             List<Item> objectsMeta = minioRepository.listRecursively(fullObjPath);
             for (Item item : objectsMeta) {
-                String objPath = item.objectName();
-                String newObjPath = objPath.replaceFirst(fullObjPath, fullPath + newObjName);
-                minioRepository.rename(objPath, newObjPath);
+                String internalObjPath = item.objectName();
+                String newInternalObjPath = fullNewObjPath + internalObjPath.substring(fullObjPath.length());
+                minioRepository.rename(internalObjPath, newInternalObjPath);
             }
 
         } else {
